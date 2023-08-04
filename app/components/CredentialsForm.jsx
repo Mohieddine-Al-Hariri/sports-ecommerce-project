@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { FacebookSignInButton, GoogleSignInButton } from "./authButton";
 // import OTP from "./OTP";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
 import OtpInput from "otp-input-react";
 import PhoneInput from "react-phone-input-2";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { toast, Toaster } from "react-hot-toast";
 import "react-phone-input-2/lib/style.css";
-import { auth } from "../services/firebaseConfig";
 import { CgSpinner } from "react-icons/cg";
 
 
@@ -48,14 +48,11 @@ const CredentialsForm = () => {
 		const signInResponse = await signIn("credentials", {
 			redirect: false,
 			callbackUrl: "/",
-			// countryCode: data.get("countryCode"),
-			// phoneNumber: data.get("phoneNumber"),
 			ph: ph,
 			password: password,
 			firstName: firstName,
 			lastName: lastName,
 			isLogIn: isLogIn,
-			// email: data.get("email"),
 		});
 		if (signInResponse && !signInResponse.error) {
 			router.push("/");
@@ -163,20 +160,8 @@ const CredentialsForm = () => {
 							<input value={formData.firstName} onChange={(e) => setFromData(prev => ({...prev, firstName: e.target.value}))} type="text" name="firstName" placeholder="First Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 							<input value={formData.lastName} onChange={(e) => setFromData(prev => ({...prev, lastName: e.target.value}))} type="text" name="lastName" placeholder="Last Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 						</div>
-					}
-					{/* <div className="flex items-end gap-2 ">
-						<div>
-							<label htmlFor="countryCode" className="text-gray-700 ml-4 max-sm:ml-0">Country Code</label>
-							<input type="text" value={`+${countryCode}`} onChange={(e) => setCountryCode(e.target.value.slice(1).replace(/\D/g,''))} name="countryCode" placeholder="Eg: 961" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
-						</div>
-						<div>
-							<label htmlFor="countryCode" className="text-gray-700 ml-4 max-sm:ml-0">Phone Number</label>
-							<input type="number" name="phoneNumber" placeholder="Eg: 71 654 321" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
-						</div>
-					</div> */}
-					
+					}					
 					<input value={formData.password} onChange={(e) => setFromData(prev => ({...prev, password: e.target.value}))} type="password" name="password" placeholder="Password" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
-					{/* <input type="email" name="email" placeholder="example@email.com" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" /> */}
 					<button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Sign In with Phone Number</button>
 					{error && <p className="text-red-500">{error}</p>}
 				</form>

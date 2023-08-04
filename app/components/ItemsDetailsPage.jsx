@@ -30,7 +30,7 @@ const ItemsDetailsPage = ({ product }) => {
           src={product.images[0].url}
           alt={product.name}
         />
-        <div className="w-screen relative bg-white flex flex-col justify-center px-2 gap-4">
+        <div className="w-full relative bg-white flex flex-col justify-center px-2 pl-5 gap-4">
           <div>
             <div className="left-[30px] top-[22px] text-black text-xl font-bold mb-1">
               {product.name}
@@ -96,7 +96,7 @@ const ItemsDetailsPage = ({ product }) => {
           </div>
         </div>
         {/* <div className="w-full text-center text-black text-3xl flex justify-center gap-3"> Total <h1 className="font-bold"> {product.price*quantity}</h1>  </div> */}
-        <div className=" w-full flex justify-center ">
+        <div className=" w-full flex justify-center bg-white pb-4">
           <button className="h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] bg-zinc-800 rounded-full justify-center items-start gap-[15px] inline-flex">
             <div className="text-white text-xl font-bold leading-normal">
               Add to cart

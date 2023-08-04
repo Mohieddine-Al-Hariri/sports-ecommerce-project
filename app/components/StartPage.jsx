@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 
 
-const StartPage = ({ products, hasNextPage }) => {
+const StartPage = ({ products, hasNextPage, user }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [doesHaveNextPage, setDoesHaveNextPage] = useState(false);
   const [productsState, setProductsState] = useState([]);
