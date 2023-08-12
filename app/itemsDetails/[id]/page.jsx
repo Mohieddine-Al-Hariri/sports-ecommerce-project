@@ -18,7 +18,7 @@ const itemDetails = async ({ params }) => {
   const sessionData = await getServerSession(authOptions);
   const productDetails = await getProductDetails(params.id); 
 
-  return <ItemsDetailsPage product={productDetails} />
+  return <ItemsDetailsPage product={productDetails} user={sessionData?.user} />
   
 }
 

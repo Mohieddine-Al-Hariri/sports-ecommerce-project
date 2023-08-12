@@ -1,0 +1,26 @@
+import Cart from '@/app/components/Cart'
+import { getCartItems } from '@/lib';
+import { authOptions } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+// import { redirect } from 'next/dist/server/api-utils';
+
+export async function getProductsData(cursor, searchText, userId) {
+  const data = (await getCartItems(cursor, searchText, userId)) || [];
+  // console.log("data in func: ", data);
+  return data;
+}
+
+
+const page = async ({ searchParams: { cursor, searchText } }) => {
+  //TODO: Get things from Cart Component in hygraph 
+  const session = await getServerSession(authOptions);
+  let data = {};
+  if(session) {
+    data = await getProductsData(cursor, searchText, session.user.id);
+  }
+  // const datas = await getProductsData(cursor, searchText, session.user.id);
+
+  return <Cart user={session?.user} cartItems={data.products} hasNextPage={data.pageInfo?.hasNextPage}/>
+}
+
+export default page

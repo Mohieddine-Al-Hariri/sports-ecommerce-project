@@ -45,10 +45,10 @@ const StartPage = ({ products, hasNextPage, user }) => {
         <div className=" text-neutral-700 text-xl font-bold leading-normal ml-5">Items</div>
         <div className="w-full h-full flex items-start justify-between flex-wrap gap-4 p-4 relative">
           {productsState.map((item, index) => (
-            <Link href={`/itemsDetails/${item.node.id}`} key={index} className="w-[108px] h-full gap-0 p-2 rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
-              <Image width={102} height={109.03} className="w-[102px] h-[109.03px] left-0 top-0 rounded-[20px]" alt={item.name} src={item.node.images[0].url} />
-              <div className="w-full text-neutral-700 text-sm font-bold leading-[18px]">Лонгслив</div>
-              <div className="w-full text-neutral-700 text-[10px] font-thin leading-[10px]">Long sleeve FB Hype</div>
+            <Link href={`/itemsDetails/${item.node.id}`} key={index} className="w-[108px] h-fit gap-0 p-2 rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
+              <Image width={102} height={109.03} className="w-[102px] h-[109.03px] left-0 top-0 rounded-[20px]" alt={item.node.name} src={item.node.images[0].url} />
+              <div className="w-full text-neutral-700 text-sm font-bold leading-[18px]">{item.node.name.length > 15 ? item.node.name.slice(0, 11) + '...' : item.node.name}</div>
+              <div className="w-full text-neutral-700 text-[10px] font-thin leading-[10px]">{item.node.Excerpt}</div>
             </Link>
           ))}
         </div>

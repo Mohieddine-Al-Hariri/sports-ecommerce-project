@@ -1,11 +1,12 @@
 "use client";
+import { addItemToCart, publishItemAddedToCart } from "@/lib";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function Variants({ variant, setChosenProductId, bg, txtClr }) {
+export function Variants({ variant, setChosenProductVariantId, bg, txtClr }) {
   return (
     <button
-      onClick={() => setChosenProductId(variant.id)}
+      onClick={() => setChosenProductVariantId(variant.id)}
       className={` ${bg} ${txtClr} w-fit h-fit p-2 flex-col justify-start items-start inline-flex rounded-full `}
     >
       {/* <div className={`w-11 h-11 rounded-full border border-zinc-800`} /> */}
@@ -14,11 +15,36 @@ export function Variants({ variant, setChosenProductId, bg, txtClr }) {
   );
 }
 
-const ItemsDetailsPage = ({ product }) => {
+const ItemsDetailsPage = ({ product, user }) => {
   //TODO: Add similar items??
   console.log("product: ", product);
-  const [chosenProductId, setChosenProductId] = useState("");
+  const [chosenProductVariantId, setChosenProductVariantId] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [isItemAddedToCart, setIsItemAddedToCart] = useState(false);
+  const [isLoggedin, setisLoggedin] = useState(false);
+  const [showPleaseLogin, setShowPleaseLogin] = useState(false)
+  
+  useEffect(() => {
+    if(user) setisLoggedin(true);
+  }, [])
+
+  const itemToCart = async () => {
+    if(!isLoggedin){
+      setShowPleaseLogin(true);
+      setTimeout(function(){
+        setShowPleaseLogin(false);
+      }, 2000);
+      return;
+    }
+    const totalPrice = quantity * product.price;
+    const isAdded = await addItemToCart({itemId: product.id, userSlug: user.slug, quantity, totalPrice});
+    console.log("isAdded: ", isAdded);
+    await publishItemAddedToCart(isAdded.createOrderItem.id);
+    setIsItemAddedToCart(!!isAdded.length); //TODO:
+    setTimeout(function(){
+      setIsItemAddedToCart(false);
+    }, 2000);
+  } 
 
   return (
     <div className=" overflow-y-scroll overflow-x-hidden flex items-start justify-center px-2 ">
@@ -30,6 +56,9 @@ const ItemsDetailsPage = ({ product }) => {
           src={product.images[0].url}
           alt={product.name}
         />
+        {/* {product.images.map((image) => (
+          <Image width={86} height={108} className="relative w-[86px] h-[108px] rounded-[20px]" src={image.url} alt="hello"  />
+        ))} */}
         <div className="w-full relative bg-white flex flex-col justify-center px-2 pl-5 gap-4">
           <div>
             <div className="left-[30px] top-[22px] text-black text-xl font-bold mb-1">
@@ -37,7 +66,7 @@ const ItemsDetailsPage = ({ product }) => {
             </div>
             {/* TODO: Add description👇🏻👇🏻 */}
             <div className="left-[31px] top-[54px] text-black text-sm font-thin leading-[18px]">
-              Winter Training Full-Zip Hoodie
+              {product.excerpt || "Winter Training Full-Zip Hoodie"}
             </div>
           </div>
           <div>
@@ -48,7 +77,7 @@ const ItemsDetailsPage = ({ product }) => {
               {product.variants.map((variant, index) => {
                 let bg = "bg-neutral-100";
                 let txtClr = "text-neutral-700";
-                if (chosenProductId === variant.id) {
+                if (chosenProductVariantId === variant.id) {
                   bg = "bg-zinc-800";
                   txtClr = "text-white";
                 }
@@ -56,7 +85,7 @@ const ItemsDetailsPage = ({ product }) => {
                   <Variants
                     variant={variant}
                     key={index}
-                    setChosenProductId={setChosenProductId}
+                    setChosenProductVariantId={setChosenProductVariantId}
                     bg={bg}
                     txtClr={txtClr}
                   />
@@ -96,12 +125,16 @@ const ItemsDetailsPage = ({ product }) => {
           </div>
         </div>
         {/* <div className="w-full text-center text-black text-3xl flex justify-center gap-3"> Total <h1 className="font-bold"> {product.price*quantity}</h1>  </div> */}
-        <div className=" w-full flex justify-center bg-white pb-4">
-          <button className="h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] bg-zinc-800 rounded-full justify-center items-start gap-[15px] inline-flex">
-            <div className="text-white text-xl font-bold leading-normal">
-              Add to cart
-            </div>
-          </button>
+        <div className="w-full flex justify-center items-center flex-col ">
+          <div className=" w-full flex justify-center bg-white pb-4">
+            <button onClick={itemToCart} className="h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] bg-zinc-800 rounded-full justify-center items-start gap-[15px] inline-flex">
+              <div className="text-white text-xl font-bold leading-normal">
+                Add to cart
+              </div>
+            </button>
+          </div>
+          {showPleaseLogin && <p className="text-red-500 text-center ">Sign In to add item to cart</p>}
+          {isItemAddedToCart && <p className="text-green-500 text-center ">Item Added Successfuly</p>}
         </div>
       </div>
     </div>

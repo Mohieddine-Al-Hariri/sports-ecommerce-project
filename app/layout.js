@@ -15,10 +15,10 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const session = await getServerSession(authOptions);
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-white bg-no-repeat h-full `}>
+    <html lang="en" className='relative h-full w-full overflow-hidden '>
+      <body className={`${inter.className} bg-white bg-no-repeat h-full w-screen `}>
         {children}
-        <Navbar userSlug={session?.user?.slug}/>
+        <Navbar userSlug={session?.user?.slug} userRole={session?.user?.userRole}/>
       </body>
     </html>
   )

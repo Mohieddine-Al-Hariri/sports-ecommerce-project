@@ -16,7 +16,8 @@ import { CgSpinner } from "react-icons/cg";
 
 const CredentialsForm = () => {
 	const [error, setError] = useState(null);
-	const [countryCode, setCountryCode] = useState("");
+	// const [countryCode, setCountryCode] = useState("");
+	const [dateState, setDateState] = useState('');
 	const [isLogIn, setIsLogIn] = useState(false);
   	const [loading, setLoading] = useState(false);
   	// const [isVerifyByPhoneNumber, setIsVerifyByPhoneNumber] = useState(false);
@@ -53,6 +54,7 @@ const CredentialsForm = () => {
 			firstName: firstName,
 			lastName: lastName,
 			isLogIn: isLogIn,
+			birthDate: dateState
 		});
 		if (signInResponse && !signInResponse.error) {
 			router.push("/");
@@ -160,7 +162,8 @@ const CredentialsForm = () => {
 							<input value={formData.firstName} onChange={(e) => setFromData(prev => ({...prev, firstName: e.target.value}))} type="text" name="firstName" placeholder="First Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 							<input value={formData.lastName} onChange={(e) => setFromData(prev => ({...prev, lastName: e.target.value}))} type="text" name="lastName" placeholder="Last Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 						</div>
-					}					
+					}
+					<input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/>
 					<input value={formData.password} onChange={(e) => setFromData(prev => ({...prev, password: e.target.value}))} type="password" name="password" placeholder="Password" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 					<button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Sign In with Phone Number</button>
 					{error && <p className="text-red-500">{error}</p>}

@@ -2,27 +2,54 @@ import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
   const body = await req.json();
-  const client = new GraphQLClient(process.env.NEXT_PUBLIC_GRAPHCMS_ENDPOINT, {
+  const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
-      authorization: `Bearer ${process.env.NEXT_PUBLIC_GRAPHCMS_TOKEN}`,
+      authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-  const { itemId, userSlug } = body;
+  const { itemId, userSlug, quantity, totalPrice, cartId } = body;
   try {
     const isItemAdded = await client.request(
       `
-      mutation UpdateTheUser($itemId: ID!, $userSlug: String!) {
-        updateTheUser(
-            where: {slug: $userSlug}
-            data: {orderItems: {connect: {where: {id: $itemId}}}}
-        ) {
-          id
+        mutation UpdateCart($itemId: ID!, $userSlug: String!, $quantity: Int!, $totalPrice: Float!, $cartId: ID!) {
+          updateCart(
+            where: {id: $cartId}
+            data: {orderItems: {create: {quantity: $quantity, total: $totalPrice, product: {connect: {id: $itemId}}, theUser: {connect: {slug: $userSlug}}}}}
+          ) {
+            id
+          }
         }
-      }
-      
       `,
-      { itemId, userSlug }
+      { itemId, userSlug, quantity, totalPrice, cartId }
     );
+    // const isItemAdded = await client.request(
+    //   `
+    //     mutation CreateOrderItem($itemId: ID!, $userSlug: String!, $quantity: Int!, $totalPrice: Float!) {
+    //       createOrderItem( data: {quantity: $quantity, total: $totalPrice, product: {connect: {id: $itemId}}, theUser: {connect: {slug: $userSlug}} 
+    //       })
+    //       {
+    //         id
+    //         quantity
+    //         product {
+    //           name
+    //         }
+    //         total
+    //       }
+    //     }
+    //   `,
+    //   { itemId, userSlug, quantity, totalPrice }
+    // );
+
+    // const newCartItem = await client.request(
+    //   `
+    //     mutation UpdateTheUser($itemId: ID!, $userSlug: String!) {
+    //       createCart(
+    //         data: {orderItems: {connect: {id: ""}}, theUser: {connect: {slug: ""}}}
+    //       )
+    //     }
+    //   `,
+    //   { itemId, userSlug, quantity, totalPrice }
+    // );
     
     return new Response(JSON.stringify(isItemAdded)); // Should return the id
     // res.status(201).json(newComment.createComment);

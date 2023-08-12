@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --fontColor: #030303;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,13 +16,57 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
+* {
+  padding: 0;
+  /* overflow-x: hidden; */
+}
 
 body {
   color: rgb(var(--foreground-rgb));
+  --dashedBorder: #343434;
+  --borderColor: #343434;
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.fontColor {
+  color: var(--fontColor);
+}
+.borderColor{
+  border-color: var(--borderColor);
+}
+.dashedBorder{
+  border: 2px dashed var(--dashedBorder);
+}
+
+/* Project Form */
+.form {
+  @apply flex-col w-full lg:pt-24 pt-12 gap-10 text-lg max-w-5xl mx-auto;
+}
+.form_image-container {
+  @apply w-3/4 lg:min-h-[200px] min-h-[100px] relative;
+}
+
+.form_image-label {
+  @apply z-10 text-center w-1/4 h-1/4 p-20 dashedBorder rounded-full aspect-square;
+}
+
+.form_image-input {
+  @apply absolute z-30 opacity-0 cursor-pointer w-full h-full rounded-full;
+}
+
+/* Profile Projects */
+.profile_projects {
+  @apply grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8 mt-5;
+}
+
+.flexStart {
+  @apply flex items-center justify-start;
+}
+.flexCenter {
+  @apply flex justify-center items-center;
 }
