@@ -1,8 +1,8 @@
 import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
-  const itemId = await req.json(); 
-  console.log("itemId: ", itemId);
+  const body = await req.json(); 
+  console.log("________________________body: \n", body);
 
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
@@ -10,20 +10,22 @@ export async function POST(req) {
     },
   });
   try {
-    const removedItemId = await client.request(
+    const { cartId, itemsIds } = body;
+    const updatedCartId = await client.request(
       `
-        mutation DeleteOrderItem(
-          $itemId: ID!
+        mutation updateCart(
+          $itemsIds: [OrderItemWhereUniqueInput!]!,
+          $cartId: ID!
         ) 
         {
-          deleteOrderItem(where: {id: itemId}){
+          updateCart(data: {orderItems: {disconnect: $itemsIds}}, where: {id: $cartId}){
             id
           }
         }
       `,
-      { itemId }
+      { itemsIds: itemsIds.map((id) => ({ id })), cartId }
     );
-    return new Response(JSON.stringify(removedItemId));
+    return new Response(JSON.stringify(cartId));
     // res.status(201).json(newComment.createComment);
   } catch (error) {
     // res.status(500).json({ message: 'Something went wrong.' });

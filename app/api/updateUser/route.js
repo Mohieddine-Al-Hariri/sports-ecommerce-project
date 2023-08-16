@@ -9,7 +9,7 @@ import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
   const body = await req.json(); 
-  console.log("body: ", body);
+  // console.log("body: ", body);
 
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
@@ -54,6 +54,7 @@ export async function POST(req) {
         imgUrl
       }
     );
+    // console.log("_________________updatedUser: \n", updatedUser);
     return new Response(JSON.stringify(updatedUser));
     // res.status(201).json(newComment.createComment);
   } catch (error) {

@@ -18,7 +18,7 @@ export default async function RootLayout({ children }) {
     <html lang="en" className='relative h-full w-full overflow-hidden '>
       <body className={`${inter.className} bg-white bg-no-repeat h-full w-screen `}>
         {children}
-        <Navbar userSlug={session?.user?.slug} userRole={session?.user?.userRole}/>
+        <Navbar userSlug={session?.user?.slug} userRole={session?.user?.userRole} cartId={session?.user?.cartId} />
       </body>
     </html>
   )

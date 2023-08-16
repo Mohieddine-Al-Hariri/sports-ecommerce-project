@@ -18,11 +18,14 @@ export async function POST(req) {
               total: $totalPrice
               orderItems: { connect: $itemsIds }
               theUser: { connect: { id: $userId } }
+              state: Ordered
+              isRemoved: false
             }
           ) {
             createdAt
             id
             orderItems {
+              id
               product {
                 name
               }

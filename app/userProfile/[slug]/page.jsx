@@ -9,7 +9,7 @@ export async function getUserDetails(userSlug) {
   return userData
 }
 export async function getUserOrders(userId) {
-  const ordersData = await getOrders(undefined, undefined,userId);
+  const ordersData = await getOrders(undefined, undefined, userId);
   return ordersData
 }
 
@@ -20,7 +20,6 @@ const page = async ({ params: { slug } }) => {
   }
   const user = await getUserDetails(slug);
   const ordersData = await getUserOrders(session.user.id);
-  console.log("ordersData: ", ordersData);
   return <ProfilePage user={user} orders={ordersData.orders} ordersHasNextPage={ordersData.pageInfo.hasNextPage} />
   
 }

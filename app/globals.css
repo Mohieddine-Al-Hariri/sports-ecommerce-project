@@ -6,7 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-  --fontColor: #030303;
+  /* --fontColor: #030303; */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,6 +25,8 @@ body {
   color: rgb(var(--foreground-rgb));
   --dashedBorder: #343434;
   --borderColor: #343434;
+  --fontColor: #030303;
+  --fontColorGray: rgb(75 85 99);
   background: linear-gradient(
       to bottom,
       transparent,
@@ -36,6 +38,10 @@ body {
 .fontColor {
   color: var(--fontColor);
 }
+.fontColorGray {
+  color: var(--fontColorGray);
+}
+
 .borderColor{
   border-color: var(--borderColor);
 }

@@ -8,7 +8,7 @@ import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage
 import { v4 } from "uuid";
 import { storage } from "@/lib/firebaseConfig";
 import { Order } from ".";
-
+import { useRouter } from "next/navigation";
 
 const ProfilePage = ({ user, orders }) => { 
   const { firstName, lastName, email, phoneNumber, birthDate, orderItems, profileImageUrl, location } = user;
@@ -16,15 +16,13 @@ const ProfilePage = ({ user, orders }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [imageUpload, setImageUpload] = useState(null);
-  console.log("orders: ", orders);
-  console.log("user: ", user);
   const [updatedUserDetails, setUpdatedUserDetails] = useState({firstName, lastName, email, phoneNumber, profileImageUrl});
+  const router = useRouter();
   //TODO: Continue Styling, add getTheUser, fix image alt...
-
 
   const uploadImage = async (imagePath) => { //To add the new profile image to the database
     if (imagePath == null || !imagePath) {
-      return ({ message: "Image path is required" }, { status: 400 });
+      return profileImageUrl;
     }
     const imageRef = ref(storage, `profileImages/${imagePath.name + v4()}`); 
     const imageUrl = await uploadBytes(imageRef, imagePath).then( async (snapshot) => {
@@ -36,8 +34,8 @@ const ProfilePage = ({ user, orders }) => {
     return imageUrl
   };
   const deletePrevImage = async (prevImgUrl) => { //To remove the old profile Image from the database
-    const imageRef = ref(storage, prevImgUrl);
     try {
+      const imageRef = ref(storage, prevImgUrl);
       await deleteObject(imageRef).catch((error) => {
         console.log(error.message);
       });
@@ -56,6 +54,7 @@ const ProfilePage = ({ user, orders }) => {
     await publishUser(user.slug);
     setIsSaving(false);
     setIsEdit(false);
+    router.refresh();
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +89,7 @@ const ProfilePage = ({ user, orders }) => {
     };
   };
 
-  if(isEdit)
+  if(isEdit) //TODO: add ability to change location even if already set
     return (
       <div className="bg-white h-screen flex flex-col justify-start items-center gap-5 ">
         <div className="w-full h-fit flex justify-between p-6 text-black">
@@ -136,7 +135,24 @@ const ProfilePage = ({ user, orders }) => {
               <span className="sr-only">Loading...</span>
             </div>:
             <button onClick={handleSubmitProfileEdits}>
-              <svg fill="currentColor" width="30px" height="30px" viewBox="0 0 0.9 0.9" xmlns="http://www.w3.org/2000/svg"><path d="M0.327 0.289 0.412 0.203V0.563a0.037 0.037 0 0 0 0.075 0V0.203l0.086 0.086a0.037 0.037 0 0 0 0.053 0 0.037 0.037 0 0 0 0 -0.053l-0.15 -0.15a0.037 0.037 0 0 0 -0.012 -0.008 0.037 0.037 0 0 0 -0.028 0 0.037 0.037 0 0 0 -0.012 0.008l-0.15 0.15a0.037 0.037 0 1 0 0.053 0.053ZM0.787 0.45a0.037 0.037 0 0 0 -0.037 0.037v0.225a0.037 0.037 0 0 1 -0.037 0.037H0.188a0.037 0.037 0 0 1 -0.037 -0.037v-0.225a0.037 0.037 0 0 0 -0.075 0v0.225a0.112 0.112 0 0 0 0.112 0.112h0.525a0.112 0.112 0 0 0 0.112 -0.112v-0.225a0.037 0.037 0 0 0 -0.037 -0.037Z"/></svg>
+              <svg
+                fill="currentColor"
+                width="30px"
+                height="30px"
+                viewBox="0 0 0.9 0.9"
+                id="check"
+                data-name="Flat Color"
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon flat-color"
+              >
+                <path
+                  id="primary"
+                  d="M0.375 0.675a0.037 0.037 0 0 1 -0.027 -0.011l-0.188 -0.188a0.037 0.037 0 0 1 0.053 -0.053l0.161 0.161 0.311 -0.311a0.037 0.037 0 1 1 0.053 0.053l-0.337 0.337A0.037 0.037 0 0 1 0.375 0.675Z"
+                  style={{
+                    fill: "rgb(0, 0, 0)",
+                  }}
+                />
+              </svg>
             </button>
           }
         </div>
@@ -205,11 +221,12 @@ const ProfilePage = ({ user, orders }) => {
           )} */}
           
         </div>
-        <div className="w-full h-full border-solid border-t-2 border-[#8f8f8f] fontColor ">
+        <div className="w-full h-full border-solid border-t-2 border-[#8f8f8f] fontColor overflow-y-scroll ">
           <h1 className="p-2 text-xl font-semibold ">Orders</h1>
           {orders?.map((order) => (
-            <Order order={order.node} />
+            <Order order={order.node} key={order.node.id} />
           ))}
+          <div className="h-20 w-full "></div>
         </div>
       </div>
     );
@@ -231,11 +248,12 @@ const ProfilePage = ({ user, orders }) => {
         <h2 >Location: {location}</h2>
         <h2 >BirthDate: {birthDate}</h2>
       </div>
-      <div className="w-full h-full border-solid border-t-2 border-[#8f8f8f] fontColor p-1 ">
-        <h1 className="p-2 text-xl font-semibold ">Orders</h1>
+      <div className="w-full h-full border-solid border-t-2 border-[#8f8f8f] fontColor p-1 overflow-y-scroll ">
+        <h1 className="p-2 text-xl font-semibold ">Orders <u> {orders.length}</u></h1>
         {orders?.map((order) => ( 
           <Order key={order.node.id} order={order.node} />
         ))}
+        <div className="h-20 w-full "></div>
       </div>
     </div>
   )
