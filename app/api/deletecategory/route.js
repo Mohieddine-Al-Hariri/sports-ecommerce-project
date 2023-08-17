@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
-  const body = await req.json();
+  const categoryId = await req.json();
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
@@ -9,19 +9,18 @@ export async function POST(req) {
   });
 
   try {
-    const { orderId, state } = body
-    const updatedOrder = await client.request(
+    const deletedCategory = await client.request(
       `
-        mutation UpdateOrder($orderId: ID!, $state: Tracking!) {
-          updateOrder(data: {state: $state}, where: {id: $orderId}) {
+        mutation DeleteCategory($categoryId: ID!) {
+          deleteCategory(where: {id: $categoryId}) {
             id
-            state
           }
         }
       `,
-      { orderId, state }
+      { categoryId }
     );
-    return new Response(JSON.stringify(updatedOrder)); // Should return the post's title
+    
+    return new Response(JSON.stringify(deletedCategory)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({status:500, body: error.message});

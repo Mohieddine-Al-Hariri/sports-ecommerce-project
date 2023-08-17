@@ -27,6 +27,7 @@ body {
   --borderColor: #343434;
   --fontColor: #030303;
   --fontColorGray: rgb(75 85 99);
+  --bgColor: white;
   background: linear-gradient(
       to bottom,
       transparent,
@@ -47,6 +48,9 @@ body {
 }
 .dashedBorder{
   border: 2px dashed var(--dashedBorder);
+}
+.bgColor{
+  background-color: var(--bgColor);
 }
 
 /* Project Form */

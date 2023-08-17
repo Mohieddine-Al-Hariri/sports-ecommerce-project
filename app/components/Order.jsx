@@ -10,19 +10,15 @@ const Order = ({ order }) => {
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
   
   const cancelOrder = async () => { 
-    console.log("canceling");
     const isCancelled = await updateOrderState({ orderId: order.id , state: "Cancelled" });
     await publishSubmittedOrder(order.id);
-    console.log("cancelled");
     router.refresh();
   //TODO: do something when order is cancelled; refresh, show cancelled?
   }
 
   const removeOrderFromUsersView = async () => {
-    console.log("removing");
     await removeOrder(order.id);
     await publishSubmittedOrder(order.id);
-    console.log("removed");
     router.refresh();
   }
 

@@ -3,7 +3,6 @@ import Image from "next/image";
 const OrderItem = ({ item }) => {
   const { quantity, total, product, id, createdAt, variant } = item;
   
-  // console.log(product);
   return (
     <div className="flex justify-around items-center w-screen gap-5 border-b-2 rounded-md">
       <Image width={86} height={108} className="relative w-[86px] h-[108px] rounded-[20px]" src={product.images[0].url} alt={product.name}  />

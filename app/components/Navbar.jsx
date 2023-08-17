@@ -20,7 +20,7 @@ const router = useRouter();
       </Link>
       
       {userRole === "User" && 
-        <Link href="/AdminOrders" className="rounded-full text-[#8f8f8f] hover:bg-[#8f8f8f] hover:text-[#f3f3f3] p-2 ">
+        <Link href="/Admin/orders" className="rounded-full text-[#8f8f8f] hover:bg-[#8f8f8f] hover:text-[#f3f3f3] p-2 ">
           <svg
             fill="currentColor"
             width="30px"

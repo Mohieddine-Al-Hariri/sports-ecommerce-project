@@ -13,7 +13,7 @@ import {
 import { storage } from '@/lib/firebaseConfig';
 
 
-const CreateProductForm = () => {
+const CreateProductForm = ({ categoriesData }) => {
   const [images, setImages] = useState([]);
   const [form, setForm] = useState({
     name: '',
@@ -51,11 +51,9 @@ const CreateProductForm = () => {
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  const categoryOptions = [ //TODO: get them from api
-    { value: 'Men', label: 'Men' },
-    { value: 'Women', label: 'Women' },
-    // Add more category options here
-  ];
+  const categoryOptions = categoriesData.map((category) => {
+    return { value: category.id, label: category.name };
+  })
 
   const handleCategoryChange = (selectedOptions) => {
     const selectedCategories = selectedOptions.map(option => option.value);
@@ -77,18 +75,9 @@ const CreateProductForm = () => {
   }
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // const imageRef = ref(storage, `productImages/${fileUpload.name + v4()}`); 
-    // const imgUrls = await uploadBytes(imageRef, fileUpload).then(async(snapshot) => {
-    //   const downloadUrl = await getDownloadURL(snapshot.ref).then((url) => {
-    //     return url 
-    //   });
-    //   return downloadUrl
-    // });
     const imgUrls = await uploadImages();
-    console.log(imgUrls)
     const slug = v4();
     const createdProduct = await createProduct({...form, imgUrls, slug, price});
-    console.log("createdProduct: ", createdProduct);
     await publishProduct(createdProduct.createProduct.id);
     await publishImagesUrls(createdProduct.createProduct.imageUrls);
     router.push(`/itemsDetails/${createdProduct.createProduct.id}`);
@@ -97,7 +86,7 @@ const CreateProductForm = () => {
   
 
   return (
-    <div className="max-w-2xl h-screen mx-auto p-6 bg-white shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
       <h2 className="text-3xl font-semibold mb-6">Create a Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mb-4">
@@ -205,6 +194,15 @@ const CreateProductForm = () => {
             onChange={handleCategoryChange}
             className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
           />
+          {/* <Select
+            id="categories"
+            name="categories"
+            isMulti
+            options={categoryOptions}
+            value={categoryOptions.filter(option => form.categories.includes(option.value))}
+            onChange={handleCategoryChange}
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+          /> */}
         </div>
         <div className="mb-4">
           <label htmlFor="collection" className="block text-lg font-semibold mb-2">

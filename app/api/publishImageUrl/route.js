@@ -2,9 +2,6 @@ import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
   const imagesIds = await req.json();
-  console.log(imagesIds);
-  let ids = imagesIds.map((id) => (id.id));
-  console.log("ids: ", ids);
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
@@ -23,7 +20,6 @@ export async function POST(req) {
       // { imagesIds: ['clldvjfspkab60buo4vanqkm1', 'clldvjfsrkab80buodl6ov0zf'] }
       { imagesIds: imagesIds.map((id) => (id.id)) }
     );
-    console.log("_______publishedImages: \n", publishedImages);
     return new Response(JSON.stringify(publishedImages)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);

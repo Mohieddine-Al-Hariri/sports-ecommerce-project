@@ -12,7 +12,6 @@ export const OrderButton = ({ userId, totalPrice, itemsIds, cartId, setSubmitted
   const orderItems = async () => {
     setSubmitting(true);
     const submittedOrder = await submitOrder({userId, totalPrice, itemsIds});
-    console.log("submittedOrder: ", submittedOrder);
     const itemIds = submittedOrder.createOrder.orderItems.map((item) => item.id);
     setSubmittedItemsIds(itemIds);
     if(submittedOrder.createOrder) {
@@ -65,7 +64,6 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
-  console.log("cartItems: ", cartItems);
   return (
     <div className='flex flex-col items-center justify-between p-4 h-screen w-screen bg-white overflow-y-scroll overflow-x-hidden'>
       <div className="w-screen fontColor">

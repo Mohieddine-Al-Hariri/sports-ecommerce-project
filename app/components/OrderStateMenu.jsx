@@ -32,7 +32,6 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId 
 
   const changeOrderState = async (state) => {
     const updatedOrder = await updateOrderState({orderId, state});
-    console.log("updatedOrder: ", updatedOrder);
     await publishSubmittedOrder(orderId);
     //publishOrderItem && publishTheUser??
     setOrderState(updatedOrder.updateOrder.state);

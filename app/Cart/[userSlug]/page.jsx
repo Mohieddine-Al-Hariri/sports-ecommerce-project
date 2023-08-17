@@ -8,12 +8,6 @@ export async function getCartData(searchText, userId) {
   const data = (await getCart(searchText, userId)) || [];
   return data;
 }
-// export async function getProductsData(cursor, searchText, userId) {
-//   const data = (await getCartItems(cursor, searchText, userId)) || [];
-//   // console.log("data in func: ", data);
-//   return data;
-// }
-
 
 const page = async ({ searchParams: { cursor, searchText } }) => {
   //TODO: Get things from Cart Component in hygraph 

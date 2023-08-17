@@ -1,20 +1,26 @@
 import Image from 'next/image'
 import { StartPage } from "./components"
-import { getProducts } from '@/lib'
+import { getCategories, getProducts } from '@/lib'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
-export async function getProductsData(searchText) {
-  const products = (await getProducts(undefined, searchText)) || [];
-  // console.log("products in func: ", products)
+export async function getProductsData(searchText, category) {
+  const products = (await getProducts(undefined, searchText, category)) || [];
   return products;
 }
+export async function getCategoriesData() {
+  const Categories = (await getCategories()) || [];
+  return Categories;
+}
 
-export default async function Home({ searchParams: { searchText } }) {
-  console.log("searchText: ", searchText);
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
+
+export default async function Home({ searchParams: { searchText, category } }) {
   const sessionData = await getServerSession(authOptions);
-  const productsData = await getProductsData(searchText);
-  console.log("sessionData?.user: ", sessionData?.user);
+  const productsData = await getProductsData(searchText, category);
+  const categoriesData = await getCategoriesData();
 
   if(!productsData) 
   return (
@@ -29,7 +35,14 @@ export default async function Home({ searchParams: { searchText } }) {
   );
   return (
     <main className="h-full w-full">
-      <StartPage products={productsData.products} hasNextPage={productsData.pageInfo.hasNextPage} searchText={searchText} user={sessionData?.user}/>
+      <StartPage 
+        categoriesData={categoriesData} 
+        searchedCategory={category} 
+        products={productsData.products} 
+        hasNextPage={productsData.pageInfo.hasNextPage}
+        searchText={searchText} 
+        user={sessionData?.user}
+      />
     </main>
   )
 }

@@ -2,6 +2,8 @@
 import { addItemToCart, publishCart, publishItemAddedToCart } from "@/lib";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import the carousel styles
 
 export function Variants({ variant, setChosenProductVariantName, bg, txtClr }) {
   return (
@@ -18,7 +20,6 @@ export function Variants({ variant, setChosenProductVariantName, bg, txtClr }) {
 
 const ItemsDetailsPage = ({ product, user }) => {
   //TODO: Add similar items??
-  console.log("user: ", user);
   const [chosenProductVariantName, setChosenProductVariantName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isItemAddedToCart, setIsItemAddedToCart] = useState(false);
@@ -54,7 +55,6 @@ const ItemsDetailsPage = ({ product, user }) => {
       } else chosenProductVariant = chosenProductVariantName;
     }
     const isAdded = await addItemToCart({itemId: product.id, userSlug: user.slug, quantity, totalPrice, cartId, chosenProductVariant});
-    console.log("isAdded: ", isAdded);
     await publishCart(cartId); //Needs publish after being updated
     await publishItemAddedToCart(isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id);
     setIsAdding(false);
@@ -67,42 +67,28 @@ const ItemsDetailsPage = ({ product, user }) => {
   return (
     <div className=" overflow-y-scroll overflow-x-hidden flex items-start justify-center px-2 ">
       <div className="w-[428px] h-screen relative bg-white flex-col gap-6 justify-start items-start inline-flex">
-        {/* <Image
-          className="w-[428px] h-[428px]"
-          width={428}
-          height={428}
-          src={product.images[0]?.url ? product.images[0].url : product.imageUrls[0].url}
-          alt={product.name}
-        /> */}
-        {/* {product.images.map((image) => (
-          <Image width={86} height={108} className="relative w-[86px] h-[108px] rounded-[20px]" src={image.url} alt="hello"  />
-        ))} */}
-        <div className="relative ">
-          <Image
-            className="w-[428px] h-[428px]"
-            width={428}
-            height={428}
-            // src={product.imageUrls[currentImageIndex]?.url}
-            src={product.images[0]?.url ? product.images[0].url : product.imageUrls[currentImageIndex].url}
-            alt={product.name}
-          />
-          <div className="absolute bottom-0 left-0 flex space-x-2 p-2 fontColor">
+
+        <div className="relative">
+          <Carousel
+            showArrows={true}
+            selectedItem={currentImageIndex}
+            onChange={(index) => setCurrentImageIndex(index)}
+            
+          >
             {product.imageUrls.map((image, index) => (
-              <button
-                key={index}
-                className={` border-2 ${
-                  currentImageIndex === index ? 'bg-black text-white border-white' : 'bg-white text-black border-black'
-                } px-2 py-1 rounded focus:outline-none`}
-                // className={`${
-                //   currentImageIndex === index ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'
-                // } px-2 py-1 rounded focus:outline-none`}
-                onClick={() => setCurrentImageIndex(index)}
-              >
-                {index + 1}
-              </button>
+              <div key={index} className="relative">
+                <Image
+                  className="w-[428px] h-[428px]"
+                  width={428}
+                  height={428}
+                  src={image.url}
+                  alt={`Image ${index + 1}`}
+                />
+              </div>
             ))}
-          </div>
+          </Carousel>
         </div>
+
         <div className="w-full relative bg-white flex flex-col justify-center px-2 pl-5 gap-4">
           <div>
             <div className="left-[30px] top-[22px] text-black text-xl font-bold mb-1">

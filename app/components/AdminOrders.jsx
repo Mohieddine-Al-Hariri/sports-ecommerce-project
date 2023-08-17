@@ -4,9 +4,11 @@ import OrderCard from "./OrderCard"
 import SearchBar from "./SearchBar";
 import { getAdminOrders } from "@/lib";
 import { useIsVisible } from "./UseVisible";
+import { useRouter } from "next/navigation";
+// import Link from "next/link";
 
 const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
-  const [ordersState, setOrdersState] = useState(orders);
+  const [ordersState, setOrdersState] = useState([]);
   //Pagination
   const [lastOrderCursor, setLastOrderCursor] = useState(orders[orders.length - 1]?.cursor);
   const [doesHaveNextPage, setDoesHaveNextPage] = useState(hasNextPage);
@@ -14,12 +16,14 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   const isLastOrderCardVisible = useIsVisible(lastOrderCardRef);
   const [isFirstRedner, setIsFirstRender] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedState, setSelectedState] = useState(filteredState || "All");
+  const [resetSearchText, setResetSearchText] = useState(false);
+  const router = useRouter();
 
   const getMoreOrders = async () => {
     const paginatedOrders = await getAdminOrders(lastOrderCursor, searchText, filteredState);
     return paginatedOrders;
   }
-  console.log(ordersState);
   useEffect(() => {
     if(isFirstRedner){
       setIsFirstRender(false);
@@ -36,6 +40,12 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
     }
   },[isLastOrderCardVisible]);
 
+  useEffect(() => {
+    setOrdersState(orders);
+    setDoesHaveNextPage(hasNextPage);
+  },[orders, hasNextPage])
+
+  const allState = ["All", "Ordered", "Delivering", "Recieved", "Cancelled", "Deleted"];
   let orderedState = [], 
   deliveringState = [], 
   recievedState = [], 
@@ -50,16 +60,54 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
     else if( order.node.state === "Deleted" ) deletedState.push(order);
   })
 
+  const handleNavigation = (state) => {
+    const currentParams = new URLSearchParams(window.location.search);
+    if(state === 'All') currentParams.delete("filteredState");
+    else currentParams.set("filteredState", state);
+    currentParams.delete("cursor");
+    currentParams.delete("search");
+
+    const newSearchParams = currentParams.toString();
+    const newPathname = `${window.location.pathname}?${newSearchParams}`;
+    // TODO: Change states in parent component to the new category and pageInfo ...
+    setResetSearchText(!resetSearchText);
+    router.push(newPathname);
+  };
+  useEffect(() => {
+    handleNavigation(selectedState);
+  },[selectedState])
+
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
-  // console.log("array: ", array);
+
   return (
     <div className='flex flex-col items-center justify-between p-4 h-screen w-screen bg-white overflow-y-scroll overflow-x-hidden fontColor ' >
-      <SearchBar />
-      <h1 className="p-2 text-2xl font-semibold border-b-2 border-black mb-4 ">Orders</h1>
+      
+      <div className="mb-4 ">
+        <SearchBar resetSearchText={resetSearchText} />
+        <div className="mb-4">
+          <label htmlFor="state" className="block text-lg font-semibold mb-2">
+            Filter by State
+          </label>
+          <select
+            id="state"
+            name="state"
+            value={selectedState}
+            onChange={(e) => setSelectedState(e.target.value)}
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+          >
+            {allState.map((state, index) => (
+              <option className="fontColor" key={state} >{state}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      {/* {ordersState.map((order) => (
+        <OrderCard key={order.node.id} order={order.node} />
+      ))} */}
       {array.map((item) => (
-        <div>
-          <h1 className="p-2 text-xl font-semibold ">{item[0].node.state}</h1>
+        <div key={item[0].node.id}>
+          <h1 className="p-2 pb-0 text-xl font-semibold w-full text-center border-b-2 border-black ">{item[0].node.state}</h1>
           {item.map((order) => (
             <OrderCard key={order.node.id} order={order.node} />
           ))}

@@ -7,10 +7,8 @@ const CartItem = ({ item }) => {
   const deleteItem = async () => {
     const removedItemId = await removeItemfromCart(id);
     await publishCart(cartId);
-    console.log("removedItemId: ", removedItemId);
     //TODO: make it update the cart in real time, maybe put it in the parrent comp.
   }
-  // console.log(product);
   return (
     <div className="flex justify-around items-center w-screen gap-5 ">
       <Image width={86} height={108} className="relative w-[86px] h-[108px] rounded-[20px]" src={product.images[0].url} alt={product.name}  />

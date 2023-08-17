@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from "react"
 import SearchBar from "./SearchBar";
 import { useIsVisible } from "./UseVisible";
 import { getProducts } from "@/lib";
+import { useRouter } from 'next/navigation';
 
 
 
-const StartPage = ({ products, hasNextPage, user, searchText }) => {
+const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, searchedCategory }) => {
   const [productsState, setProductsState] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   //Pagination
@@ -18,10 +19,11 @@ const StartPage = ({ products, hasNextPage, user, searchText }) => {
   const isLastProductCardVisible = useIsVisible(lastProductCardRef);
   const [isFirstRedner, setIsFirstRender] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
+
+  const router = useRouter();
 
   const generalAlt = "Gear Up - Sports";
-
-  console.log(products);
 
   useEffect(() => {
     setProductsState(products);
@@ -58,6 +60,23 @@ const StartPage = ({ products, hasNextPage, user, searchText }) => {
   //   else document.body.classList.remove('dark');
 
   },[isDarkMode])
+
+  const handleNavigation = (category) => {
+    const currentParams = new URLSearchParams(window.location.search);
+    if(category === 'All') currentParams.delete("category");
+    else currentParams.set("category", category);
+    currentParams.delete("cursor");
+    currentParams.delete("search");
+
+    const newSearchParams = currentParams.toString();
+    const newPathname = `${window.location.pathname}?${newSearchParams}`;
+    // TODO: Change states in parent component to the new category and pageInfo ...
+    router.push(newPathname);
+  };
+  useEffect(() => {
+    handleNavigation(selectedCategory);
+
+  },[selectedCategory])
 
   // if(isLoading)
   //   return (
@@ -103,7 +122,25 @@ const StartPage = ({ products, hasNextPage, user, searchText }) => {
         </div>
       </div>
       <div>
-        <div className="w-full flex justify-center mb-4 ">
+        <div className="w-full flex justify-center max-sm:items-center items-end  max-sm:gap-2 gap-4 mb-4 max-sm:flex-col fontColor">
+          <div className="max-sm:mb-4">
+            <label htmlFor="category" className="block text-lg font-semibold mb-2">
+              Filter by Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            >
+              <option value="All">All</option>
+              {categoriesData.map((category, index) => (
+                <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
+              ))}
+            </select>
+          </div>
+
           <SearchBar/>
         </div>
         <div className=" text-neutral-700 text-xl font-bold leading-normal ml-5">Items</div>
