@@ -65,10 +65,10 @@ const ItemsDetailsPage = ({ product, user }) => {
   } 
 
   return (
-    <div className=" overflow-y-scroll overflow-x-hidden flex items-start justify-center px-2 ">
-      <div className="w-[428px] h-screen relative bg-white flex-col gap-6 justify-start items-start inline-flex">
+    <div className=" overflow-y-scroll h-screen  overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
+      <div className="w-[428px] relative bg-white flex-col gap-6 justify-start items-start inline-flex">
 
-        <div className="relative">
+        <div className="relative w-full">
           <Carousel
             showArrows={true}
             selectedItem={currentImageIndex}
@@ -76,9 +76,9 @@ const ItemsDetailsPage = ({ product, user }) => {
             
           >
             {product.imageUrls.map((image, index) => (
-              <div key={index} className="relative">
+              <div key={index} className="relative flex justify-center w-full ">
                 <Image
-                  className="w-[428px] h-[428px]"
+                  className="w-[428] h-[428]"
                   width={428}
                   height={428}
                   src={image.url}

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { deleteCategory, publishCategory, updateCategory } from "@/lib";
 import { useRouter } from "next/navigation";
@@ -150,7 +150,6 @@ const CategoryCard = ({ category }) => {
 }
 
 const AdminCategoriesPage = ({ categoriesData }) => {
-
   return (
     <div className="h-screen bg-white fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
       <div className=" flex gap-4 flex-col ">
