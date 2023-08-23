@@ -16,8 +16,8 @@ const OrderCard = ({ order }) => {
   return (
     <div className="border border-gray-300 rounded-lg relative shadow-md w-64 m-4">
       <div className="h-32 overflow-hidden">
-        <Link href={`orderDetails/${order.id}`}>
-          <Image height={100} width={100} src={order.orderItems[0].product.images[0].url} alt={order.orderItems[0].product.name} className="w-full h-full object-cover" />
+        <Link href={`/orderDetails/${order.id}`}>
+          <Image height={100} width={100} src={order.orderItems[0].product.imageUrls[0].url} alt={order.orderItems[0].product.name} className="w-full h-full object-cover" />
         </Link>
       </div>
       <div className="p-4 text-gray-700 gap-1 flex flex-col">

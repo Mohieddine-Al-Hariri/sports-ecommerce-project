@@ -16,7 +16,7 @@ export async function POST(req) {
           $itemId: ID!
         ) 
         {
-          deleteOrderItem(where: {id: itemId}){
+          deleteOrderItem(where: {id: $itemId}){
             id
           }
         }

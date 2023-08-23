@@ -114,7 +114,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             </a>
             <a href="https://www.instagram.com/gearr_up/" target="_blank">
               <div className="">
-                <Image src="/Instagram-Logo.wine.svg" width="60" height="60" />
+                <Image src="/Instagram-Logo.wine.svg" width="60" height="60" alt="instagram logo" />
               </div>
             </a>
           </div>
@@ -151,7 +151,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
                 width={102} height={109.03} 
                 className="w-[102px] h-[109.03px] left-0 top-0 rounded-[20px]" 
                 alt={item.node.name} 
-                src={item.node.images[0]?.url ? item.node.images[0].url : item.node.imageUrls[0].url} 
+                src={ item.node.imageUrls[0].url} 
               />
               <div className="w-full text-neutral-700 text-sm font-bold leading-[18px]">{item.node.name.length > 15 ? item.node.name.slice(0, 11) + '...' : item.node.name}</div>
               <div className="w-full text-neutral-700 text-[10px] font-thin leading-[10px]">{item.node.Excerpt}</div>

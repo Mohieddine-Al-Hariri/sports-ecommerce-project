@@ -100,7 +100,7 @@ const AdminProductCard = ({ product }) => {
 
   return (
     <div className="flex w-full justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] bg-gray-100 p-2 ">
-      <Image className="rounded-t-md" src={product?.images[0]?.url ? product.images[0].url : product.imageUrls[0].url} alt={product.name} width={102} height={109.03}/>
+      <Image className="rounded-t-md" src={product.imageUrls[0].url} alt={product.name} width={102} height={109.03}/>
       <div className="w-full flex-col text-center fontColor ">
         <div className=" text-neutral-700 text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 11) + '...' : product.name}</div>
         <div className=" text-neutral-700 text-[10px] font-thin ">{product.Excerpt}</div>

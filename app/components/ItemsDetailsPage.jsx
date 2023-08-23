@@ -27,6 +27,7 @@ const ItemsDetailsPage = ({ product, user }) => {
   const [isLoggedin, setisLoggedin] = useState(false);
   const [showPleaseLogin, setShowPleaseLogin] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  console.log(product);
 
   useEffect(() => {
     if(user) setisLoggedin(true);
@@ -44,14 +45,14 @@ const ItemsDetailsPage = ({ product, user }) => {
     const totalPrice = quantity * product.price;
     const cartId= user.cartId
     let chosenProductVariant = ""
-    if(product.variants.length === 1){
-      chosenProductVariant = product.variants[0].name;
-      setChosenProductVariantName(product.variants[0].name);
+    if(product.productVariants.length === 1){
+      chosenProductVariant = product.productVariants[0].name;
+      setChosenProductVariantName(product.productVariants[0].name);
     }else{ 
       if(!chosenProductVariantName){ //To make sure a variant is chosen
-        //maybe add an error that the user needs to choose a variant...
-        chosenProductVariant = product.variants[0].name;
-        setChosenProductVariantName(product.variants[0].name);
+        //or maybe add an error that the user needs to choose a variant...
+        chosenProductVariant = product.productVariants[0]?.name;
+        setChosenProductVariantName(product.productVariants[0]?.name);
       } else chosenProductVariant = chosenProductVariantName;
     }
     const isAdded = await addItemToCart({itemId: product.id, userSlug: user.slug, quantity, totalPrice, cartId, chosenProductVariant});
@@ -67,13 +68,13 @@ const ItemsDetailsPage = ({ product, user }) => {
   return (
     <div className=" overflow-y-scroll h-screen  overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
       <div className="w-[428px] relative bg-white flex-col gap-6 justify-start items-start inline-flex">
-
+        {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="relative w-full">
           <Carousel
             showArrows={true}
             selectedItem={currentImageIndex}
             onChange={(index) => setCurrentImageIndex(index)}
-            
+            showThumbs={false}
           >
             {product.imageUrls.map((image, index) => (
               <div key={index} className="relative flex justify-center w-full ">
@@ -100,11 +101,31 @@ const ItemsDetailsPage = ({ product, user }) => {
             </div>
           </div>
           <div>
-            <div className="left-[31px] top-[88px] text-black text-sm font-bold leading-tight mb-2">
-              Variants
-            </div>
+            { (product.productVariants.length) &&
+              <div className="left-[31px] top-[88px] text-black text-sm font-bold leading-tight mb-2">
+                Variants
+              </div>
+            }
             <div className="w-screen h-fit left-[30px] top-[122px] flex flex-wrap gap-2">
-              {product.variants.map((variant, index) => {
+              {/* remove this later */}
+              {/* {product.productVariants.map((variant, index) => {
+                let bg = "bg-neutral-100";
+                let txtClr = "text-neutral-700";
+                if (chosenProductVariantName === variant.name) {
+                  bg = "bg-zinc-800";
+                  txtClr = "text-white";
+                }
+                return (
+                  <Variants
+                    variant={variant}
+                    key={index}
+                    setChosenProductVariantName={setChosenProductVariantName}
+                    bg={bg}
+                    txtClr={txtClr}
+                  />
+                );
+              })} */}
+              {product.productVariants.map((variant, index) => {
                 let bg = "bg-neutral-100";
                 let txtClr = "text-neutral-700";
                 if (chosenProductVariantName === variant.name) {
@@ -170,7 +191,6 @@ const ItemsDetailsPage = ({ product, user }) => {
                   </div>
                   : "Add to cart"
                 }
-                {/* Add to cart */}
               </div>
             </button>
           </div>

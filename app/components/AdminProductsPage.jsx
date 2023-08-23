@@ -21,6 +21,9 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
   const router = useRouter();
 
+
+
+
   const getMoreProducts = async () => {
     const searchedCategory = undefined; //Make it related to collections later...
     //TODO: create an env var specific for this pagination...

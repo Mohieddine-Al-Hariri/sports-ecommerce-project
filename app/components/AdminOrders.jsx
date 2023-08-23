@@ -79,13 +79,13 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
 
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
-
+  console.log("orders: ", orders); 
   return (
     <div className='flex flex-col items-center justify-between p-4 h-screen w-screen bg-white overflow-y-scroll overflow-x-hidden fontColor ' >
       
       <div className="mb-4 ">
         <SearchBar resetSearchText={resetSearchText} />
-        <div className="mb-4">
+        <div className="my-4">
           <label htmlFor="state" className="block text-lg font-semibold mb-2">
             Filter by State
           </label>
