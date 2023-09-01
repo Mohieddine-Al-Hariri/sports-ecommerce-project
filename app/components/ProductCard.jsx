@@ -5,7 +5,7 @@ import ReactStars from 'react-rating-star-with-type';
 
 const ProductCard = ({ id, name, excerpt, imageUrl, reviews }) => {
   const rates = reviews?.map(review => review.rating)
-  const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length
+  const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return (
     <Link href={`/itemsDetails/${id}`} className="relative shadow-lg overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
       <Image width={100} height={100} className="h-full w-full object-cover" alt={name} src={imageUrl}/>
