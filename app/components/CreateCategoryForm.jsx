@@ -31,14 +31,16 @@ const CreateCategoryForm = () => {
     await publishCategory(createdCategory.createCategory.id);
     setCreatingCategory(false);
     router.refresh();
+    setName('');
+    setDescription('');
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 mb-5 ">
+    <div className="max-w-md mx-auto bgColor fontColor rounded-lg shadow-lg p-6 mb-5 border-2 borderColor">
       <h1 className="text-2xl font-semibold mb-4">Create Category</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="name" className="block text-sm font-medium fontColorGray ">
             Name:
           </label>
           <input
@@ -47,11 +49,11 @@ const CreateCategoryForm = () => {
             value={name}
             onChange={handleNameChange}
             required
-            className="mt-1 p-2 border rounded w-full"
+            className="mt-1 p-2 border rounded w-full colorScheme"
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="description" className="block text-sm font-medium fontColorGray ">
             Description:
           </label>
           <input
@@ -60,7 +62,7 @@ const CreateCategoryForm = () => {
             value={description}
             onChange={handleDescriptionChange}
             required
-            className="mt-1 p-2 border rounded w-full"
+            className="mt-1 p-2 border rounded w-full colorScheme"
           />
         </div>
         <div className="mb-4">
@@ -70,9 +72,9 @@ const CreateCategoryForm = () => {
               id="show"
               checked={show}
               onChange={handleShowChange}
-              className="h-4 w-4 text-blue-500"
+              className="h-4 w-4 text-blue-500 colorScheme"
             />
-            <span className="text-sm font-medium text-gray-700">Show</span>
+            <span className="text-sm font-medium fontColorGray">Show</span>
           </label>
         </div>
         <button disabled={creatingCategory} type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">

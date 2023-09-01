@@ -16,7 +16,7 @@ export async function POST(req) {
     },
   });
   try {
-    const { firstName, lastName, userId, location, imgUrl } = body;
+    const { firstName, lastName, userId, location, imgUrl, birthDate } = body;
     const updatedUser = await client.request(
       `
         mutation UpdateTheUser(
@@ -24,7 +24,8 @@ export async function POST(req) {
           $location: String!, 
           $firstName: String!, 
           $lastName: String!, 
-          $imgUrl: String!
+          $imgUrl: String!,
+          $birthDate: DateTime!
         ) 
           {
             updateTheUser(
@@ -32,7 +33,8 @@ export async function POST(req) {
                 location: $location, 
                 firstName: $firstName, 
                 lastName: $lastName, 
-                profileImageUrl: $imgUrl
+                profileImageUrl: $imgUrl,
+                birthDate: $birthDate
               }
               where: {id: $userId}
             ) 
@@ -50,9 +52,11 @@ export async function POST(req) {
         firstName,
         userId,
         lastName,
-        imgUrl
+        imgUrl,
+        birthDate
       }
     );
+    console.log("updatedUser: ", updatedUser);
     return new Response(JSON.stringify(updatedUser));
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {

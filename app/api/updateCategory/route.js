@@ -8,7 +8,7 @@ export async function POST(req) {
     },
   });
   const { name, show, description, categoryId } = body;
-  try {//TODO: add variants
+  try {
     const updateCategory = await client.request(
       `
         mutation updateCategory($name: String!, $categoryId: ID!, $description: String!, $show: Boolean!) {

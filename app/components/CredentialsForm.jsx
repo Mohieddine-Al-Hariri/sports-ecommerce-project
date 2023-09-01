@@ -3,7 +3,6 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { FacebookSignInButton, GoogleSignInButton } from "./authButton";
-// import OTP from "./OTP";
 import { RecaptchaVerifier, signInWithPhoneNumber, settings } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";

@@ -1,16 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import ReactMarkdown from "react-markdown";
 import {
-  createProduct,
   publishImagesUrls,
   publishProduct,
   publishProductVariants,
+  updateProduct,
 } from "@/lib";
 import { useRouter } from "next/navigation";
-import { v4 } from "uuid";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 
 const PillVariant = ({ size, color, index, deleteItem }) => {
@@ -26,13 +25,13 @@ const PillVariant = ({ size, color, index, deleteItem }) => {
   );
 };
 
-export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
+export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) => {
 
   const [showSizeInput, setShowSizeInput] = useState(false);
   const [showColorInput, setShowColorInput] = useState(false);
   const [sizeValues, setSizeValues] = useState([]);
   const [colorValues, setColorValues] = useState([]);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(productData ? true : false);
 
   const deleteItem = (index) => {
     const updatedPills = selectedPills.filter((_, i) => i !== index);
@@ -223,24 +222,42 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
         </div>
       )}
     </div>
+  )
+}
+
+const UpdateProductForm = ({ categoriesData, productData }) => {
+  const productCategoriesIds = productData?.categories?.map(
+    (category) => category.id
   );
-};
+  const productDataVariants = productData?.productVariants?.map((variant) => ({
+    size: variant.name,
+  }));
+  const productImages = productData?.imageUrls
 
-const CreateProductForm = ({ categoriesData, isDarkMode }) => {
+  const [prevImages, setPrevImages] = useState(productImages || []);
   const [images, setImages] = useState([]);
-  const [form, setForm] = useState({
-    name: "",
-    excerpt: "",
-    description: "",
-    collection: "",
-    state: "Available",
-    categories: [],
-  });
-  const [price, setPrice] = useState(0);
+  const [removedImages, setRemovedImages] = useState([]);
   const [imageError, setImageError] = useState("");
-  const router = useRouter();
 
-  const [selectedPills, setSelectedPills] = useState([]); //Variants State
+  const [form, setForm] = useState({
+    name: productData?.name || "",
+    excerpt: productData?.excerpt || "",
+    description: productData?.description || "",
+    collection: productData?.collection || "",
+    state: productData?.state || "Available",
+    categories: productCategoriesIds || [],
+  });
+  const [price, setPrice] = useState(productData?.price || 0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  
+  const [selectedPills, setSelectedPills] = useState(productDataVariants || []); // Variants State 
+
+  useEffect(() => {
+    const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
+    if(isDarkModeLocal) document.body.classList.add('dark');
+    else document.body.classList.remove('dark');
+  }, []);
 
   const handleImageUpload = (event) => {
     const newImages = Array.from(event.target.files);
@@ -258,9 +275,33 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
     setImages([...images, ...newImages]);
   };
 
+
   const handleRemoveImage = (index) => {
     const updatedImages = images.filter((_, i) => i !== index);
     setImages(updatedImages);
+  };
+  const handleRemovePrevImage = (index) => {
+    setRemovedImages((prev) => {
+      return ([...prev, prevImages[index]]);
+    });
+    const updatedImages = prevImages.filter((_, i) => i !== index);
+    setPrevImages(updatedImages);
+  };
+  const handleAddPrevImage = (index) => {
+    setPrevImages(prev => [...prev, removedImages[index]]);
+    setRemovedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const deletaImagesFromFireBase = async () => {
+    removedImages.map((image) => {
+      try{
+        const imageRef = ref(storage, image.url);
+        deleteObject(imageRef); //add await? (also async next to (image) )
+      }
+      catch(error){
+        console.log(error.message);
+      }
+    });
   };
 
   const handleChange = (e) => {
@@ -269,7 +310,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
   };
 
   const categoryOptions = categoriesData.map((category) => {
-    return { value: category.id, label: category.name, className: "fontColor bgColor" };
+    return { value: category.id, label: category.name };
   });
 
   const handleCategoryChange = (selectedOptions) => {
@@ -295,53 +336,37 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
   }
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
     const imgUrls = await uploadImages();
-    const slug = v4();
-    const createdProduct = await createProduct({
+    const imageUrls = imgUrls.map((url) => ({ url }))
+    await deletaImagesFromFireBase();
+    const previousVariants = productData?.productVariants.map((variant) => (
+      {id: variant.id}
+    ));
+    const removedImagesIds = removedImages.map((image) => image.id).flat();
+    const updatedProduct = await updateProduct({
+      productId: productData.id,
       ...form,
-      imgUrls,
-      slug,
       price,
       variants: selectedPills,
+      imageUrls,
+      removedImagesIds,
+      previousCategories: productCategoriesIds.map((id) => ({ id })),
+      previousCollections: [],
+      previousVariants,
+      
     });
-    await publishProduct(createdProduct.createProduct.id);
-    await publishImagesUrls(createdProduct.createProduct.imageUrls);
-    await publishProductVariants(createdProduct.createProduct.productVariants);
-    router.push(`/itemsDetails/${createdProduct.createProduct.id}`);
-  };
-
-  const reactSelectStyles = {
-    control: (provided, state) => ({
-      ...provided,
-      backgroundColor: "bgColor", // Adjust the background color
-      borderColor: "borderColor", // Adjust the border color
-      color: "fontColor", // Adjust the text color
-      // '&:hover': {
-      //   borderColor: theme.colors.blue[500],    // Adjust the hover border color
-      // },
-    }),
-    option: (provided, ishoverd) => ({
-      ...provided,
-      backgroundColor: isDarkMode ? "black" : "white", // Adjust the background color for selected options
-      color: isDarkMode ? "white" : "black", // Adjust the text color
-    }),
-    '&:hover': {
-      backgroundColor: "blue",
-    },
-    // option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    //   return {
-    //     ...styles,
-    //     backgroundColor: "bgColor",
-    //     color: 'fontColor',
-    //     cursor: isDisabled ? 'not-allowed' : 'default',
-    //   };
-    // },
-    // Other style overrides as needed...
+    await publishProduct(updatedProduct.updateProduct.id);
+    await publishImagesUrls(updatedProduct.updateProduct.imageUrls);
+    await publishProductVariants(updatedProduct.updateProduct.productVariants);
+    setIsSubmitting(false);
+    router.push(`/itemsDetails/${updatedProduct.updateProduct.id}`);
   };
   
+
   return (
-    <div className="max-w-2xl mx-auto p-6 bgColor colorScheme fontColor shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
-      <h2 className="text-3xl font-semibold mb-6">Create a Product</h2>
+    <div className="max-w-2xl h-screen mx-auto p-6 bgColor colorScheme rounded-lg fontColor overflow-y-scroll pb-16">
+      <h2 className="text-3xl font-semibold mb-6">Update Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mb-4">
           <label htmlFor="images" className="block text-lg font-semibold mb-2">
@@ -350,7 +375,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
           <input
             type="file"
             id="images"
-            required
+            required={images.length === 0 && prevImages.length === 0}
             multiple
             onChange={handleImageUpload}
             className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
@@ -360,7 +385,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
             {images.map((image, index) => (
               <div key={index} className="relative">
                 <img
-                  src={URL.createObjectURL(image)}
+                  src={ URL.createObjectURL(image) }
                   alt={`Product ${index}`}
                   className="w-32 h-32 object-cover rounded"
                 />
@@ -369,6 +394,36 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
                   onClick={() => handleRemoveImage(index)}
                 >
                   X
+                </span>
+              </div>
+            ))}
+            {prevImages.map((image, index) => (
+              <div key={image.url} className="relative ">
+                <img
+                  src={ image.url }
+                  alt={`Product ${index}`}
+                  className="w-32 h-32 object-cover rounded "
+                />
+                <span
+                  className="absolute top-0 right-0 text-white bg-red-500 rounded-full p-1 cursor-pointer"
+                  onClick={() => handleRemovePrevImage(index)}
+                >
+                  X
+                </span>
+              </div>
+            ))}
+            {removedImages.map((image, index) => (
+              <div key={image.url} className="relative">
+                <img
+                  src={ image.url }
+                  alt={`Product ${index}`}
+                  className="w-32 h-32 object-cover rounded brightness-50"
+                />
+                <span
+                  className="absolute top-0 right-0 text-white bg-blue-500 rounded-full p-1 cursor-pointer"
+                  onClick={() => handleAddPrevImage(index)}
+                >
+                  +
                 </span>
               </div>
             ))}
@@ -416,7 +471,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
             className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
             rows="6"
           />
-          <ReactMarkdown className="prose mt-2 ">
+          <ReactMarkdown className="prose mt-2">
             {form.description}
           </ReactMarkdown>
         </div>
@@ -425,7 +480,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
             Price
           </label>
           <div className="flex items-center border rounded focus-within:border-blue-500">
-            <span className="fontColorGray px-3">$</span>
+            <span className="text-gray-600 px-3">$</span>
             <input
               type="number"
               id="price"
@@ -455,13 +510,11 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
             value={categoryOptions.filter((option) =>
               form.categories.includes(option.value)
             )}
-            styles={isDarkMode ? reactSelectStyles : null}
             onChange={handleCategoryChange}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 "
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
           />
         </div>
-        <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} />
-
+        <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} productData={productData} />
 
         <div className="mb-4">
           <label
@@ -501,11 +554,11 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
           type="submit"
           className="bg-blue-500 text-white py-3 px-6 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500"
         >
-          Create Product
+          {isSubmitting ? "Updating..." : "Update Product"}
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateProductForm;
+export default UpdateProductForm;

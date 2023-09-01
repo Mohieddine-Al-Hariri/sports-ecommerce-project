@@ -26,6 +26,7 @@
     "react-markdown": "^8.0.7",
     "react-multi-carousel": "^2.8.4",
     "react-phone-input-2": "^2.15.1",
+    "react-rating-star-with-type": "^1.2.1",
     "react-responsive-carousel": "^3.2.23",
     "react-select": "^5.7.4",
     "tailwindcss": "3.3.3",

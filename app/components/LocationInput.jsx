@@ -38,7 +38,7 @@ const LocationInput = ({ selectedLocation, setSelectedLocation }) => {
         value={selectedLocation}
         onChange={handleInputChange}
         placeholder="Enter your location..."
-        className="mt-4 px-2 py-1 w-full border rounded mb-2 "
+        className="mt-4 px-2 py-1 w-full border rounded mb-2 colorScheme "
       />
       <div className='flex gap-1 justify-center '>
 

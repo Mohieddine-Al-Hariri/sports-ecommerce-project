@@ -2,7 +2,7 @@
 
 import { deleteCategory, publishCategory, updateCategory } from "@/lib";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CreateCategoryForm from "./CreateCategoryForm";
 
 const CategoryCard = ({ category }) => {
@@ -25,29 +25,36 @@ const CategoryCard = ({ category }) => {
     router.refresh();
     setShow(!show);
   }
+  const cancelUpdateCategory = () => {
+    setUpdatingCategoryName(false);
+    setShow(category.show);
+    setCategoryName(category.name);
+    setDescription(category.description);
+  }
 
   const deleteCategoryFunc = async () => {
     await deleteCategory(category.id);
     router.refresh();
   }
 
+
   return (
-    <div className={`border-2 ${show ? "border-black fontColor" : "border-gray-500 fontColorGray"} rounded-lg p-2 flex justify-between`}>
-      <div>
+    <div className={`border-2 ${show ? "borderColor fontColor" : "border-gray-500 fontColorGray"} rounded-lg p-2 flex justify-between`}>
+      <div >
         {updatingCategoryName?
-          <div>
-            <input type="text" value={categoryName} onChange={(e) => setCategoryName(e.target.value)} className="rounded-md border-2 p-2 border-black" />
-            <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} className="rounded-md border-2 p-2 border-black" />
+          <div className="flex flex-col justify-around items-center h-full" >
+            <input type="text" value={categoryName} onChange={(e) => setCategoryName(e.target.value)} className="rounded-md border-2 p-2 borderColor colorScheme" />
+            <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} className="rounded-md border-2 p-2 borderColor colorScheme" />
           </div>
           :
           <div>
-            <h1 className="text-xl font-bold ">{category.name}</h1>
+            <h1 className="text-xl font-bold">{category.name}</h1>
             <h2>{category.description}</h2>
           </div>
         }
       </div>
-      <div className="flex gap-4 items-start ">
-        {updatingCategoryName?
+      <div className={`flex gap-4 items-start ${updatingCategoryName ? "flex-col" : ""}`}>
+        {updatingCategoryName ? 
           <button onClick={updateCategoryDetails}>
             <svg
               fill="currentColor"
@@ -63,7 +70,7 @@ const CategoryCard = ({ category }) => {
                 id="primary"
                 d="M0.375 0.675a0.037 0.037 0 0 1 -0.027 -0.011l-0.188 -0.188a0.037 0.037 0 0 1 0.053 -0.053l0.161 0.161 0.311 -0.311a0.037 0.037 0 1 1 0.053 0.053l-0.337 0.337A0.037 0.037 0 0 1 0.375 0.675Z"
                 style={{
-                  fill: "rgb(0, 0, 0)",
+                  fill: "currentColor",
                 }}
               />
               </svg>
@@ -127,22 +134,50 @@ const CategoryCard = ({ category }) => {
             </svg>
           </button>
         }
-        <button onClick={deleteCategoryFunc}>
-          <svg
-            width="30px"
-            height="30px"
-            viewBox="0 0 0.563 0.563"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M0.206 0.037a0.019 0.019 0 0 0 0 0.037h0.15a0.019 0.019 0 0 0 0 -0.037h-0.15ZM0.112 0.131a0.019 0.019 0 0 1 0.019 -0.019h0.3a0.019 0.019 0 0 1 0 0.037H0.412v0.3a0.037 0.037 0 0 1 -0.037 0.037H0.188a0.037 0.037 0 0 1 -0.037 -0.037V0.15h-0.019a0.019 0.019 0 0 1 -0.019 -0.019ZM0.188 0.15h0.188v0.3H0.188V0.15Z"
+        {!updatingCategoryName ?
+          <button onClick={deleteCategoryFunc}>
+            <svg
+              width="30px"
+              height="30px"
+              viewBox="0 0 0.563 0.563"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M0.206 0.037a0.019 0.019 0 0 0 0 0.037h0.15a0.019 0.019 0 0 0 0 -0.037h-0.15ZM0.112 0.131a0.019 0.019 0 0 1 0.019 -0.019h0.3a0.019 0.019 0 0 1 0 0.037H0.412v0.3a0.037 0.037 0 0 1 -0.037 0.037H0.188a0.037 0.037 0 0 1 -0.037 -0.037V0.15h-0.019a0.019 0.019 0 0 1 -0.019 -0.019ZM0.188 0.15h0.188v0.3H0.188V0.15Z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+        :
+          <button onClick={cancelUpdateCategory}>
+            <svg
               fill="currentColor"
-            />
-          </svg>
-        </button>
+              width="30px"
+              height="30px"
+              viewBox="0 0 1.35 1.35"
+              preserveAspectRatio="xMidYMid meet"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+            >
+              <title>{"cancel-line"}</title>
+              <path
+                className="clr-i-outline clr-i-outline-path-1"
+                d="M0.675 0.075a0.6 0.6 0 1 0 0.6 0.6A0.6 0.6 0 0 0 0.675 0.075ZM0.15 0.675a0.522 0.522 0 0 1 0.129 -0.343l0.739 0.739A0.525 0.525 0 0 1 0.15 0.675Zm0.921 0.343L0.332 0.279a0.525 0.525 0 0 1 0.739 0.739Z"
+              />
+              <path
+                x={0}
+                y={0}
+                width={36}
+                height={36}
+                fillOpacity={0}
+                d="M0 0H1.35V1.35H0V0z"
+              />
+            </svg>
+          </button>
+        }
       </div>
 
     </div>
@@ -150,8 +185,13 @@ const CategoryCard = ({ category }) => {
 }
 
 const AdminCategoriesPage = ({ categoriesData }) => {
+  useEffect(() => {
+    const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
+    if(isDarkModeLocal) document.body.classList.add('dark');
+    else document.body.classList.remove('dark');
+  }, []);
   return (
-    <div className="h-screen bg-white fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
+    <div className="h-screen bgColor fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
       <div className=" flex gap-4 flex-col ">
         {categoriesData.map((category) => (
           <CategoryCard key={category.id} category={category}/>

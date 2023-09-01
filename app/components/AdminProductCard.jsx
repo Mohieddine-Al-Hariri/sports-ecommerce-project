@@ -99,11 +99,36 @@ const AdminProductCard = ({ product }) => {
   else if(product.state === "Out_of_Stock") stateTxtClr = "text-yellow-500";
 
   return (
-    <div className="flex w-full justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] bg-gray-100 p-2 ">
+    <div className="flex relative w-full justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] productCardBg fontColor p-2 ">
+      <button className="p-1 absolute right-2 top-2 " onClick={() => router.push(`Products/updateProduct/${product.id}`)}>
+        <svg
+          fill="currentColor"
+          width="24px"
+          height="24px"
+          viewBox="0 0 1.35 1.35"
+          preserveAspectRatio="xMidYMid meet"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+        >
+          <title>{"edit-line"}</title>
+          <path
+            className="clr-i-outline clr-i-outline-path-1"
+            d="M1.27 0.312 1.05 0.091a0.078 0.078 0 0 0 -0.11 0L0.16 0.87l-0.071 0.307a0.077 0.077 0 0 0 0.075 0.094 0.08 0.08 0 0 0 0.016 0l0.311 -0.071 0.779 -0.779a0.078 0.078 0 0 0 0 -0.11ZM0.453 1.132l-0.291 0.061 0.066 -0.286L0.812 0.326l0.225 0.225ZM1.087 0.497l-0.225 -0.225 0.131 -0.13 0.221 0.225Z"
+          />
+          <path
+            x={0}
+            y={0}
+            width={36}
+            height={36}
+            fillOpacity={0}
+            d="M0 0H1.35V1.35H0V0z"
+          />
+        </svg>
+      </button>
       <Image className="rounded-t-md" src={product.imageUrls[0].url} alt={product.name} width={102} height={109.03}/>
       <div className="w-full flex-col text-center fontColor ">
-        <div className=" text-neutral-700 text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 11) + '...' : product.name}</div>
-        <div className=" text-neutral-700 text-[10px] font-thin ">{product.Excerpt}</div>
+        <div className=" fontColorGray text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 11) + '...' : product.name}</div>
+        <div className=" fontColorGray text-[10px] font-thin ">{product.excerpt}</div>
         <h1 className="w-full p-1 ">${ product.price }</h1>
         {/* <h1 className="w-full p-1 ">{ product.state }</h1> */}
         {openMenu ?

@@ -25,15 +25,50 @@ body {
   color: rgb(var(--foreground-rgb));
   --dashedBorder: #343434;
   --borderColor: #343434;
+  --borderColorGray: rgb(209 213 219);
   --fontColor: #030303;
   --fontColorGray: rgb(75 85 99);
   --bgColor: white;
+  --bgColorGray: rgb(243 244 246);
+  --colorScheme: light;
+  --opBgColor: black;
+  --opTxtColor: white;
+  --productCardBg: rgb(230, 230, 230);
+  --whatsappTxt: #25D366;
+  /* --scrollbar-track-bg: linear-gradient(to top, #c6c4c6, #d8d8d8, #ececec);*/
+  --scrollbar-track-bg: white;
+  --scrollbar-thumb-color: #888;
+  --scrollbar-thumb-color-hover: #555;
   background: linear-gradient(
       to bottom,
       transparent,
       rgb(var(--background-end-rgb))
     )
-    rgb(var(--background-start-rgb));
+    rgb(var(--background-start-rgb)
+  );
+}
+body.dark{
+  --Bg: #343434;
+  --bgColor: linear-gradient(to top, #000, #131313, #161616);
+  --bgColorGray: #343434;
+  background: var(--bgColor);
+  --opBgColor: #f3f3f3 ;
+  --opTxtColor: black;
+  --productCardBg: rgb(59, 59, 59) ;
+  /* --postCardBgStart: #343434 ;
+  --postCardBgEnd: #131313; */
+  --fontColor: #f3f3f3;
+  --fontColorGray: rgb(209 213 219);
+  --colorScheme: dark;
+  --dashedBorder: #f3f3f3;
+  --borderColor: #f3f3f3;
+  --borderColorGray: #8e8e8e;
+  --hoveredDarkModeBtnTxtClr: #343434;
+  --hoveredDarkModeBtnBg: #f3f3f3;
+  --scrollbar-track-bg: linear-gradient(to top, #000, #131313, #161616);;
+  /* --scrollbar-track-bg: #666; */
+  --scrollbar-thumb-color: rgb(111, 111, 111);
+  --scrollbar-thumb-color-hover: #484848;
 }
 
 .fontColor {
@@ -46,16 +81,90 @@ body {
 .borderColor{
   border-color: var(--borderColor);
 }
+.borderColorGray{
+  border-color: var(--borderColorGray);
+}
 .dashedBorder{
   border: 2px dashed var(--dashedBorder);
 }
 .bgColor{
   background-color: var(--bgColor);
 }
-
+.bgColorGray{
+  background-color: var(--bgColorGray);
+}
+.opBgColor{
+  background-color: var(--opBgColor);
+}
+.opTxtColor{
+  color: var(--opTxtColor);
+}
 .selected { /*for the pill shaped cards in the Admin/Products > createProductForm*/
   border: 2px solid blue;
 }
+.darkModebtnBg{
+  background-color: var(--Bg);
+}
+.darkModebtnBg:hover{
+  background-color: var(--hoveredDarkModeBtnBg);
+  color: var(--hoveredDarkModeBtnTxtClr);
+}
+.colorScheme{
+  color-scheme: var(--colorScheme);
+}
+.productCardBg{
+  background-color: var(--productCardBg);
+}
+
+/* Standard scrollbar styles (for larger devices) */
+/* ::-webkit-scrollbar {
+  width: 10px;
+} */
+
+/* Track */
+/* ::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-bg);
+  border-radius: 5px; 
+} */
+
+/* Handle */
+/* ::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color);
+  border-radius: 5px; 
+} */
+
+/* Handle on hover */
+/* ::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-color-hover);
+}  */
+
+/* Media query for small devices */
+@media (max-width: 768px) {
+  /* Reset scrollbar styles for small devices */
+  /* ::-webkit-scrollbar {
+    width: initial;
+  } */
+  
+  /* Reset scrollbar track styles */
+  /* ::-webkit-scrollbar-track {
+    background: initial;
+    border-radius: initial;
+  } */
+  
+  /* Reset scrollbar thumb styles */
+  /* ::-webkit-scrollbar-thumb {
+    background: initial;
+    border-radius: initial;
+  } */
+  
+  /* Reset scrollbar thumb hover styles */
+  /* ::-webkit-scrollbar-thumb:hover {
+    background: initial;
+  } */
+}
+
+
+
 
 
 /* Project Form */

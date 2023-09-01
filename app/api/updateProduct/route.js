@@ -8,26 +8,102 @@ export async function POST(req) {
     },
   });
 
-  const { productId, name, imageUrls, previousImageUrls, excerpt, description, price, state } = body;
+  const {
+    productId,
+    name,
+    imageUrls,
+    removedImagesIds,
+    excerpt,
+    description,
+    price,
+    state,
+    variants,
+    previousCategories,
+    previousVariants,
+    categories,
+  } = body;
 
-  try {//TODO: add collection and category for later...
-    const updatedProduct = await client.request( 
-      `
-        mutation updateProduct($productId: ID!, $name: String!, $imageUrls: [String!]!, $previousImageUrls: [ID!]!, $excerpt: String!, $description: !Markdown, $price: Float!, $state: ProductStates!) {
-          updateProduct(
-            where: {id: $productId}
-            data: {name: $name, imageUrls: {create: {url: $imageUrls}, delete: {id: $previousImageUrls}}, excerpt: $excerpt, description: $description, price: $price, state: $state}
-          ) {
-            id
-          }
+  let variantInput = [];
+  if (variants.length > 0) {
+    variantInput = 
+      variants.map((variant) => {
+        const variantInput = {};
+        if (variant.size) {
+          variantInput.name = variant.size;
         }
-      `,
-      { productId, name, imageUrls, previousImageUrls, excerpt, description, price, state }
+        if (variant.color) {
+          variantInput.name = variant.color;
+        }
+        return variantInput;
+      });
+  }
+
+  const query = `
+    mutation updateProduct(
+      $productId: ID!
+      $name: String!
+      $imageUrls: [ImageUrlCreateInput!]
+      $removedImagesIds: [ImageUrlWhereUniqueInput!]
+      $excerpt: String!
+      $description: String!
+      $price: Float!
+      $state: ProductStates!
+      $previousVariants: [ProductVariantWhereUniqueInput!]
+      $variants: [ProductVariantCreateInput!]
+      $previousCategories: [CategoryWhereUniqueInput!]
+      $categories: [CategoryConnectInput!]
+    ) {
+      updateProduct(
+        where: {id: $productId}
+        data: {
+          name: $name, 
+          imageUrls: {create: $imageUrls, delete: $removedImagesIds }, 
+          excerpt: $excerpt, 
+          description: $description, 
+          price: $price, 
+          state: $state, 
+          productVariants: {delete: $previousVariants, create: $variants}, 
+          categories: {disconnect: $previousCategories, connect: $categories},
+        }
+      ) {
+        id
+        imageUrls{
+          id
+        }
+        productVariants{
+          id
+        }
+      }
+    }
+  `;
+
+  try {
+    //TODO: add collection for later...
+    const updatedProduct = await client.request( 
+      query,
+      {
+        productId,
+        name,
+        imageUrls,
+        removedImagesIds: removedImagesIds.map(id => ({id})),
+        excerpt,
+        description,
+        price,
+        state,
+        variants: variantInput,
+        previousVariants,
+        previousCategories,
+        categories: categories.map((category) => ({where: { id: category }})),
+      }
     );
-    
+    // $previousCollections: [ID!]!, 
+    // $collections: [CollectionWhereUniqueInput!]!
+    // collections: {disconnect: {id: $previousCollections}, connect: {where: {id: $collections}}}}
+    // console.log("__________________________updatedProduct: \n", updatedProduct);
+
     return new Response(JSON.stringify(updatedProduct)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
-    return new Response({status:500, body: error.message});
+    return new Response({ status: 500, body: error.message });
   }
 }

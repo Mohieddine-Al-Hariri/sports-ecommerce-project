@@ -10,7 +10,7 @@ import {
   submitOrder,
 } from "@/lib";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const OrderButton = ({
   userId,
@@ -42,7 +42,6 @@ export const OrderButton = ({
       setTimeout(function () {
         setIsOrderSubmitted(false);
       }, 3000);
-      //TODO: add submitted order✅, you can track it in your profile...
     } else {
       setError(true);
       setTimeout(function () {
@@ -53,13 +52,13 @@ export const OrderButton = ({
   };
 
   return (
-    <div className="pb-20">
+    <div className="pb-20 " >
       <button
         disabled={!itemsIds.length}
         onClick={orderItems}
-        className={`w-[343px] h-[50px] px-4 py-2 text-white ${
-          itemsIds.length ? "bg-black" : "bg-gray-300"
-        } bg-black rounded-lg border-black justify-around items-center gap-[3px] flex`}
+        className={`w-[343px] h-[50px] px-4 py-2  ${
+          itemsIds.length  ? "opBgColor opTxtColor" : "bg-gray-300"
+        }  rounded-lg border-black justify-around items-center gap-[3px] flex`}
       >
         <div className=" text-center text-[23px] font-semibold flex items-center gap-4">
           <h2>Order</h2>
@@ -71,7 +70,7 @@ export const OrderButton = ({
           >
             <path
               fill="none"
-              stroke="#fff"
+              stroke="currentColor"
               strokeWidth="2"
               d="M3,18 L1,18 L1,3 L14,3 L14,17 M14,18 L9,18 M6,21 C7.65685425,21 9,19.6568542 9,18 C9,16.3431458 7.65685425,15 6,15 C4.34314575,15 3,16.3431458 3,18 C3,19.6568542 4.34314575,21 6,21 Z M17,21 C18.6568542,21 20,19.6568542 20,18 C20,16.3431458 18.6568542,15 17,15 C15.3431458,15 14,16.3431458 14,18 C14,19.6568542 15.3431458,21 17,21 Z M14,8 L19,8 L23,13 L23,18 L20,18"
             />
@@ -86,7 +85,7 @@ export const GoShopping = () => {
     <div className="pb-20">
       <Link
         href="/"
-        className="w-[343px] h-[50px] px-4 py-2 text-white  bg-black rounded-lg border-black justify-around items-center gap-[3px] flex"
+        className="w-[343px] h-[50px] px-4 py-2 opTxtColor opBgColor rounded-lg border-black justify-around items-center gap-[3px] flex"
       >
         <div className=" text-center text-[23px] font-semibold flex items-center gap-4">
           <h2>Go Shopping</h2>
@@ -117,6 +116,20 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   const [error, setError] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
+    if(isDarkModeLocal) document.body.classList.add('dark');
+    else document.body.classList.remove('dark');
+  }, [])
+
+  useEffect(() => {
+    console.log("selectedItemsIds: ", selectedItemsIds.length);
+    console.log(cartItems.length);
+    console.log("effect");
+    if(selectedItemsIds.length === cartItems.length) setSelectAll(true);
+    else setSelectAll(false);
+  }, [selectedItemsIds])
+
   const deleteItem = async (itemId) => {
     await removeItemfromCart(itemId);
     await publishCart(user.cartId);
@@ -133,7 +146,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   console.log("selectedItemsIds: ", selectedItemsIds);
 
   return (
-    <div className="flex flex-col items-center justify-between p-4 h-screen w-screen bg-white overflow-y-scroll overflow-x-hidden">
+    <div className="flex flex-col items-center justify-between p-4 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-screen fontColor pb-5 ">
         <h1 className=" text-xl font-bold text-center py-10 ">Cart</h1>
         {isOrderSubmitted && (
@@ -166,25 +179,33 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
             </div>
           </h1>
         ) : (
-          <React.Fragment>
-            <h3 className="p-4 pb-2 ">{cartItems?.length} Items</h3>
+          <React.Fragment >
+            <h3 className="p-4 pb-2 text-2xl font-semibold fontColorGray border-b border-gray-300">
+              {cartItems?.length} Items
+            </h3>
             {cartItems?.length > 0 && (
-              <div className="flex items-center gap-2 pl-2 mb-2  ">
-                <label htmlFor="selectAll">
+              <div className="flex items-center gap-4 pl-4 py-2 bg-gray-100 rounded-md shadow-md mt-4">
+                <label className="flex items-center gap-2 text-gray-600" htmlFor="selectAll">
                   <input
                     type="checkbox"
+                    id="selectAll"
                     name="selectAll"
                     onChange={selectAllItems}
-                    value={selectAll}
+                    checked={selectAll}
+                    className="text-blue-500 rounded"
                   />
+                  <span className="text-lg font-semibold">
+                    {selectedItemsIds.length} Items Selected
+                  </span>
                 </label>
-                <h3>{selectedItemsIds.length} Items Selected</h3>
+                {/* You can add more interactive elements or content here */}
               </div>
             )}
           </React.Fragment>
+
         )}
         {cartItems?.length > 0 ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 ">
             {cartItems.map((item) => {
               return (
                 <CartItem

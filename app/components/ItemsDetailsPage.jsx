@@ -1,25 +1,46 @@
 "use client";
 import { addItemToCart, publishCart, publishItemAddedToCart } from "@/lib";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // Import the carousel styles
+import { ProductCard } from ".";
+import ReactStars from 'react-rating-star-with-type';
 
 export function Variants({ variant, setChosenProductVariantName, bg, txtClr }) {
   return (
     <button
       onClick={() => setChosenProductVariantName(variant.name)}
-      // onClick={() => setChosenProductVariantId(variant.id)}
       className={` ${bg} ${txtClr} w-fit h-fit p-2 flex-col justify-start items-start inline-flex rounded-full `}
     >
-      {/* <div className={`w-11 h-11 rounded-full border border-zinc-800`} /> */}
       <div className="text-sm font-bold leading-normal">{variant.name}</div>
     </button>
   );
 }
+export function ReviewCard({ review }) {
+  return(
+    <div className="flex flex-col py-2 px-4 gap-2 mb-2 ">
+      <div className="flex items-center gap-2 " >
+        <Image src={review.theUser.profileImageUrl} alt={review.theUser.firstName} width={50} height={50} className="rounded-full"/>
+        <h2>{review.theUser.firstName} {review.theUser.lastName}</h2>
+        <ReactStars
+          count={5}
+          value={review.rating}
+          size={16}
+          isHalf={true}
+          activeColors={[ "red", "orange", "#FFCE00", "#FFCE00","#4bc0d9",]}
+        />
+      </div>
+      <h1 className="font-bold ">{review.headline}</h1>
+      <p className="">{review.content}</p>
+      <div className="w-3/4 h-1 bgColorGray "></div>
+    </div>
+  )
+}
 
 const ItemsDetailsPage = ({ product, user }) => {
-  //TODO: Add similar items??
   const [chosenProductVariantName, setChosenProductVariantName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isItemAddedToCart, setIsItemAddedToCart] = useState(false);
@@ -27,12 +48,34 @@ const ItemsDetailsPage = ({ product, user }) => {
   const [isLoggedin, setisLoggedin] = useState(false);
   const [showPleaseLogin, setShowPleaseLogin] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  console.log(product);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [star, setStar] = useState(5);
+  
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const maxDescriptionWords = 5;
+  const descriptionToShow = showFullDescription
+    ? product.description.replace(/\n/g, "  \n") || ""
+    : product.description
+      .split(" ")
+      .slice(0, maxDescriptionWords)
+      .join(" ");
+
+  const showMoreLessLabel = showFullDescription ? "Show Less" : "Show More";
 
   useEffect(() => {
     if(user) setisLoggedin(true);
   }, [])
-
+  useEffect(() => {
+    const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
+    if(isDarkModeLocal) {
+      document.body.classList.add('dark');
+      setIsDarkMode(true);
+    } 
+    else {
+      document.body.classList.remove('dark');
+      setIsDarkMode(false);
+    }
+  }, []);
   const itemToCart = async () => {
     if(!isLoggedin){
       setShowPleaseLogin(true);
@@ -41,11 +84,13 @@ const ItemsDetailsPage = ({ product, user }) => {
       }, 2000);
       return;
     }
+    if(product.state !== "Available") return
     setIsAdding(true);
     const totalPrice = quantity * product.price;
     const cartId= user.cartId
     let chosenProductVariant = ""
-    if(product.productVariants.length === 1){
+    if(product.productVariants.length === 0) setChosenProductVariantName(product.name); 
+    else if(product.productVariants.length === 1){
       chosenProductVariant = product.productVariants[0].name;
       setChosenProductVariantName(product.productVariants[0].name);
     }else{ 
@@ -59,17 +104,20 @@ const ItemsDetailsPage = ({ product, user }) => {
     await publishCart(cartId); //Needs publish after being updated
     await publishItemAddedToCart(isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id);
     setIsAdding(false);
-    setIsItemAddedToCart(true); //TODO:
+    setIsItemAddedToCart(true); 
     setTimeout(function(){
       setIsItemAddedToCart(false);
     }, 2000);
   } 
+  const onChange = (nextValue) => {
+    setStar(nextValue);
+  }
 
   return (
     <div className=" overflow-y-scroll h-screen  overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
-      <div className="w-[428px] relative bg-white flex-col gap-6 justify-start items-start inline-flex">
+      <div className="w-[428px] relative bgColor fontColor flex-col gap-6 justify-start items-start inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
-        <div className="relative w-full">
+        <div className="relative w-full px-3 ">
           <Carousel
             showArrows={true}
             selectedItem={currentImageIndex}
@@ -90,41 +138,36 @@ const ItemsDetailsPage = ({ product, user }) => {
           </Carousel>
         </div>
 
-        <div className="w-full relative bg-white flex flex-col justify-center px-2 pl-5 gap-4">
+        <div className="w-full relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
           <div>
-            <div className="left-[30px] top-[22px] text-black text-xl font-bold mb-1">
+            <div className="left-[30px] top-[22px] text-xl font-bold mb-1">
               {product.name}
             </div>
-            {/* TODO: Add description👇🏻👇🏻 */}
-            <div className="left-[31px] top-[54px] text-black text-sm font-thin leading-[18px]">
+            {/* TODO: Fix description Markdown Style👇🏻👇🏻 */}
+            <div className="left-[31px] top-[54px] text-sm font-thin leading-[18px]">
               {product.excerpt || "Winter Training Full-Zip Hoodie"}
+            </div>
+            <div className="left-[31px] top-[54px] fontColor text-sm font-thin leading-[18px]">
+              <ReactMarkdown className="prose mt-2">
+                {descriptionToShow}
+              </ReactMarkdown>
+                {product.description &&
+                  product.description.split(" ").length > maxDescriptionWords && (
+                    <span className="cursor-pointer text-blue-500" onClick={() => setShowFullDescription(!showFullDescription)}>
+                      {" "}
+                      {showMoreLessLabel}
+                    </span>
+                  )
+                }
             </div>
           </div>
           <div>
             { (product.productVariants.length) &&
-              <div className="left-[31px] top-[88px] text-black text-sm font-bold leading-tight mb-2">
+              <div className="left-[31px] top-[88px] text-sm font-bold leading-tight mb-2">
                 Variants
               </div>
             }
             <div className="w-screen h-fit left-[30px] top-[122px] flex flex-wrap gap-2">
-              {/* remove this later */}
-              {/* {product.productVariants.map((variant, index) => {
-                let bg = "bg-neutral-100";
-                let txtClr = "text-neutral-700";
-                if (chosenProductVariantName === variant.name) {
-                  bg = "bg-zinc-800";
-                  txtClr = "text-white";
-                }
-                return (
-                  <Variants
-                    variant={variant}
-                    key={index}
-                    setChosenProductVariantName={setChosenProductVariantName}
-                    bg={bg}
-                    txtClr={txtClr}
-                  />
-                );
-              })} */}
               {product.productVariants.map((variant, index) => {
                 let bg = "bg-neutral-100";
                 let txtClr = "text-neutral-700";
@@ -144,43 +187,50 @@ const ItemsDetailsPage = ({ product, user }) => {
               })}
             </div>
           </div>
-          <div className="w-full flex justify-start item-center text-black ">
+            <h1 className={`text-xl ${product.state === "Available" ? "text-green-500" : "text-red-500"} `}>{product.state === "Available" ? "Available" : "Out of Stock!"}</h1>
+            <div className="w-full flex justify-start item-center text-black ">
             <div className=" w-3/4 flex justify-between item-center">
-              <div className="bg-neutral-100 rounded-full flex justify-between items-center gap-3">
+              <div className={`${isDarkMode ? "bg-neutral-700": "bg-neutral-100"} rounded-full flex justify-between items-center gap-3 fontColor`}>
                 <button
                   onClick={() => {
-                    if (quantity > 0) setQuantity(quantity - 1);
+                    if (quantity > 0 && product.state === "Available" ) setQuantity(quantity - 1);
                   }}
-                  className="rounded-full bg-white w-10 h-10 p-2 text-4xl flex justify-center items-center"
+                  className="rounded-full bgColor w-10 h-10 p-2 text-4xl flex justify-center items-center"
                 >
                   -
                 </button>
                 <h3 className="text-2xl">{quantity}</h3>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="rounded-full bg-white w-10 h-10 p-2 text-4xl flex justify-center items-center"
+                  className="rounded-full bgColor w-10 h-10 p-2 text-4xl flex justify-center items-center"
                 >
                   +
                 </button>
                 {/* TODO: Add Limit to adding quantity */}
               </div>
               <div>
-                <div className=" text-black text-xs font-thin leading-[14px]">
+                <div className=" fontColor text-xs font-thin leading-[14px]">
                   Price
                 </div>
-                <div className="text-black text-2xl font-semibold leading-7">
+                <div className="fontColor text-2xl font-semibold leading-7">
                   ${product.price}
                 </div>
               </div>
             </div>
           </div>
+            {/* <ReactStars 
+              count={5}
+              onChange={onChange} 
+              value={star}
+              edit={true}
+              activeColors={[ "red", "orange", "#FFCE00", "#4bc4d9","#4bc0d9",]} 
+            /> */}
         </div>
         {/* <div className="w-full text-center text-black text-3xl flex justify-center gap-3"> Total <h1 className="font-bold"> {product.price*quantity}</h1>  </div> */}
         <div className="w-full flex justify-center items-center flex-col ">
-          <div className=" w-full flex justify-center  bg-white pb-4">
-            <button onClick={itemToCart} className="h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] bg-zinc-800 rounded-full justify-center items-start gap-[15px] inline-flex">
-              {/* TODO: when added to cart, change button text: Added to Cart✅ */}
-              <div className="text-white text-xl font-bold leading-normal">
+          <div className=" w-full flex justify-center bgColor pb-4">
+            <button disabled={product.state === "Available" ? false : true} onClick={itemToCart} className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${product.state !== "Available" ? "bg-gray-300" : "opBgColor"} rounded-full justify-center items-start gap-[15px] inline-flex`}>
+              <div className="opTxtColor text-xl font-bold leading-normal">
                 {isAdding ? 
                   <div role="status">
                     <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -197,6 +247,17 @@ const ItemsDetailsPage = ({ product, user }) => {
           {showPleaseLogin && <p className="text-red-500 text-center ">Sign In to add item to cart</p>}
           {isItemAddedToCart && <p className="text-green-500 text-center ">Item Added Successfuly</p>}
         </div>
+        {/* Similars from same Category */}
+        <h2 className="pl-4 ">Other Related Products</h2>
+        <div className=" flex gap-3 items-center justify-start mb-10 pb-2 px-4 relative overflow-x-scroll  ">
+          {product.categories[0].products?.map(product => (
+            <ProductCard key={product.id} id={product.id} name={product.name} excerpt={product.excerpt} imageUrl={product.imageUrls[0].url} />
+          ))}
+        </div>
+        <div className="w-full h-1 bgColorGray "></div>
+        {product.reviews.map(review => (
+          <ReviewCard key={review.id} review={review} />
+        ))}
       </div>
     </div>
   );

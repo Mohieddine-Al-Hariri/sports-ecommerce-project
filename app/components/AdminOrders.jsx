@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import OrderCard from "./OrderCard"
 import SearchBar from "./SearchBar";
-import { getAdminOrders } from "@/lib";
+import { deleteOrder, getAdminOrders } from "@/lib";
 import { useIsVisible } from "./UseVisible";
 import { useRouter } from "next/navigation";
 // import Link from "next/link";
@@ -19,6 +19,12 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   const [selectedState, setSelectedState] = useState(filteredState || "All");
   const [resetSearchText, setResetSearchText] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
+    if(isDarkModeLocal) document.body.classList.add('dark');
+    else document.body.classList.remove('dark');
+  }, []);
 
   const getMoreOrders = async () => {
     const paginatedOrders = await getAdminOrders(lastOrderCursor, searchText, filteredState);
@@ -77,11 +83,15 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
     handleNavigation(selectedState);
   },[selectedState])
 
+  const handleDeleteOrder = async (id) => {
+    await deleteOrder(id);
+    router.refresh();
+  }
+
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
-  console.log("orders: ", orders); 
   return (
-    <div className='flex flex-col items-center justify-between p-4 h-screen w-screen bg-white overflow-y-scroll overflow-x-hidden fontColor ' >
+    <div className='flex flex-col items-center justify-between p-4 h-screen w-screen bgColor overflow-y-scroll overflow-x-hidden fontColor ' >
       
       <div className="mb-4 ">
         <SearchBar resetSearchText={resetSearchText} />
@@ -94,7 +104,7 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
             name="state"
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
           >
             {allState.map((state, index) => (
               <option className="fontColor" key={state} >{state}</option>
@@ -109,7 +119,7 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
         <div key={item[0].node.id}>
           <h1 className="p-2 pb-0 text-xl font-semibold w-full text-center border-b-2 border-black ">{item[0].node.state}</h1>
           {item.map((order) => (
-            <OrderCard key={order.node.id} order={order.node} />
+            <OrderCard key={order.node.id} order={order.node} handleDeleteOrder={handleDeleteOrder} />
           ))}
         </div>
       ))}

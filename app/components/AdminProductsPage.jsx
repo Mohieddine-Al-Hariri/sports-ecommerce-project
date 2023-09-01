@@ -19,14 +19,24 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   const isLastProductCardVisible = useIsVisible(lastProductCardRef);
   const [resetSearchText, setResetSearchText] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
-
+  useEffect(() => {
+    const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
+    if(isDarkModeLocal) {
+      document.body.classList.add('dark');
+      setIsDarkMode(true);
+    } 
+    else {
+      document.body.classList.remove('dark');
+      setIsDarkMode(false);
+    }
+  }, [])
 
 
   const getMoreProducts = async () => {
     const searchedCategory = undefined; //Make it related to collections later...
-    //TODO: create an env var specific for this pagination...
     const paginatedProducts = await getProducts(lastProductCursor, searchText, searchedCategory);
     return paginatedProducts;
   }
@@ -70,14 +80,14 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   },[selectedCategory])
 
   return (
-    <div className="overflow-y-scroll bg-white fontColor ">
+    <div className="overflow-y-scroll bgColor fontColor ">
       <div className="p-2 ">
-        <button onClick={() => setIsCreating(!isCreating)} className="border-2 border-black rounded-lg p-2 fontColor w-full ">{isCreating ? "Products" : "Create"}</button>
+        <button onClick={() => setIsCreating(!isCreating)} className="border-2 borderColor rounded-lg p-2 fontColor w-full ">{isCreating ? "Products" : "Create"}</button>
       </div>
       {isCreating?
-        <CreateProductForm categoriesData={categoriesData} />
+        <CreateProductForm categoriesData={categoriesData} isDarkMode={isDarkMode} />
         :
-        <div className="flex flex-col gap-2 p-1 ">
+        <div className="flex flex-col gap-2 p-1 bgColor ">
           <SearchBar resetSearchText={resetSearchText} />
           <div className="mb-4">
             <label htmlFor="category" className="block text-lg font-semibold mb-2">
@@ -88,7 +98,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
               name="category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
             >
               <option value="All">All</option>
               {categoriesData.map((category, index) => (

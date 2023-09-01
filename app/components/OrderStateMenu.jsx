@@ -1,17 +1,17 @@
 "use client"
-import { publishSubmittedOrder, updateOrderState } from '@/lib';
+import { deleteOrder, publishOrder, updateOrderState } from '@/lib';
 import { useRef, useEffect, useState } from 'react';
 
 export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, bg, disable, txtClr }) => {
   return(
-    <button disabled={disable} onClick={() => {changeOrderState(state); setIsOpen(false)}}  className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}>
+    <button disabled={disable} onClick={() => {changeOrderState(state); setIsOpen(false)}}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}>
       {state}
       {svg}
     </button>
   )
 } 
 
-const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId }) => {
+const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId, handleDeleteOrder }) => {
   // Ref for the card menu container
   const cardMenuRef = useRef(null);
 
@@ -32,7 +32,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId 
 
   const changeOrderState = async (state) => {
     const updatedOrder = await updateOrderState({orderId, state});
-    await publishSubmittedOrder(orderId);
+    await publishOrder(orderId);
     //publishOrderItem && publishTheUser??
     setOrderState(updatedOrder.updateOrder.state);
   }
@@ -122,7 +122,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId 
   }];
 
   const statesBtns = states.map((state) => {
-    let bg = "bg-white";
+    let bg = "bgColor";
     let disable = false;
     let txtClr = "fontColor";
     if(state.state === orderState){
@@ -146,7 +146,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId 
   return (
     <div 
       ref={cardMenuRef}
-      className="absolute w-48 h-10 bg-white fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
+      className="absolute w-48 h-10 bgColor fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
     >
       <div>
         <div className='w-full flex justify-end'>
@@ -171,16 +171,26 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId 
           </button>
         </div>
 
-        <div className="absolute right-0 w-48 fontColor bg-white rounded-md shadow-lg z-10">
+        <div className="absolute right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
           <ul>
-            {/* <li className="px-4 py-2 rounded-md hover:bg-[#2482c8]">
-              <button onClick={() => {setIsOpenShareModal(true), setIsOpen(false)}} className="flex w-full justify-between">
-                Share
-                <svg fill="currentColor" width="20px" height="20px" viewBox="0 0 12.8 12.8" xmlns="http://www.w3.org/2000/svg"><title>share</title><path d="M9.625 11.6q-0.7 0 -1.15 -0.475 -0.475 -0.475 -0.475 -1.15 0 -0.225 0.025 -0.275l-3.75 -2.125q-0.425 0.425 -1.05 0.425 -0.675 0 -1.15 -0.475t-0.475 -1.15q0 -0.65 0.475 -1.1 0.475 -0.475 1.15 -0.475 0.625 0 1.05 0.425l3.75 -2.1q-0.025 -0.075 -0.025 -0.35 0 -0.65 0.475 -1.1 0.45 -0.475 1.125 -0.475 0.65 0 1.125 0.475 0.45 0.45 0.475 1.1 0 0.675 -0.475 1.15t-1.125 0.475q-0.575 0 -1.075 -0.425l-3.75 2.125q0.025 0.05 0.025 0.275 0 0.25 -0.025 0.325l3.75 2.125q0.5 -0.425 1.1 -0.425 0.75 0 1.15 0.475t0.4 1.125q0 0.65 -0.4 1.125t-1.15 0.475Z"/></svg>
-              </button>
-              
-            </li> */}
             {statesBtns}
+            <button onClick={() => handleDeleteOrder(orderId)}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white fontColor flex w-full justify-between `}>
+              Delete
+              <svg
+                width="30px"
+                height="30px"
+                viewBox="0 0 0.563 0.563"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M0.206 0.037a0.019 0.019 0 0 0 0 0.037h0.15a0.019 0.019 0 0 0 0 -0.037h-0.15ZM0.112 0.131a0.019 0.019 0 0 1 0.019 -0.019h0.3a0.019 0.019 0 0 1 0 0.037H0.412v0.3a0.037 0.037 0 0 1 -0.037 0.037H0.188a0.037 0.037 0 0 1 -0.037 -0.037V0.15h-0.019a0.019 0.019 0 0 1 -0.019 -0.019ZM0.188 0.15h0.188v0.3H0.188V0.15Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
           </ul>
         </div>
       </div>

@@ -15,6 +15,5 @@ const signIn = async () => {
     </div>
   )
 }
-//TODO: Compare Given Phone Number and gmail/facebook to Check if user already exists
 
 export default signIn

@@ -22,7 +22,7 @@ const OrderDetails = ({order, user}) => {
 
               <OrderStateMenu isOpen={openMenu} setIsOpen={setOpenMenu} orderState={orderState} setOrderState={setOrderState} orderId={order.id}/>
               <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 ">
-                <h1 className={`${stateColor} font-bold`}>{orderState}{/*TODO: make it {order.state} instead? */}</h1> 
+                <h1 className={`${stateColor} font-bold`}>{orderState}</h1> 
               </button>
             </div>
             :

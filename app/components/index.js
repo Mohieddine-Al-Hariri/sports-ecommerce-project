@@ -6,4 +6,6 @@ export {default as AdminOrders} from './AdminOrders';
 export {default as Order} from './Order';
 export {default as AdminProductCard} from './AdminProductCard';
 export {default as AdminProductsPage} from './AdminProductsPage';
+export {default as DarkMBtn} from './DarkMBtn';
+export {default as ProductCard} from './ProductCard';
 
