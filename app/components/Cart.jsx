@@ -137,7 +137,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between p-4 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
+    <div className="flex flex-col items-center justify-between p-4 pb-10 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-screen fontColor pb-5 ">
         <h1 className=" text-xl font-bold text-center py-10 ">Cart</h1>
         {isOrderSubmitted && (
@@ -216,7 +216,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
             <h1 className="text-3xl ">
               No Items in Cart
             </h1>
-            <p>If your Item isn't showing, please wait a minute and refresh</p>
+            {user && <p>If your Item isn't showing, please wait a minute and refresh</p>}
           </div>
         )}
       </div>
