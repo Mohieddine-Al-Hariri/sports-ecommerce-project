@@ -13,15 +13,24 @@ import { v4 } from "uuid";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 
-const PillVariant = ({ size, color, index, deleteItem }) => {
+const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
+
   return (
-    <div className="flex items-center px-3 py-1 productCardBg rounded-full">
+    <div className="flex flex-col items-center px-3 py-1 productCardBg rounded-full">
       {/*  */}
-      {size && size} {size && color && "/"} {color && color}
-      <button className="text-red-600 ml-2" onClick={() => deleteItem(index)}>
-        X
-      </button>
+      <div>
+        {size && size} {size && color && "/"} {color && color}
+        <button className="text-red-600 ml-2" onClick={(e) => {deleteItem(index); e.preventDefault()}}>
+          X
+        </button>
+      </div>
       {/*  */}
+      <div className="flex gap-2">
+        <button className="rounded-full bgColorGray aspect-square px-2 " onClick={(e) => decreaseQuantity(e, index)}>-</button>
+        <button onClick={(e) => infiniteQuantity(e, index)}>♾️</button>
+        <button className="rounded-full bgColorGray aspect-square px-2 " onClick={(e) => increaseQuantity(e, index)}>+</button>
+      </div>
+        {quantity !== null ? quantity : "⊠"}
     </div>
   );
 };
@@ -34,6 +43,56 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
   const [colorValues, setColorValues] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
+  const infiniteQuantity = (e, index) => {
+    e.preventDefault();
+    setSelectedPills(prev => prev.map((pill, i) => {
+      if(i === index) {
+        return {
+          ...pill,
+          quantity: null
+        }
+      }
+      return pill
+    }))
+  }
+  const decreaseQuantity = (e, index) => {
+    e.preventDefault();
+    console.log("selectedPills[index].quantity", selectedPills[index].quantity);
+    if(!selectedPills[index].quantity || selectedPills[index].quantity === 0 ) return
+    // else if(selectedPills[index].quantity === 1){
+    //   setSelectedPills(prev => prev.map((pill, i) => {
+    //     if(i === index) {
+    //       return {
+    //         ...pill,
+    //         quantity: null
+    //       }
+    //     }
+    //     return pill
+    //   }))
+    //   return
+    // }
+    setSelectedPills(prev => prev.map((pill, i) => {
+      if(i === index) {
+        return {
+          ...pill,
+          quantity: pill.quantity - 1
+        }
+      }
+      return pill
+    }))
+  }
+  const increaseQuantity = (e, index) => {
+    e.preventDefault();
+    setSelectedPills(prev => prev.map((pill, i) => {
+      if(i === index) {
+        return {
+          ...pill,
+          quantity: pill.quantity ? pill.quantity + 1 : 1
+        }
+      }
+      return pill
+    }));
+  }
   const deleteItem = (index) => {
     const updatedPills = selectedPills.filter((_, i) => i !== index);
     setSelectedPills(updatedPills);
@@ -52,16 +111,16 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
     e.preventDefault();
     if (showSizeInput && showColorInput) {
       let pills = sizeValues.map((size) =>
-        colorValues.map((color) => ({ name: `${size}/${color}`, size, color }))
+        colorValues.map((color) => ({ name: `${size}/${color}`, size, color, quantity: 1 }))
       );
       setSelectedPills(pills.flat());
       setShowSizeInput(false);
       setShowColorInput(false);
     } else if (showSizeInput) {
-      setSelectedPills(sizeValues.map((size) => ({ size })));
+      setSelectedPills(sizeValues.map((size) => ({ size, quantity: 1 })));
       setShowSizeInput(false);
     } else if (showColorInput) {
-      setSelectedPills(colorValues.map((color) => ({ color })));
+      setSelectedPills(colorValues.map((color) => ({ color, quantity: 1 })));
       setShowColorInput(false);
     } else {
       setShowSizeInput(false);
@@ -215,6 +274,10 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
               color={pill.color || null}
               index={index}
               deleteItem={deleteItem}
+              decreaseQuantity={decreaseQuantity}
+              increaseQuantity={increaseQuantity}
+              infiniteQuantity={infiniteQuantity}
+              quantity={pill.quantity}
             />
           ))}
           {selectedPills.length > 0 && (
@@ -241,6 +304,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
   const router = useRouter();
 
   const [selectedPills, setSelectedPills] = useState([]); //Variants State
+  console.log(selectedPills)
 
   const handleImageUpload = (event) => {
     const newImages = Array.from(event.target.files);

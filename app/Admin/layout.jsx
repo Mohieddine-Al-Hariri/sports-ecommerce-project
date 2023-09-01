@@ -8,7 +8,7 @@ export const getTheUserData = async (userSlug) => {
   return theUser
 }
 
-const Layout = async ({children}) => {
+const Layout = async ({ children }) => {
   const session = await getServerSession(authOptions);
   if(!session) {
     redirect('/SignIn');

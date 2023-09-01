@@ -13,7 +13,7 @@ const OrderDetails = ({order, user}) => {
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
 
   return (
-    <div className="flex flex-col items-center justify-start gap-10 p-4 pt-8 h-screen w-screen bg-white fontColor overflow-y-scroll overflow-x-hidden">
+    <div className="flex flex-col items-center justify-start gap-10 p-4 pt-8 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-full justify-between flex items-center">
         <h1 className="text-xl font-bold mb-2 border-b-2 border-gray-500">${order.total}</h1>
         <div className="fontColor flex justify-center items-start relative ">

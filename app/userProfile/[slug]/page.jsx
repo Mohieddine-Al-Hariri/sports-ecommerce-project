@@ -15,9 +15,9 @@ export async function getUserOrders(userId) {
 
 const page = async ({ params: { slug } }) => {
   const session = await getServerSession(authOptions);
-  // if(!session) { //TODO: if middleware file didnt work, keep it
-  //   redirect('/SignIn');
-  // }
+  if(!session) {
+    redirect('/SignIn');
+  }
   const user = await getUserDetails(slug);
   const ordersData = await getUserOrders(session.user.id);
   return <ProfilePage user={user} orders={ordersData.orders} ordersHasNextPage={ordersData.pageInfo.hasNextPage} />

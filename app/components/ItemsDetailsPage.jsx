@@ -10,10 +10,14 @@ import { ProductCard } from ".";
 import ReactStars from 'react-rating-star-with-type';
 
 export function Variants({ variant, setChosenProductVariantName, bg, txtClr }) {
+  let isDisabled = false;
+  console.log(variant?.quantity)
+  if(variant?.quantity === 0) isDisabled = true
   return (
     <button
+      disabled={isDisabled}
       onClick={() => setChosenProductVariantName(variant.name)}
-      className={` ${bg} ${txtClr} w-fit h-fit p-2 flex-col justify-start items-start inline-flex rounded-full `}
+      className={` ${isDisabled ? "bg-gray-100 text-gray-300" : `${bg} ${txtClr}` } w-fit h-fit p-2 flex-col justify-start items-start inline-flex rounded-full `}
     >
       <div className="text-sm font-bold leading-normal">{variant.name}</div>
     </button>
@@ -49,7 +53,8 @@ const ItemsDetailsPage = ({ product, user }) => {
   const [showPleaseLogin, setShowPleaseLogin] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [star, setStar] = useState(5);
+  const [isOutOfStock , setIsOutOfStock] = useState(false);
+  // const [star, setStar] = useState(5);
   
   const [showFullDescription, setShowFullDescription] = useState(false);
   const maxDescriptionWords = 5;
@@ -61,8 +66,20 @@ const ItemsDetailsPage = ({ product, user }) => {
       .join(" ");
 
   const showMoreLessLabel = showFullDescription ? "Show Less" : "Show More";
-
+  function checkOutOfStock() {
+    let outOfStock = true;
+  
+    for (const variant of product.productVariants) {
+      if (variant.quantity > 0) {
+        outOfStock = false;
+        break;
+      }
+    }
+    if(product.state !== "Available") outOfStock = true
+    return outOfStock;
+  }  
   useEffect(() => {
+    setIsOutOfStock(checkOutOfStock());
     if(user) setisLoggedin(true);
   }, [])
   useEffect(() => {
@@ -90,7 +107,7 @@ const ItemsDetailsPage = ({ product, user }) => {
     const cartId= user.cartId
     let chosenProductVariant = ""
     if(product.productVariants.length === 0) setChosenProductVariantName(product.name); 
-    else if(product.productVariants.length === 1){
+    else if(product.productVariants.length === 1){ //TODO: make it chose the first (available) variant
       chosenProductVariant = product.productVariants[0].name;
       setChosenProductVariantName(product.productVariants[0].name);
     }else{ 
@@ -108,10 +125,8 @@ const ItemsDetailsPage = ({ product, user }) => {
     setTimeout(function(){
       setIsItemAddedToCart(false);
     }, 2000);
-  } 
-  const onChange = (nextValue) => {
-    setStar(nextValue);
   }
+
 
   return (
     <div className=" overflow-y-scroll h-screen  overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
@@ -187,7 +202,7 @@ const ItemsDetailsPage = ({ product, user }) => {
               })}
             </div>
           </div>
-            <h1 className={`text-xl ${product.state === "Available" ? "text-green-500" : "text-red-500"} `}>{product.state === "Available" ? "Available" : "Out of Stock!"}</h1>
+            <h1 className={`text-xl ${isOutOfStock ? "text-red-500" :"text-green-500"} `}>{isOutOfStock ? "Out of Stock!" : "Available"}</h1>
             <div className="w-full flex justify-start item-center text-black ">
             <div className=" w-3/4 flex justify-between item-center">
               <div className={`${isDarkMode ? "bg-neutral-700": "bg-neutral-100"} rounded-full flex justify-between items-center gap-3 fontColor`}>
@@ -206,7 +221,7 @@ const ItemsDetailsPage = ({ product, user }) => {
                 >
                   +
                 </button>
-                {/* TODO: Add Limit to adding quantity */}
+                {/* TODO: Add Limit to adding quantity, maybe for each variant add quantity...*/}
               </div>
               <div>
                 <div className=" fontColor text-xs font-thin leading-[14px]">
@@ -229,7 +244,7 @@ const ItemsDetailsPage = ({ product, user }) => {
         {/* <div className="w-full text-center text-black text-3xl flex justify-center gap-3"> Total <h1 className="font-bold"> {product.price*quantity}</h1>  </div> */}
         <div className="w-full flex justify-center items-center flex-col ">
           <div className=" w-full flex justify-center bgColor pb-4">
-            <button disabled={product.state === "Available" ? false : true} onClick={itemToCart} className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${product.state !== "Available" ? "bg-gray-300" : "opBgColor"} rounded-full justify-center items-start gap-[15px] inline-flex`}>
+            <button disabled={isOutOfStock} onClick={itemToCart} className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${product.state !== "Available" ? "bg-gray-300" : "opBgColor"} rounded-full justify-center items-start gap-[15px] inline-flex`}>
               <div className="opTxtColor text-xl font-bold leading-normal">
                 {isAdding ? 
                   <div role="status">
@@ -250,7 +265,7 @@ const ItemsDetailsPage = ({ product, user }) => {
         {/* Similars from same Category */}
         <h2 className="pl-4 ">Other Related Products</h2>
         <div className=" flex gap-3 items-center justify-start mb-10 pb-2 px-4 relative overflow-x-scroll  ">
-          {product.categories[0].products?.map(product => (
+          {product.categories[0]?.products?.map(product => (
             <ProductCard key={product.id} id={product.id} name={product.name} excerpt={product.excerpt} imageUrl={product.imageUrls[0].url} />
           ))}
         </div>

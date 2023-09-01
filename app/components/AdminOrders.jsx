@@ -75,7 +75,6 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
 
     const newSearchParams = currentParams.toString();
     const newPathname = `${window.location.pathname}?${newSearchParams}`;
-    // TODO: Change states in parent component to the new category and pageInfo ...
     setResetSearchText(!resetSearchText);
     router.push(newPathname);
   };

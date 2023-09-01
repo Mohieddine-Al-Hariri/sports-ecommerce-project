@@ -34,6 +34,7 @@ export async function POST(req) {
         if (variant.color) {
           variantInput.name = variant.color;
         }
+        if(variant.quantity !== null) variantInput.quantity = variant.quantity;
         return variantInput;
       });
   }

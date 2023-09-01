@@ -17,7 +17,6 @@ export const OrderButton = ({
   totalPrice,
   itemsIds,
   cartId,
-  setSubmittedItemsIds,
   setIsOrderSubmitted,
   setSubmitting,
   setSelectedItemsIds,
@@ -30,7 +29,6 @@ export const OrderButton = ({
     const itemIds = submittedOrder.createOrder.orderItems.map(
       (item) => item.id
     );
-    setSubmittedItemsIds(itemIds);
     if (submittedOrder.createOrder) {
       await publishOrder(submittedOrder.createOrder.id);
       await disconnectItemfromCart({ itemsIds, cartId });
@@ -108,7 +106,6 @@ export const GoShopping = () => {
 };
 
 const Cart = ({ cartItems, user, hasNextPage }) => {
-  const [submittedItemsIds, setSubmittedItemsIds] = useState([]); //TODO: REMOVE?
   const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedItemsIds, setSelectedItemsIds] = useState([]);
@@ -123,10 +120,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   }, [])
 
   useEffect(() => {
-    console.log("selectedItemsIds: ", selectedItemsIds.length);
-    console.log(cartItems.length);
-    console.log("effect");
-    if(selectedItemsIds.length === cartItems.length) setSelectAll(true);
+    if(selectedItemsIds.length === cartItems?.length) setSelectAll(true);
     else setSelectAll(false);
   }, [selectedItemsIds])
 
@@ -134,7 +128,6 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     await removeItemfromCart(itemId);
     await publishCart(user.cartId);
     router.refresh();
-    console.log("deleted");
   };
 
   const selectAllItems = async () => {
@@ -142,8 +135,6 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     else setSelectedItemsIds([]);
     setSelectAll(!selectAll);
   };
-
-  console.log("selectedItemsIds: ", selectedItemsIds);
 
   return (
     <div className="flex flex-col items-center justify-between p-4 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
@@ -221,9 +212,12 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
             })}
           </div>
         ) : (
-          <h1 className="text-3xl w-full h-full flex justify-center items-center">
-            No Items in Cart
-          </h1>
+          <div className="w-full h-full flex flex-col justify-center items-center text-center gap-2 px-2 ">
+            <h1 className="text-3xl ">
+              No Items in Cart
+            </h1>
+            <p>If your Item isn't showing, please wait a minute and refresh</p>
+          </div>
         )}
       </div>
       {/* keep btn & "Cart" fixed while scrolling between items? */}
@@ -232,7 +226,6 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
         <OrderButton
           setSubmitting={setSubmitting}
           setIsOrderSubmitted={setIsOrderSubmitted}
-          setSubmittedItemsIds={setSubmittedItemsIds}
           cartId={user?.cartId}
           userId={user?.id}
           totalPrice={cartItems?.reduce((acc, item) => acc + item.total, 0)}

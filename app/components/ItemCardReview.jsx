@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ReactStars from 'react-rating-star-with-type';
 
 
-const ItemCardReview = ({ product, userId, orderId, itemId, isFirstRender, isLastItem }) => { //TODO: Finish
+const ItemCardReview = ({ product, userId, orderId, itemId, isFirstRender, isLastItem }) => {
   const [star, setStar] = useState(0);
   const [isRated, setIsRated] = useState(false);
   const [headline, setHeadline] = useState("");

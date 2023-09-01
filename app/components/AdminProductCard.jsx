@@ -135,7 +135,7 @@ const AdminProductCard = ({ product }) => {
           <div className="mb-4 relative">
             <ProductStateMenu isOpen={openMenu} setIsOpen={setOpenMenu} productState={productState} setProductState={setProductState} productId={product.id}/>
             <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 ">
-              <h1 className={`${stateTxtClr} font-bold`}>{productState}{/*TODO: make it {product.state} instead? */}</h1> 
+              <h1 className={`${stateTxtClr} font-bold`}>{productState}</h1> 
             </button>
           </div>
           :
