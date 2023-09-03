@@ -20,7 +20,7 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
   };
 
   return (
-    <div className="flex justify-between items-center w-screen px-2 border-2 borderColor rounded-lg py-1  ">
+    <div className="flex justify-between items-center w-full lg:w-1/3 grow px-2 border-2 borderColor rounded-lg py-1  ">
       {/* <label className="flex gap-2 " htmlFor="selectAll">
         <input className="" type="checkbox" id="selectAll" name="selectAll" onChange={select} checked={isSelected} />
         <Image width={86} height={108} className="relative w-[86px] h-[108px] rounded-[20px]" src={ product.imageUrls[0].url} alt={product.name}  />
@@ -73,8 +73,8 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
       {/* <button onClick={deleteItem}> */}
       <button onClick={() => deleteItem(id)}>
         <svg
-          width="24px"
-          height="24px"
+          width="28px"
+          height="28px"
           viewBox="0 0 0.45 0.45"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

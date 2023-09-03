@@ -117,55 +117,64 @@ body.dark{
 }
 
 /* Standard scrollbar styles (for larger devices) */
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 10px;
-} */
+}
 
 /* Track */
-/* ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: var(--scrollbar-track-bg);
   border-radius: 5px; 
-} */
+}
 
 /* Handle */
-/* ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb-color);
   border-radius: 5px; 
-} */
+}
 
 /* Handle on hover */
-/* ::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-color-hover);
-}  */
+} 
 
 /* Media query for small devices */
 @media (max-width: 768px) {
   /* Reset scrollbar styles for small devices */
-  /* ::-webkit-scrollbar {
-    width: initial;
-  } */
+  ::-webkit-scrollbar {
+    width: 1px;
+  }
   
   /* Reset scrollbar track styles */
-  /* ::-webkit-scrollbar-track {
+  ::-webkit-scrollbar-track {
     background: initial;
     border-radius: initial;
-  } */
+  }
   
   /* Reset scrollbar thumb styles */
-  /* ::-webkit-scrollbar-thumb {
+  ::-webkit-scrollbar-thumb {
     background: initial;
     border-radius: initial;
-  } */
+  }
   
   /* Reset scrollbar thumb hover styles */
-  /* ::-webkit-scrollbar-thumb:hover {
+  ::-webkit-scrollbar-thumb:hover {
     background: initial;
-  } */
+  }
 }
 
-
-
-
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1;
+}
 
 /* Project Form */
 .form {

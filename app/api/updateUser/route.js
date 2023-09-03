@@ -25,7 +25,7 @@ export async function POST(req) {
           $firstName: String!, 
           $lastName: String!, 
           $imgUrl: String!,
-          $birthDate: DateTime!
+          $birthDate: Date!
         ) 
           {
             updateTheUser(

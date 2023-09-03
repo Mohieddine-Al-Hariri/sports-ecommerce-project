@@ -196,7 +196,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
 
         )}
         {cartItems?.length > 0 ? (
-          <div className="flex flex-col gap-4 ">
+          <div className="flex max-lg:flex-col gap-2 px-2 lg:flex-wrap ">
             {cartItems.map((item) => {
               return (
                 <CartItem

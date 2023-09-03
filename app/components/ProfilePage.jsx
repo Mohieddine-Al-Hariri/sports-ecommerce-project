@@ -36,7 +36,7 @@ const ProfilePage = ({ user, orders }) => {
     email,
     phoneNumber,
     profileImageUrl,
-    birthDate, //TODO: Fix
+    birthDate,
   });
   const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -139,7 +139,6 @@ const ProfilePage = ({ user, orders }) => {
   };
 
   if (isEdit)
-    //TODO: add ability to change location even if already set
     return (
       <div className="bgColor h-screen flex flex-col justify-start items-center gap-5 ">
         <div className="w-full h-fit flex justify-between p-6 fontColor">
