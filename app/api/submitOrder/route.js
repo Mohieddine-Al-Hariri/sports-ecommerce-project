@@ -34,7 +34,6 @@ export async function POST(req) {
       `,
       { itemsIds: itemsIds.map((id) => ({ id })), userId, totalPrice }
     );
-    console.log("submittedOrder: \n", submittedOrder);
     return new Response(JSON.stringify(submittedOrder)); // Should return the id
   } catch (error) {
     console.error("Error in POST:", error);

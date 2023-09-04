@@ -21,7 +21,7 @@ export default async function Home({ searchParams: { searchText, category } }) {
   const sessionData = await getServerSession(authOptions);
   const productsData = await getProductsData(searchText, category);
   const categoriesData = await getCategoriesData();
-  //TODO: https://github.com/vercel/swr
+  //TODO: https://github.com/vercel/swr OR <Suspense fallback={...}/>
   if(!productsData) 
   return (
     <div className="w-full h-full px-[63px] pt-[426px] pb-[95.82px] bg-white flex-col justify-end items-center gap-[291px] inline-flex">

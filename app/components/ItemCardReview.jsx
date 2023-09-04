@@ -20,7 +20,6 @@ const ItemCardReview = ({ product, userId, orderId, itemId, isFirstRender, isLas
       const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
       if(isDarkModeLocal) document.body.classList.add('dark');
       else document.body.classList.remove('dark');
-      console.log("rendered darkMode")
     }
   }, []);
   const onStarChange = (nextValue) => {

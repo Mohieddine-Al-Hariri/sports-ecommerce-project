@@ -2,7 +2,6 @@ import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
   const body = await req.json(); 
-  console.log("________________________body: \n", body);
 
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {

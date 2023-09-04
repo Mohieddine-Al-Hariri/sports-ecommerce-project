@@ -91,7 +91,6 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
   }
   const decreaseQuantity = (e, index) => {
     e.preventDefault();
-    console.log("selectedPills[index].quantity", selectedPills[index].quantity);
     if(!selectedPills[index].quantity || selectedPills[index].quantity === 0 ) return
     setSelectedPills(prev => prev.map((pill, i) => {
       if(i === index) {
@@ -102,7 +101,6 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
       }
       return pill
     }))
-    console.log("decreased");
   }
   const increaseQuantity = (e, index) => {
     e.preventDefault();
@@ -304,7 +302,6 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
   const router = useRouter();
   
   const [selectedPills, setSelectedPills] = useState(productDataVariants || []); // Variants State 
-  console.log("selectedPills: ", selectedPills); 
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
     if(isDarkModeLocal) document.body.classList.add('dark');

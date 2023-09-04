@@ -111,13 +111,17 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   const [selectedItemsIds, setSelectedItemsIds] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [error, setError] = useState(false);
+  const [items, setItems] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
     if(isDarkModeLocal) document.body.classList.add('dark');
     else document.body.classList.remove('dark');
-  }, [])
+    const localCart = JSON.parse(localStorage.getItem("cart"));
+    if(!user) setItems(localCart)
+    else setItems(cartItems)
+  }, [cartItems])
 
   useEffect(() => {
     if(selectedItemsIds.length === cartItems?.length) setSelectAll(true);
@@ -125,9 +129,17 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   }, [selectedItemsIds])
 
   const deleteItem = async (itemId) => {
+    if(!user){
+      const localCart = JSON.parse(localStorage.getItem("cart"));
+      const updatedCart = localCart.filter((item) => item.id !== itemId);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      setItems(updatedCart);
+      return
+    }
     await removeItemfromCart(itemId);
     await publishCart(user.cartId);
     router.refresh();
+    setItems(cartItems);
   };
 
   const selectAllItems = async () => {
@@ -172,9 +184,9 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
         ) : (
           <React.Fragment >
             <h3 className="p-4 pb-2 text-2xl font-semibold fontColorGray border-b border-gray-300">
-              {cartItems?.length} Items
+              {items?.length} Items
             </h3>
-            {cartItems?.length > 0 && (
+            {items?.length > 0 && (
               <div className="flex items-center gap-4 pl-4 py-2 bg-gray-100 rounded-md shadow-md mt-4">
                 <label className="flex items-center gap-2 text-gray-600" htmlFor="selectAll">
                   <input
@@ -195,12 +207,12 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
           </React.Fragment>
 
         )}
-        {cartItems?.length > 0 ? (
+        {items?.length > 0 ? (
           <div className="flex max-lg:flex-col gap-2 px-2 lg:flex-wrap ">
-            {cartItems.map((item) => {
+            {items.map((item) => {
               return (
                 <CartItem
-                  cartId={user.cartId}
+                  cartId={user?.cartId}
                   item={item}
                   key={item.id}
                   deleteItem={deleteItem}
@@ -228,7 +240,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
           setIsOrderSubmitted={setIsOrderSubmitted}
           cartId={user?.cartId}
           userId={user?.id}
-          totalPrice={cartItems?.reduce((acc, item) => acc + item.total, 0)}
+          totalPrice={items?.reduce((acc, item) => acc + item.total, 0)}
           itemsIds={selectedItemsIds}
           setSelectedItemsIds={setSelectedItemsIds}
         />

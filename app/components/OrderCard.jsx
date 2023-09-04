@@ -11,7 +11,6 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
   else if(order.state === "Delivering") stateColor = "text-blue-500";
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
-  console.log("order", order);
   return (
     <div className="border border-gray-300 fontColor rounded-lg relative shadow-md w-64 m-4">
       <div className="h-32 overflow-hidden">

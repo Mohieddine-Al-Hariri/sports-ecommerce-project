@@ -9,26 +9,30 @@ export async function POST(req) {
     },
   });
   try {
-    const { cartId, itemsIds } = body;
-    const updatedCartId = await client.request(
+    const { cartId, items } = body;
+    const updatedCart = await client.request(
       `
         mutation updateCart(
-          $itemsIds: [OrderItemWhereUniqueInput!]!,
+          $items: OrderItemUpdateManyInlineInput,
           $cartId: ID!
         ) 
         {
-          updateCart(data: {orderItems: {disconnect: $itemsIds}}, where: {id: $cartId}){
+          updateCart(data: {orderItems: $items}, where: {id: $cartId}){
             id
+            orderItems {
+              id
+            }
           }
         }
       `,
-      { itemsIds: itemsIds.map((id) => ({ id })), cartId }
+      { items: {create: items}, cartId }
     );
-    return new Response(JSON.stringify(cartId));
+    return new Response(JSON.stringify(updatedCart));
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { "Content-Type": "application/json" },
       status: 500,
     });
   }
+
 }

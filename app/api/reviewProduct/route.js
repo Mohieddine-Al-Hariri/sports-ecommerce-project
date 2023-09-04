@@ -26,7 +26,6 @@ export async function POST(req) {
       `,
       { userId, productId, headline, rating, content }
     );
-    console.log("reviewProduct: \n", reviewProduct);
     return new Response(JSON.stringify(reviewProduct)); // Should return the id
   } catch (error) {
     console.error("Error in POST:", error);

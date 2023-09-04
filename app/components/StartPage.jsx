@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react"
 import SearchBar from "./SearchBar";
 import { useIsVisible } from "./UseVisible";
-import { getProducts } from "@/lib";
+import { addManyItemsToCart, getProducts, publishCart, publishItemAddedToCart, publishManyItemsAddedToCart } from "@/lib";
 import { useRouter } from 'next/navigation';
 import { ProductCard } from ".";
 
@@ -22,7 +22,26 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
 
   const router = useRouter();
 
-  const generalAlt = "Gear Up - Sports";
+  // const generalAlt = "Gear Up - Sports";
+
+  const addItemsToCart = async (localCart) => { 
+  //Add items to cart in DB from localStorage since user logged in
+    const cartId = user.cartId;
+    const items = localCart.map((item) => ({
+      quantity: item.quantity,
+      total: item.total,
+      variant: item.variant,
+      product: {
+        connect: {
+          id: item.product.id
+        }
+      }
+    }));
+    const res = await addManyItemsToCart({cartId, items});
+    await publishCart(cartId);
+    await publishManyItemsAddedToCart(res.updateCart.orderItems);
+    localStorage.removeItem("cart");
+  }
 
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
@@ -33,6 +52,10 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
     else {
       document.body.classList.remove('dark');
       setIsDarkMode(false);
+    }
+    const localCart = JSON.parse(localStorage.getItem("cart"));
+    if(user && localCart){
+      addItemsToCart(localCart);
     }
   }, []);
 

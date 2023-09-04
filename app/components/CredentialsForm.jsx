@@ -13,7 +13,7 @@ import "react-phone-input-2/lib/style.css";
 import { CgSpinner } from "react-icons/cg";
 
 
-const CredentialsForm = () => {
+const CredentialsForm = ({ isModal }) => {
 	const [error, setError] = useState(null);
 	// const [countryCode, setCountryCode] = useState("");
 	const [dateState, setDateState] = useState('');
@@ -100,7 +100,7 @@ const CredentialsForm = () => {
     });
   }
 	return (
-		<div className="bg-white shadow-lg rounded-lg p-8 py-0 max-sm:p-4 mb-8 ">
+		<div className={`${isModal ? "bg-transparent": "bg-white"} shadow-lg rounded-lg p-8 py-0 max-sm:p-4 mb-8 `}>
       <h1 className="text-3xl text-center text-black  mb-2 max-sm:mt-4">{isLogIn ? "Log In" : "Sign Up"}</h1>
 			<Toaster toastOptions={{ duration: 4000 }} />
       <div id="recaptcha-container"></div>

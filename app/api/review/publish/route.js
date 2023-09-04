@@ -19,7 +19,6 @@ export async function POST(req) {
       `,
       { reviewId }
     );
-    console.log("publishedReview: \n", publishedReview);
     return new Response(JSON.stringify(publishedReview)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);

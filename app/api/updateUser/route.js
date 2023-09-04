@@ -56,7 +56,6 @@ export async function POST(req) {
         birthDate
       }
     );
-    console.log("updatedUser: ", updatedUser);
     return new Response(JSON.stringify(updatedUser));
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {

@@ -57,7 +57,6 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
   }
   const decreaseQuantity = (e, index) => {
     e.preventDefault();
-    console.log("selectedPills[index].quantity", selectedPills[index].quantity);
     if(!selectedPills[index].quantity || selectedPills[index].quantity === 0 ) return
     // else if(selectedPills[index].quantity === 1){
     //   setSelectedPills(prev => prev.map((pill, i) => {
@@ -304,7 +303,6 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
   const router = useRouter();
 
   const [selectedPills, setSelectedPills] = useState([]); //Variants State
-  console.log(selectedPills)
 
   const handleImageUpload = (event) => {
     const newImages = Array.from(event.target.files);
