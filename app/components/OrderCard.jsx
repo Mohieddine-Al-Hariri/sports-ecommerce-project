@@ -11,12 +11,27 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
   else if(order.state === "Delivering") stateColor = "text-blue-500";
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
+  const item = order.orderItems[0];
+  console.log(order)
+  let source = null;
+  if(item?.collection) {
+    if(item.collection.imageUrl) source = item.collection.imageUrl;
+    else source = item.collection.products;
+  }else if(item?.product.imageUrls) source = item.product.imageUrls[0].url;
+
   return (
-    <div className="border border-gray-300 fontColor rounded-lg relative shadow-md w-64 m-4">
+    <div className="border border-gray-300 fontColor rounded-lg relative shadow-md w-64 m-4 ">
       <div className="h-32 overflow-hidden">
         <Link href={`/orderDetails/${order.id}`}>
-          {order?.orderItems[0]?.product ? 
-            <Image height={100} width={100} src={order.orderItems[0].product.imageUrls[0].url} alt={order.orderItems[0].product.name} className="w-full h-full object-cover" />
+          {source ? //TODO: Finish adding collection, here and in api call
+            Array.isArray(source) ?
+              <div className="aspect-square w-full h-full overflow-hidden flex -space-x-2">
+                <Image src={source[0].imageUrls[0].url} width={100} height={100} alt={source[0].name}/>
+                <Image src={source[1].imageUrls[0].url} width={100} height={100} alt={source[1].name}/>
+                <Image src={source[2].imageUrls[0].url} width={100} height={100} alt={source[2].name}/>
+              </div>
+            :
+              <Image height={100} width={100} src={source} alt={item.product?.name || item.collection.products[0].name} className="w-full h-full object-cover" />
           :
           <div className="w-full h-full bg-black rounded-md"></div>
           }

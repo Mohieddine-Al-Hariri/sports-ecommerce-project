@@ -3,12 +3,75 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ReactStars from 'react-rating-star-with-type';
 
-const ProductCard = ({ id, name, excerpt, imageUrl, reviews }) => {
+// export const SVGComponent = (props) => (
+//   <svg
+//     width="100px"
+//     height="100px"
+//     viewBox="0 11.25 76.5 76.5"
+//     xmlns="http://www.w3.org/2000/svg"
+//     {...props}
+//   >
+//     <path
+//       fill="#C0392B"
+//       d="M72.763 87.75v-7.463l3.737 -3.737v7.463L72.763 87.75zM0 14.988 3.737 11.25h7.463l-3.737 3.737H0z"
+//     />
+//     <path
+//       fill="#E74C3C"
+//       d="M3.737 11.25h28.925L76.5 55.1v28.925L3.737 11.25z"
+//     />
+    
+//     <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="18"  >Sale!</text>
+//   </svg>
+// );
+export const SVGComponent = (props) => (
+  <svg
+    width="100px"
+    height="100px"
+    viewBox="0 11.25 76.5 76.5"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      fill="#C0392B"
+      d="M72.763 87.75v-7.463l3.737 -3.737v7.463L72.763 87.75zM0 14.988 3.737 11.25h7.463l-3.737 3.737H0z"
+    />
+    <path
+      fill="#E74C3C"
+      d="M3.737 11.25h28.925L76.5 55.1v28.925L3.737 11.25z"
+    />
+    <text
+      x="50%"
+      y="50%"
+      dominantBaseline="middle"
+      textAnchor="middle"
+      fill="white"
+      fontSize="18"
+      transform="rotate(45)"
+      dy="-2.3em"
+      dx="1.2em"
+    >
+      Sale!
+    </text>
+  </svg>
+);
+
+const ProductCard = ({ id, name, excerpt, isCollection, imageUrl, imageUrls, reviews }) => {
   const rates = reviews?.map(review => review.rating)
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return (
-    <Link href={`/itemsDetails/${id}`} className="relative shadow-lg overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-      <Image width={100} height={100} className="h-full w-full object-cover" alt={name} src={imageUrl}/>
+    <Link href={isCollection ? `/collectionDetails/${id}` :`/itemsDetails/${id}`} className="relative hover:scale-[1.1] duration-200 shadow-lg overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+      {isCollection &&
+        <SVGComponent className="absolute -top-2 -right-2 z-10" />
+      }
+      {imageUrl ? 
+        <Image width={100} height={100} className="h-full w-full object-cover" alt={name} src={imageUrl}/>
+        :
+        <div className='w-full h-full flex flex-wrap'> 
+          {imageUrls?.map((image) => (
+            <Image width={100} height={100} className={`${isCollection ? "w-1/3 grow" : "w-full object-cover h-full"}  `} alt={name} src={image.url}/>
+          ))}
+        </div>
+      }
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50"></div>
       <div className='absolute bottom-0 left-0 px-4 py-2 '>
         <h1 className="text-white ">{name.length > 17 ? name.slice(0, 15) + '...' : name}</h1>

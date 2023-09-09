@@ -11,7 +11,7 @@ const OrderDetails = ({order, user}) => {
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
   else if(order.state === "Delivering") stateColor = "text-blue-500";
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
-
+  console.log(order)
   return (
     <div className="flex flex-col items-center justify-start gap-10 p-4 pt-8 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-full justify-between flex items-center">

@@ -1,5 +1,5 @@
 "use client";
-import { addItemToCart, publishCart, publishItemAddedToCart } from "@/lib";
+import { addItemToCart, publishCart, publishItemAddedToCart, publishManyVariants } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -77,7 +77,7 @@ export function ReviewCard({ review }) {
   );
 }
 
-const ItemsDetailsPage = ({ product, user }) => {
+const ItemsDetailsPage = ({ product, user }) => {console.log(product)
   const [chosenProductVariantName, setChosenProductVariantName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [quantityLimit, setQuantityLimit] = useState(null);
@@ -102,13 +102,14 @@ const ItemsDetailsPage = ({ product, user }) => {
   const showMoreLessLabel = showFullDescription ? "Show Less" : "Show More";
   function checkOutOfStock() {
     let outOfStock = true;
-
-    for (const variant of product.productVariants) {
-      if (variant.quantity > 0) {
-        outOfStock = false;
-        break;
+    if (product.productVariants.length > 0){
+      for (const variant of product.productVariants) {
+        if (variant.quantity > 0) {
+          outOfStock = false;
+          break;
+        }
       }
-    }
+    } else outOfStock = false;
     if (product.state !== "Available") outOfStock = true;
     return outOfStock;
   }
@@ -207,7 +208,7 @@ const ItemsDetailsPage = ({ product, user }) => {
         id,
         quantity,
         total: totalPrice,
-        variant: chosenProductVariant,
+        chosenProductsVariants: [chosenProductVariant],
         product: {
           imageUrls: [{url: product.imageUrls[0].url}],
           name: product.name,
@@ -235,12 +236,14 @@ const ItemsDetailsPage = ({ product, user }) => {
       quantity,
       totalPrice,
       cartId,
-      chosenProductVariant,
+      chosenProductsVariants: [chosenProductVariant],
     });
-    await publishCart(cartId); //Needs publish after being updated
-    await publishItemAddedToCart(
+    const publishCartPromise = publishCart(cartId); //Needs publish after being updated
+    const publishItemPromise = publishItemAddedToCart(
       isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id
     );
+    const publishVariantsPromise = publishManyVariants(isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id);
+    await Promise.all([publishCartPromise, publishItemPromise, publishVariantsPromise])
     setIsAdding(false);
     setIsAddedToCart(true);
     setIsItemAddedToCart(true);
@@ -321,7 +324,7 @@ const ItemsDetailsPage = ({ product, user }) => {
                 </div>
               </div>
               <div>
-                {product.productVariants.length && (
+                {product.productVariants.length > 0 && (
                   <div className="left-[31px] top-[88px] text-sm font-bold leading-tight mb-2">
                     Variants
                   </div>

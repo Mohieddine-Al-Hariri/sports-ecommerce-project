@@ -1,9 +1,95 @@
 "use client";
 
-import { deleteCategory, publishCategory, updateCategory } from "@/lib";
+import { deleteCategory, publishCategory, publishCollection, updateCategory } from "@/lib";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateCategoryForm from "./CreateCategoryForm";
+
+export const CollectionStateMenu = ({ collectionState, setCollectionState, collectionId, isOpen, setIsOpen }) => {
+  const router = useRouter()
+  const states = ["Available", "Out_of_Stock", "Removed"];
+  // Ref for the card menu container
+  const cardMenuRef = useRef(null);
+
+  // Handle click outside the card menu
+  const handleClickOutside = (event) => {
+    if (cardMenuRef.current && !cardMenuRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  // Add click event listener when the component mounts
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, []);
+
+  const changeCollectionState = async (state) => {
+    const updatedProduct = await updateCollectionState({collectionId, state});
+    await publishCollection(collectionId);
+    //publishOrderItems && publishTheUser??
+    setCollectionState(updatedProduct.updateProduct.state);
+    router.refresh();
+  }
+
+
+
+  return (
+    <div 
+      ref={cardMenuRef}
+      className="absolute w-48 h-10 bg-white fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
+    >
+      <div>
+        <div className='w-full flex justify-end'>
+          <button
+            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#2482c8] rounded-full focus:outline-none"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <svg 
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            // fill={!isDarkMode ? '#030303' : '#fff'}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="absolute right-0 w-48 fontColor bg-white rounded-md shadow-lg z-10">
+          <ul>
+            {states.map((state) =>{
+              let bg = "bg-white";
+              let disable = false;
+              let txtClr = "fontColor";
+              if(state === collectionState){
+                bg = "bg-[#2482c8]";
+                disable = true;
+                txtClr = "text-white"
+              }
+              return(
+                <button key={state} disabled={disable} onClick={() => {changeCollectionState(state); setIsOpen(false)}}  className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}>
+                  {state}
+                  {/* {svg} */}
+                </button>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
+    
+    </div>
+  );
+  
+}
 
 const CategoryCard = ({ category }) => {
   const [show, setShow] = useState(category.show);
@@ -37,7 +123,8 @@ const CategoryCard = ({ category }) => {
     router.refresh();
   }
 
-
+  //TODO: Add the ability to connect and disconnect product, maybe: when admin presses on edit category, image of product appears under it, with add/remove(like select in cart), when added goes above line and vice versa 
+  //TODO: Add Collections Page
   return (
     <div className={`border-2 ${show ? "borderColor fontColor" : "border-gray-500 fontColorGray"} rounded-lg p-2 flex justify-between`}>
       <div >
@@ -152,7 +239,7 @@ const CategoryCard = ({ category }) => {
             </svg>
           </button>
         :
-          <button onClick={cancelUpdateCategory}>
+          <button className="flex justify-center items-center gap-1" onClick={cancelUpdateCategory}>
             <svg
               fill="currentColor"
               width="30px"

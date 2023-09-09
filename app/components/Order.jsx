@@ -26,14 +26,25 @@ const Order = ({ order }) => {
     await publishOrder(order.id);
     router.refresh();
   }
-
+  const item = order.orderItems[0];
   return (
     <div className="flex flex-col fontColor gap-2 p-2 border-2 borderColor border-solid rounded-lg">
       <div className="flex gap-2 justify-between items-center">
-        <Image src={order.orderItems[0].product.imageUrls[0].url} width={30} height={30} className="" alt={order.orderItems[0].product.name}/>
+        {item.collection ?
+          item.collection.imageUrl ?
+            <Image className="rounded-md" src={item.collection.imageUrl} width={30} height={30} alt={item.collection.products[0].name}/>
+          :
+            <div className="rounded-lg aspect-square w-[60px] h-[60px] overflow-hidden flex -space-x-2">
+              <Image src={item.collection.products[0].imageUrls[0].url} width={30} height={30} alt={item.collection.products[0].name}/>
+              <Image src={item.collection.products[1].imageUrls[0].url} width={30} height={30} alt={item.collection.products[1].name}/>
+              <Image src={item.collection.products[2].imageUrls[0].url} width={30} height={30} alt={item.collection.products[2].name}/>
+            </div>
+        :
+          <Image className="rounded-md" src={item.product.imageUrls[0].url} width={30} height={30} alt={item.product.name}/>
+        }
         {/* <Image src={order.orderItems[0].product.imageUrl} /> */}
         <h1 className={`${stateColor} font-bold`}>{order.state}</h1>
-        <h1>{order.total}</h1>
+        <h1>${order.total}</h1>
         <div className="flex ">
           {order.state !== "Recieved" && order.state !== "Delivering" &&
             <button disabled={cancelling} onClick={cancelOrder} className="hover:border-black border-2 border-white rounded-md px-2 ">

@@ -175,7 +175,17 @@ body.dark{
   white-space: nowrap;
   z-index: 1;
 }
-
+.bgColorTransition {
+  animation: colorChange 1.5s infinite alternate; /* You can adjust the duration and animation type as needed */
+}
+@keyframes colorChange {
+  0% {
+    background-color: var(--bgColorGray);
+  }
+  100% {
+    background-color: whitesmoke;
+  }
+}
 /* Project Form */
 .form {
   @apply flex-col w-full lg:pt-24 pt-12 gap-10 text-lg max-w-5xl mx-auto;

@@ -385,7 +385,7 @@ const ProfilePage = ({ user, orders }) => {
           <li className="fontColorGray">BirthDate: {birthDate}</li>
         </ul>
       </div>
-      <div className="w-full h-full border-solid border-t-2 border-[#8f8f8f] fontColor p-1 overflow-y-scroll ">
+      <div className="w-full h-full border-solid border-t-2 space-y-1 border-[#8f8f8f] fontColor p-1 overflow-y-scroll ">
         <h1 className="p-2 text-xl font-semibold ">
           Orders <u> {orders.length}</u>
         </h1>

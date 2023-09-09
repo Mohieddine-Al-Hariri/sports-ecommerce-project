@@ -139,8 +139,8 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
       }
       <div className="flex space-x-4 mb-2 ">
         <div
-          className={`cursor-pointer p-2 border rounded ${
-            showSizeInput ? "border-blue-500" : "border-gray-300"
+          className={`cursor-pointer p-2 border rounded hover:text-white hover:bg-[#4bc0d9] ${
+            showSizeInput ? "border-[#4bc0d9]" : "border-gray-300"
           }`}
           onClick={() => {
             setShowSizeInput(!showSizeInput);
@@ -150,8 +150,8 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
           Size
         </div>
         <div
-          className={`cursor-pointer p-2 border rounded ${
-            showColorInput ? "border-blue-500" : "border-gray-300"
+          className={`cursor-pointer p-2 border rounded hover:text-white hover:bg-[#4bc0d9] ${
+            showColorInput ? "border-[#4bc0d9]" : "border-gray-300"
           }`}
           onClick={() => {
             setShowColorInput(!showColorInput);
@@ -161,9 +161,9 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
           Color
         </div>
         <div
-          className={`cursor-pointer p-2 border rounded ${
+          className={`cursor-pointer p-2 border rounded hover:text-white hover:bg-[#4bc0d9] ${
             showSizeInput && showColorInput
-              ? "border-blue-500"
+              ? "border-[#4bc0d9]"
               : "border-gray-300"
           }`}
           onClick={() => {
@@ -254,7 +254,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
       )}
       {showSizeInput || showColorInput ? (
         <button
-          className="bg-blue-500 text-white py-2 px-4 rounded cursor-pointer"
+          className="hover:bg-[#4aa9bf] bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
           onClick={(e) => handleSubmitVariants(e)}
         >
           Check
@@ -288,13 +288,13 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
   );
 };
 
-const CreateProductForm = ({ categoriesData, isDarkMode }) => {
+const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
   const [images, setImages] = useState([]);
   const [form, setForm] = useState({
     name: "",
     excerpt: "",
     description: "",
-    collection: "",
+    collections: [],
     state: "Available",
     categories: [],
   });
@@ -333,10 +333,17 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
   const categoryOptions = categoriesData.map((category) => {
     return { value: category.id, label: category.name, className: "fontColor bgColor" };
   });
+  const collectionOptions = collectionsData.map((collection) => {
+    return { value: collection.id, label: collection.name, className: "fontColor bgColor" };
+  });
 
   const handleCategoryChange = (selectedOptions) => {
     const selectedCategories = selectedOptions.map((option) => option.value);
     setForm((prevForm) => ({ ...prevForm, categories: selectedCategories }));
+  };
+  const handleCollectionChange = (selectedOptions) => {
+    const selectedCollection = selectedOptions.map((option) => option.value);
+    setForm((prevForm) => ({ ...prevForm, collections: selectedCollection }));
   };
 
   async function uploadImage(image) {
@@ -372,34 +379,55 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
     router.push(`/itemsDetails/${createdProduct.createProduct.id}`);
   };
 
+  // const reactSelectStyles = {
+  //   control: (provided, state) => ({
+  //     ...provided,
+  //     backgroundColor: "bgColor", // Adjust the background color
+  //     borderColor: "borderColor", // Adjust the border color
+  //     color: "fontColor", // Adjust the text color
+  //     // '&:hover': {
+  //     //   borderColor: theme.colors.blue[500],    // Adjust the hover border color
+  //     // },
+  //   }),
+  //   option: (provided, ishoverd) => ({
+  //     ...provided,
+  //     backgroundColor: isDarkMode ? "black" : "white", // Adjust the background color for selected options
+  //     color: isDarkMode ? "white" : "black", // Adjust the text color
+  //   }),
+  //   '&:hover': {
+  //     backgroundColor: "blue",
+  //   },
+  //   // option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+  //   //   return {
+  //   //     ...styles,
+  //   //     backgroundColor: "bgColor",
+  //   //     color: 'fontColor',
+  //   //     cursor: isDisabled ? 'not-allowed' : 'default',
+  //   //   };
+  //   // },
+  //   // Other style overrides as needed...
+  // };
   const reactSelectStyles = {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: "bgColor", // Adjust the background color
       borderColor: "borderColor", // Adjust the border color
       color: "fontColor", // Adjust the text color
-      // '&:hover': {
-      //   borderColor: theme.colors.blue[500],    // Adjust the hover border color
-      // },
+      '&:hover': {
+        borderColor: "#00FFFF", // Adjust the hover border color
+      },
     }),
-    option: (provided, ishoverd) => ({
+    option: (provided, { isFocused, isSelected }) => ({
       ...provided,
-      backgroundColor: isDarkMode ? "black" : "white", // Adjust the background color for selected options
-      color: isDarkMode ? "white" : "black", // Adjust the text color
+      backgroundColor: isFocused || isSelected ? "#4bc0d9" : "white", // Adjust the background color for selected options
+      color: isFocused || isSelected ? "white" : "black", // Adjust the text color
+      '&:hover': {
+        backgroundColor: "#4bc0d9", // Adjust the hover background color
+      },
     }),
-    '&:hover': {
-      backgroundColor: "blue",
-    },
-    // option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    //   return {
-    //     ...styles,
-    //     backgroundColor: "bgColor",
-    //     color: 'fontColor',
-    //     cursor: isDisabled ? 'not-allowed' : 'default',
-    //   };
-    // },
     // Other style overrides as needed...
   };
+  
   
   return (
     <div className="max-w-2xl mx-auto p-6 bgColor colorScheme fontColor shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
@@ -517,7 +545,8 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
             value={categoryOptions.filter((option) =>
               form.categories.includes(option.value)
             )}
-            styles={isDarkMode ? reactSelectStyles : null}
+            styles={reactSelectStyles}
+            // styles={isDarkMode ? reactSelectStyles : null}
             onChange={handleCategoryChange}
             className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 "
           />
@@ -525,7 +554,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
         <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} />
 
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label
             htmlFor="collection"
             className="block text-lg font-semibold mb-2"
@@ -540,8 +569,31 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
             className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
           >
             <option value="">Select a Collection</option>
-            {/* Add collection options here */}
+            {collectionsData.map((collection, index) => (
+              <option key={index} value={collection.id}>{collection.name}</option>
+            ))}
           </select>
+        </div> */}
+        <div className="mb-4">
+          <label
+            htmlFor="collections"
+            className="block text-lg font-semibold mb-2"
+          >
+            Collection
+          </label>
+          <Select
+            id="collections"
+            name="collections"
+            isMulti
+            options={collectionOptions}
+            value={collectionOptions.filter((option) =>
+              form.collections.includes(option.value)
+            )}
+            styles={reactSelectStyles}
+            // styles={isDarkMode ? reactSelectStyles : null}
+            onChange={handleCollectionChange}
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 "
+          />
         </div>
         <div className="mb-4">
           <label htmlFor="state" className="block text-lg font-semibold mb-2">
@@ -561,7 +613,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode }) => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white py-3 px-6 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500"
+          className="hover:bg-[#4aa9bf] bg-[#4bc0d9] text-white py-3 px-6 rounded  focus:outline-none focus:ring focus:border-blue-500"
         >
           Create Product
         </button>

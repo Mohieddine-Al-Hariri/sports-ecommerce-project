@@ -7,12 +7,21 @@ import { addManyItemsToCart, getProducts, publishCart, publishItemAddedToCart, p
 import { useRouter } from 'next/navigation';
 import { ProductCard } from ".";
 
-
-const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, searchedCategory }) => {
+export const LoadingCard = () => {
+  return (
+    <div className={`relative hover:scale-[1.1] duration-200 shadow-lg overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bgColorTransition transition-all`}>
+      <div className='absolute bottom-0 left-0 px-4 py-2 w-full'>
+        <h1 className=" bg-white rounded-full w-1/2 h-4 mb-2"></h1>
+        <h1 className=" bg-white rounded-full w-3/4 h-4"></h1>
+      </div>
+    </div>
+  )
+}
+const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, searchedCategory, collectionsData }) => {
   const [productsState, setProductsState] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   //Pagination
-  const [lastProductCursor, setLastProductCursor] = useState(products[products.length - 1]?.cursor);
+  const [lastProductCursor, setLastProductCursor] = useState(products ? products[products?.length - 1]?.cursor : "");
   const [doesHaveNextPage, setDoesHaveNextPage] = useState(hasNextPage);
   const lastProductCardRef = useRef();
   const isLastProductCardVisible = useIsVisible(lastProductCardRef);
@@ -21,8 +30,6 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
 
   const router = useRouter();
-
-  // const generalAlt = "Gear Up - Sports";
 
   const addItemsToCart = async (localCart) => { 
   //Add items to cart in DB from localStorage since user logged in
@@ -65,13 +72,12 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   },[products, hasNextPage])
 
   const getMoreProducts = async () => {
-    const searchedCategory = undefined; //Make it related to collections later...
+    const searchedCategory = undefined;
     //TODO: create an env var specific for this pagination...
     const paginatedProducts = await getProducts(lastProductCursor, searchText, searchedCategory);
     return paginatedProducts;
   }
   useEffect(() => {
-    //TODO: Create a env var specific for this pagination, make the key limited to reading products only
     if(isFirstRedner){
       setIsFirstRender(false);
     }
@@ -96,27 +102,13 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
 
     const newSearchParams = currentParams.toString();
     const newPathname = `${window.location.pathname}?${newSearchParams}`;
-    // TODO: Change states in parent component to the new category and pageInfo ...
     router.push(newPathname);
   };
   useEffect(() => {
     handleNavigation(selectedCategory);
-
   },[selectedCategory])
 
-  // if(isLoading)
-  //   return (
-  //     <div className="w-full h-full px-[63px] pt-[426px] pb-[95.82px] bg-white flex-col justify-end items-center gap-[291px] inline-flex">
-  //     <div className="text-black text-[64px] font-bold">Gear Up</div>
-  //     <div className="flex justify-between w-full ">
-  //       <Image width={60} height={60} className="w-[58px] h-[29.59px] " alt={generalAlt} src="/image 3.png" />
-  //       <Image width={60} height={60} className="w-[58px] h-[39.18px] " alt={generalAlt} src="/Logo.svg" />
-  //       <Image width={60} height={60} className="w-[58px] h-[29.59px] " alt={generalAlt} src="/image 9.png" />
-  //     </div>
-  //   </div>
-  //   );
   return (
-    
       <div>
         <div className="w-full flex justify-center max-sm:items-center items-end  max-sm:gap-2 gap-4 mb-4 max-sm:flex-col fontColor">
           <div className="max-sm:mb-4">
@@ -134,22 +126,43 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
               {categoriesData.map((category) => (
                 <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
               ))}
+                <option className="fontColor" >Collections & Sales</option>
             </select>
           </div>
 
           <SearchBar/>
         </div>
         <div className=" text-neutral-700 fontColorGray text-xl font-bold leading-normal ml-5">Items</div>
-        {/* <div className="w-full h-full flex items-start justify-between flex-wrap gap-4 p-4 relative "> */}
-        <div className="w-full h-full flex items-start justify-between flex-wrap gap-1 p-4 relative ">
-          {productsState.map(item => (
+        <div className="w-full h-full flex items-start justify-around lg:justify-between flex-wrap gap-1 p-4 relative ">
+          {selectedCategory === 'Collections & Sales' ?
+            collectionsData?.collections.map(collection => {
+              const images = collection.node.products?.map(product => product.imageUrls[0]);
+              return(
+                <ProductCard key={collection.node.id} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
+              )
+            })
+          :
+            collectionsData?.collections.slice(0, 4).map(collection => {
+              const images = collection.node.products?.map(product => product.imageUrls[0]);
+              return(
+                <ProductCard key={collection.node.id} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
+              )
+            })
+          }
+          {productsState?.map(item => (
             <ProductCard key={item.node.id} id={item.node.id} name={item.node.name} excerpt={item.node.excerpt} imageUrl={item.node.imageUrls[0].url} reviews={item.node.reviews} />
           ))}
           {/* Pagination controls */}
-          {isLoading && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">Loading...</div> }
+          {isLoading && 
+            <>
+              <LoadingCard/>
+              <LoadingCard/>
+              <LoadingCard/>
+            </>
+          }
           {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }
           {/* Add an invisible element to act as the previousProductCardRef */}
-          <div ref={lastProductCardRef} style={{ visibility: "hidden" }} />
+          <div className="w-full h-[60px]" ref={lastProductCardRef} style={{ visibility: "hidden" }} />
         </div>
       </div>
       

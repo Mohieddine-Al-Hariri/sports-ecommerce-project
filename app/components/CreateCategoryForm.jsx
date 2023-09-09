@@ -77,7 +77,7 @@ const CreateCategoryForm = () => {
             <span className="text-sm font-medium fontColorGray">Show</span>
           </label>
         </div>
-        <button disabled={creatingCategory} type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+        <button disabled={creatingCategory} type="submit" className="bg-[#4bc0d9] hover:bg-[#4aa9bf] text-white px-4 py-2 rounded">
           {creatingCategory ? 
             <div className='flex gap-4 '>
               <div role="status">

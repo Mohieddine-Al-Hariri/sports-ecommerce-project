@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
-  const orderItemId = await req.json();
+  const collectionId = await req.json();
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
@@ -9,17 +9,18 @@ export async function POST(req) {
   });
 
   try {
-    const publishedItems = await client.request(
+    const deletedCollection = await client.request(
       `
-        mutation PublishManyOrderItems($orderItemId: [ID]) {
-          publishManyOrderItems(where: {orderItem: {id: ""}}) {
-            count
+        mutation DeleteCollection($collectionId: ID!) {
+          deleteCollection(where: {id: $collectionId}) {
+            id
           }
         }
       `,
-      { orderItemId }
+      { collectionId }
     );
-    return new Response(JSON.stringify(publishedItems));
+    
+    return new Response(JSON.stringify(deletedCollection)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({status:500, body: error.message});

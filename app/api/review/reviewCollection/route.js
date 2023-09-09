@@ -7,13 +7,13 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-  const { userId, productId, headline, rating, content } = body;
+  const { userId, collectionId, headline, rating, content } = body;
   try {
-    const reviewProduct = await client.request(
+    const reviewCollection = await client.request(
       `
-        mutation ReviewProduct($productId: ID!, $userId: ID!, $headline: String!, $rating: Float!, $content: String!) {
-          updateProduct(
-            where: {id: $productId}
+        mutation ReviewCollection($collectionId: ID!, $userId: ID!, $headline: String!, $rating: Float!, $content: String!) {
+          updateCollection(
+            where: {id: $collectionId}
             data: {reviews: {create: {headline: $headline, content: $content, rating: $rating, theUser: {connect: {id: $userId}} }}}
           )
           {
@@ -24,9 +24,10 @@ export async function POST(req) {
           }
         }
       `,
-      { userId, productId, headline, rating, content }
+      { userId, collectionId, headline, rating, content }
     );
-    return new Response(JSON.stringify(reviewProduct)); // Should return the id
+    console.log("________reviewCollection : ________\n\n\n", reviewCollection);
+    return new Response(JSON.stringify(reviewCollection)); // Should return the id
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({ status: 500, body: error.message });

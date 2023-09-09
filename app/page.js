@@ -1,11 +1,16 @@
+
 import Image from 'next/image'
 import { StartPage } from "./components"
-import { getCategories, getProducts } from '@/lib'
+import { getCategories, getCollections, getProducts } from '@/lib'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
 export async function getProductsData(searchText, category) {
   const products = (await getProducts(undefined, searchText, category)) || [];
+  return products;
+}
+export async function getCollectionsData(searchText) {
+  const products = (await getCollections(undefined, searchText)) || [];
   return products;
 }
 export async function getCategoriesData() {
@@ -19,19 +24,20 @@ export const revalidate = 0;
 
 export default async function Home({ searchParams: { searchText, category } }) {
   const sessionData = await getServerSession(authOptions);
-  const productsData = await getProductsData(searchText, category);
+  const productsData = category !== "Collections & Sales" ? await getProductsData(searchText, category) : [];
+  const collectionsData = await getCollectionsData(searchText, category);
   const categoriesData = await getCategoriesData();
   //TODO: https://github.com/vercel/swr OR <Suspense fallback={...}/>
   if(!productsData) 
-  return (
-    <div className="w-full h-full px-[63px] pt-[426px] pb-[95.82px] bg-white flex-col justify-end items-center gap-[291px] inline-flex">
-    <div className="text-black text-[64px] font-bold">Electro M</div>
-    <div className="flex justify-between w-full ">
-      <Image width={60} height={60} className="w-[58px] h-[29.59px] " alt={generalAlt} src="/image 3.png" />
-      <Image width={60} height={60} className="w-[58px] h-[39.18px] " alt={generalAlt} src="/Logo.svg" />
-      <Image width={60} height={60} className="w-[58px] h-[29.59px] " alt={generalAlt} src="/image 9.png" />
+    return (
+      <div className="w-full h-full px-[63px] pt-[426px] pb-[95.82px] bg-white flex-col justify-end items-center gap-[291px] inline-flex">
+      <div className="text-black text-[64px] font-bold">Electro M</div>
+      <div className="flex justify-between w-full ">
+        <Image width={60} height={60} className="w-[58px] h-[29.59px] " alt={generalAlt} src="/image 3.png" />
+        <Image width={60} height={60} className="w-[58px] h-[39.18px] " alt={generalAlt} src="/Logo.svg" />
+        <Image width={60} height={60} className="w-[58px] h-[29.59px] " alt={generalAlt} src="/image 9.png" />
+      </div>
     </div>
-  </div>
   );
 
   return (
@@ -39,7 +45,7 @@ export default async function Home({ searchParams: { searchText, category } }) {
       <div className="w-full h-full gap-12 relative bgColor flex-col justify-start items-center py-10 inline-flex overflow-y-scroll">
         <div className="w-full flex flex-col justify-center items-center relative bgColorGray rounded-[20px] ">
           <Image width={300} height={334} className="w-[333px] h-[250px] rounded-[20px] object-cover " src="/ElecrtoMLogo.png" alt="gear up"/>
-          <div className=" text-neutral-700 fontColor text-xl font-bold m-2 mb-0 ">Specail for You.</div>
+          <div className=" text-neutral-700 fontColor text-xl font-bold m-2 mb-0 ">Special for You.</div>
           <div className=" text-neutral-700 fontColorGray text-sm font-thin m-2 mt-0 text-center ">"Empower Your Tech Life with Our Accessories Delight!"</div>
           <div className="w-full flex flex-col justify-center items-center fontColor pt-4 ">
             <div className="flex items-center ">
@@ -68,8 +74,9 @@ export default async function Home({ searchParams: { searchText, category } }) {
         <StartPage 
           categoriesData={categoriesData} 
           searchedCategory={category} 
-          products={productsData.products} 
-          hasNextPage={productsData.pageInfo.hasNextPage}
+          products={productsData.products}
+          collectionsData={collectionsData}
+          hasNextPage={productsData?.pageInfo?.hasNextPage || false}
           searchText={searchText} 
           user={sessionData?.user}
         />

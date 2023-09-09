@@ -7,7 +7,7 @@ import SearchBar from "./SearchBar";
 import { useRouter } from "next/navigation";
 import { getProducts } from "@/lib";
 
-const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, searchedCategory }) => {
+const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, searchedCategory, collectionsData, searchedCollection }) => {
 
   const [productsState, setProductsState] = useState([]);
   const [lastProductCursor, setLastProductCursor] = useState(products[products.length - 1]?.cursor);
@@ -19,6 +19,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   const isLastProductCardVisible = useIsVisible(lastProductCardRef);
   const [resetSearchText, setResetSearchText] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
+  const [selectedCollection, setSelectedCollection] = useState(searchedCollection || 'All');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
@@ -36,8 +37,9 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
 
 
   const getMoreProducts = async () => {
-    const searchedCategory = undefined; //Make it related to collections later...
-    const paginatedProducts = await getProducts(lastProductCursor, searchText, searchedCategory);
+    const isSearchedCategory = searchedCategory || undefined; 
+    const isSearchedCollection = searchedCollection || undefined; 
+    const paginatedProducts = await getProducts(lastProductCursor, searchText, isSearchedCategory, isSearchedCollection, true);
     return paginatedProducts;
   }
   useEffect(() => {
@@ -62,12 +64,15 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
     setDoesHaveNextPage(hasNextPage);
   },[products, hasNextPage])
 
-  const handleNavigation = (category) => {
+  const handleNavigation = (category, collection) => {
     const currentParams = new URLSearchParams(window.location.search);
     if(category === 'All') currentParams.delete("category");
     else currentParams.set("category", category);
+    if(collection === 'All') currentParams.delete("collection");
+    else currentParams.set("collection", collection);
     currentParams.delete("cursor");
     currentParams.delete("search");
+    // currentParams.delete("category");
 
     const newSearchParams = currentParams.toString();
     const newPathname = `${window.location.pathname}?${newSearchParams}`;
@@ -76,35 +81,56 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
     router.push(newPathname);
   };
   useEffect(() => {
-    handleNavigation(selectedCategory);
-  },[selectedCategory])
+    handleNavigation(selectedCategory, selectedCollection);
+  },[selectedCategory, selectedCollection])
 
   return (
     <div className="overflow-y-scroll bgColor fontColor ">
       <div className="p-2 ">
-        <button onClick={() => setIsCreating(!isCreating)} className="border-2 borderColor rounded-lg p-2 fontColor w-full ">{isCreating ? "Products" : "Create"}</button>
+        <button onClick={() => setIsCreating(!isCreating)} className="border-2 borderColor rounded-lg p-2 fontColor w-full hover:border-[#4bc0d9] hover:bg-[#4bc0d9] hover:text-white ">{isCreating ? "Products" : "Create"}</button>
       </div>
       {isCreating?
-        <CreateProductForm categoriesData={categoriesData} isDarkMode={isDarkMode} />
+        <CreateProductForm categoriesData={categoriesData} isDarkMode={isDarkMode} collectionsData={collectionsData} />
         :
         <div className="flex flex-col gap-2 p-1 bgColor ">
-          <SearchBar resetSearchText={resetSearchText} />
-          <div className="mb-4">
-            <label htmlFor="category" className="block text-lg font-semibold mb-2">
-              Filter by Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
-            >
-              <option value="All">All</option>
-              {categoriesData.map((category, index) => (
-                <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
-              ))}
-            </select>
+          <div className="lg:flex lg:justify-center lg:items-end lg:mb-4 gap-2">
+            <SearchBar resetSearchText={resetSearchText} />
+            <div className="flex gap-2 justify-center">
+              <div className="mb-4 lg:mb-0">
+                <label htmlFor="category" className="block text-lg font-semibold mb-2">
+                  Filter by Category
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 ${selectedCategory !== "All" && "border-red-500 "}`}
+                >
+                  <option value="All">All</option>
+                  {categoriesData.map((category, index) => (
+                    <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
+                  ))}
+                </select>
+              </div>
+                <div className="mb-4 lg:mb-0">
+                  <label htmlFor="category" className="block text-lg font-semibold mb-2">
+                    Filter by Collection
+                  </label>
+                  <select
+                    id="collection"
+                    name="collection"
+                    value={selectedCollection}
+                    onChange={(e) => setSelectedCollection(e.target.value)}
+                    className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 ${selectedCollection !== "All" && "border-red-500"}`}
+                  >
+                    <option value="All">All</option>
+                    {collectionsData.map((collection, index) => (
+                      <option className="fontColor" href={`/categories/${collection.slug}`} key={collection.name} >{collection.name}</option>
+                    ))}
+                  </select>
+                </div>
+            </div>
           </div>
           {productsState.map(({node}) => (
             <AdminProductCard

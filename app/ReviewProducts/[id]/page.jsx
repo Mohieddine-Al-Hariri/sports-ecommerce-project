@@ -36,6 +36,7 @@ const page = async ({ params: { id } }) => {
         <ItemCardReview
           key={item.id}
           product={item.product}
+          collection={item.collection}
           orderId={id}
           itemId={item.id}
           userId={session.user.id}

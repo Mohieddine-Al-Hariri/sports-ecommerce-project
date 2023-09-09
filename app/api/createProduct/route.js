@@ -11,7 +11,7 @@ export async function POST(req) {
   });
 
   const {
-    name, slug, description, price, state, imgUrls, excerpt, categories, variants,
+    name, slug, description, price, state, imgUrls, excerpt, categories, variants, collections
   } = body;
 
   let variantInput = {};
@@ -42,6 +42,7 @@ export async function POST(req) {
       $excerpt: String!
       $categories: [CategoryWhereUniqueInput!]
       $variants: ProductVariantCreateManyInlineInput
+      $collection: [CategoryWhereUniqueInput!]
     ) {
       createProduct(
         data: {
@@ -54,6 +55,7 @@ export async function POST(req) {
           productVariants: $variants
           excerpt: $excerpt
           categories: { connect: $categories }
+          collection: { connect: $collection }
         }
       ) {
         id
@@ -77,6 +79,7 @@ export async function POST(req) {
       state,
       excerpt,
       categories: categories.map((category) => ({ id: category })),
+      collection: collections.map((collection) => ({ id: collection })),
       variants: variantInput
     });
     return new Response(JSON.stringify(createdProduct));
