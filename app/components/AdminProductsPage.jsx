@@ -105,10 +105,10 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
                   name="category"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 ${selectedCategory !== "All" && "border-red-500 "}`}
+                  className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] ${selectedCategory !== "All" && "border-red-500 "}`}
                 >
                   <option value="All">All</option>
-                  {categoriesData.map((category, index) => (
+                  {categoriesData.map(category => (
                     <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
                   ))}
                 </select>
@@ -122,7 +122,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
                     name="collection"
                     value={selectedCollection}
                     onChange={(e) => setSelectedCollection(e.target.value)}
-                    className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 ${selectedCollection !== "All" && "border-red-500"}`}
+                    className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] ${selectedCollection !== "All" && "border-red-500"}`}
                   >
                     <option value="All">All</option>
                     {collectionsData.map((collection, index) => (

@@ -126,7 +126,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
       <div className="flex space-x-4 mb-2 ">
         <div
           className={`cursor-pointer p-2 border rounded ${
-            showSizeInput ? "border-blue-500" : "border-gray-300"
+            showSizeInput ? "border-[#4bc0d9]" : "border-gray-300"
           }`}
           onClick={() => {
             setShowSizeInput(!showSizeInput);
@@ -137,7 +137,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
         </div>
         <div
           className={`cursor-pointer p-2 border rounded ${
-            showColorInput ? "border-blue-500" : "border-gray-300"
+            showColorInput ? "border-[#4bc0d9]" : "border-gray-300"
           }`}
           onClick={() => {
             setShowColorInput(!showColorInput);
@@ -149,7 +149,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
         <div
           className={`cursor-pointer p-2 border rounded ${
             showSizeInput && showColorInput
-              ? "border-blue-500"
+              ? "border-[#4bc0d9]"
               : "border-gray-300"
           }`}
           onClick={() => {
@@ -166,7 +166,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
           <input
             type="text"
             placeholder="Size"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.target.value) {
                 e.preventDefault();
@@ -206,7 +206,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
           <input
             type="text"
             placeholder="Color"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.target.value) {
                 e.preventDefault();
@@ -240,7 +240,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
       )}
       {showSizeInput || showColorInput ? (
         <button
-          className="bg-blue-500 text-white py-2 px-4 rounded cursor-pointer"
+          className="bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
           onClick={(e) => handleSubmitVariants(e)}
         >
           Check
@@ -427,7 +427,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             required={images.length === 0 && prevImages.length === 0}
             multiple
             onChange={handleImageUpload}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
           {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
           <div className="flex space-x-4">
@@ -469,7 +469,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
                   className="w-32 h-32 object-cover rounded brightness-50"
                 />
                 <span
-                  className="absolute top-0 right-0 text-white bg-blue-500 rounded-full p-1 cursor-pointer"
+                  className="absolute top-0 right-0 text-white bg-[#4bc0d9] rounded-full p-1 cursor-pointer"
                   onClick={() => handleAddPrevImage(index)}
                 >
                   +
@@ -489,7 +489,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             name="name"
             value={form.name}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
         <div className="mb-4">
@@ -502,7 +502,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             name="excerpt"
             value={form.excerpt}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
         <div className="mb-4">
@@ -517,7 +517,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             name="description"
             value={form.description}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             rows="6"
           />
           <ReactMarkdown className="prose mt-2">
@@ -528,7 +528,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
           <label htmlFor="price" className="block text-lg font-semibold mb-2">
             Price
           </label>
-          <div className="flex items-center border rounded focus-within:border-blue-500">
+          <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
             <span className="text-gray-600 px-3">$</span>
             <input
               type="number"
@@ -537,7 +537,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
               name="price"
               value={price}
               onChange={(e) => setPrice(parseFloat(e.target.value))}
-              className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             />
           </div>
           {/* {isNaN(parseFloat(form.price)) && form.price.trim() !== '' && (
@@ -560,7 +560,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
               form.categories.includes(option.value)
             )}
             onChange={handleCategoryChange}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
         <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} productData={productData} />
@@ -577,7 +577,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             name="collection"
             value={form.collection}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           >
             <option value="">Select a Collection</option>
             {/* Add collection options here */}
@@ -592,7 +592,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             name="state"
             value={form.state}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           >
             <option value="Available">Available</option>
             <option value="Out Of Stock">Out Of Stock</option>
@@ -601,7 +601,7 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white py-3 px-6 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-500"
+          className="bg-[#4bc0d9] text-white py-3 px-6 rounded hover:bg-[#3ca8d0] focus:outline-none focus:ring focus:border-[#4bc0d9]"
         >
           {isSubmitting ? "Updating..." : "Update Product"}
         </button>

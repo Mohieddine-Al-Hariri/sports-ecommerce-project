@@ -72,12 +72,12 @@ const CreateCategoryForm = () => {
               id="show"
               checked={show}
               onChange={handleShowChange}
-              className="h-4 w-4 text-blue-500 colorScheme"
+              className="h-4 w-4 text-[#4bc0d9] colorScheme"
             />
             <span className="text-sm font-medium fontColorGray">Show</span>
           </label>
         </div>
-        <button disabled={creatingCategory} type="submit" className="bg-[#4bc0d9] hover:bg-[#4aa9bf] text-white px-4 py-2 rounded">
+        <button disabled={creatingCategory} type="submit" className="bg-[#4bc0d9] hover:bg-[#3ca8d0] text-white px-4 py-2 rounded">
           {creatingCategory ? 
             <div className='flex gap-4 '>
               <div role="status">

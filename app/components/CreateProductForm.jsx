@@ -180,7 +180,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
           <input
             type="text"
             placeholder="Size"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.target.value) {
                 e.preventDefault();
@@ -220,7 +220,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
           <input
             type="text"
             placeholder="Color"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.target.value) {
                 e.preventDefault();
@@ -254,7 +254,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
       )}
       {showSizeInput || showColorInput ? (
         <button
-          className="hover:bg-[#4aa9bf] bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
+          className="hover:bg-[#3ca8d0] bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
           onClick={(e) => handleSubmitVariants(e)}
         >
           Check
@@ -443,7 +443,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             required
             multiple
             onChange={handleImageUpload}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
           {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
           <div className="flex space-x-4">
@@ -475,7 +475,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             name="name"
             value={form.name}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
         <div className="mb-4">
@@ -488,7 +488,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             name="excerpt"
             value={form.excerpt}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
         <div className="mb-4">
@@ -503,7 +503,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             name="description"
             value={form.description}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             rows="6"
           />
           <ReactMarkdown className="prose mt-2 ">
@@ -514,7 +514,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
           <label htmlFor="price" className="block text-lg font-semibold mb-2">
             Price
           </label>
-          <div className="flex items-center border rounded focus-within:border-blue-500">
+          <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
             <span className="fontColorGray px-3">$</span>
             <input
               type="number"
@@ -523,7 +523,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
               name="price"
               value={price}
               onChange={(e) => setPrice(parseFloat(e.target.value))}
-              className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-blue-500"
+              className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
             />
           </div>
           {/* {isNaN(parseFloat(form.price)) && form.price.trim() !== '' && (
@@ -548,7 +548,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             styles={reactSelectStyles}
             // styles={isDarkMode ? reactSelectStyles : null}
             onChange={handleCategoryChange}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 "
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] "
           />
         </div>
         <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} />
@@ -566,7 +566,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             name="collection"
             value={form.collection}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           >
             <option value="">Select a Collection</option>
             {collectionsData.map((collection, index) => (
@@ -592,7 +592,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             styles={reactSelectStyles}
             // styles={isDarkMode ? reactSelectStyles : null}
             onChange={handleCollectionChange}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 "
+            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] "
           />
         </div>
         <div className="mb-4">
@@ -604,7 +604,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             name="state"
             value={form.state}
             onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           >
             <option value="Available">Available</option>
             <option value="Out Of Stock">Out Of Stock</option>
@@ -613,7 +613,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
         </div>
         <button
           type="submit"
-          className="hover:bg-[#4aa9bf] bg-[#4bc0d9] text-white py-3 px-6 rounded  focus:outline-none focus:ring focus:border-blue-500"
+          className="hover:bg-[#3ca8d0] bg-[#4bc0d9] text-white py-3 px-6 rounded  focus:outline-none focus:ring focus:border-[#4bc0d9]"
         >
           Create Product
         </button>

@@ -31,8 +31,8 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
         <label
           className={`relative cursor-pointer ${
             isSelected
-              ? 'border-blue-500'
-              : 'border-gray-300 hover:border-blue-500'
+              ? 'border-[#4bc0d9]'
+              : 'border-gray-300 hover:border-[#4bc0d9]'
           } border-2 rounded-[20px] transition duration-300`}
           htmlFor={`selectItem ${id}`}
         >
@@ -48,7 +48,7 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
             <Image
               width={86}
               height={108}
-              className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+              className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
               src={product.imageUrls[0].url}
               alt={product.name}
             /> :
@@ -56,7 +56,7 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
               <Image
                 width={86}
                 height={108}
-                className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+                className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
                 src={collection.imageUrl}
                 alt={product.name}
               />
@@ -66,7 +66,7 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
                   <Image
                     width={86}
                     height={108}
-                    className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+                    className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
                     src={product.imageUrls[0].url}
                     alt={product.name}
                   />
@@ -76,11 +76,11 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
           {/* <Image
             width={86}
             height={108}
-            className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+            className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
             src={product.imageUrls[0].url}
             alt={product.name}
           /> */}
-          <div className={`absolute top-0 left-0 ${isSelected ? "bg-blue-500 text-gray-100 " : "bg-white"} text-gray-600 p-1 rounded-full shadow`}>
+          <div className={`absolute top-0 left-0 ${isSelected ? "bg-[#4bc0d9] text-gray-100 " : "bg-white text-gray-600"} p-1 rounded-full shadow`}>
             {isSelected ? "Selected" : "Select"}
           </div>
         </label>

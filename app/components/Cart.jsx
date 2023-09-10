@@ -55,7 +55,7 @@ export const OrderButton = ({
         disabled={!itemsIds.length}
         onClick={orderItems}
         className={`w-[343px] h-[50px] px-4 py-2  ${
-          itemsIds.length  ? "opBgColor opTxtColor" : "bg-gray-300"
+          itemsIds.length  ? "bg-[#4bc0d9] text-white hover:bg-[#3ca8d0]" : "bg-gray-300"
         }  rounded-lg border-black justify-around items-center gap-[3px] flex`}
       >
         <div className=" text-center text-[23px] font-semibold flex items-center gap-4">
@@ -83,7 +83,7 @@ export const GoShopping = () => {
     <div className="pb-20">
       <Link
         href="/"
-        className="w-[343px] h-[50px] px-4 py-2 opTxtColor opBgColor rounded-lg border-black justify-around items-center gap-[3px] flex"
+        className="w-[343px] h-[50px] px-4 py-2 bg-[#4bc0d9] text-white hover:bg-[#3ca8d0] rounded-lg justify-around items-center gap-[3px] flex"
       >
         <div className=" text-center text-[23px] font-semibold flex items-center gap-4">
           <h2>Go Shopping</h2>
@@ -195,7 +195,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
                     name="selectAll"
                     onChange={selectAllItems}
                     checked={selectAll}
-                    className="text-blue-500 rounded"
+                    className="text-[#4bc0d9] rounded"
                   />
                   <span className="text-lg font-semibold">
                     {selectedItemsIds.length} Items Selected

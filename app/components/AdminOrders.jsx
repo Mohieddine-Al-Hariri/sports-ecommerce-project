@@ -103,7 +103,7 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
             name="state"
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
-            className="w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500"
+            className="w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           >
             {allState.map((state, index) => (
               <option className="fontColor" key={state} >{state}</option>

@@ -8,12 +8,12 @@ import { v4 } from "uuid";
 
 export const ProductCard = ({ product, included, include }) => {
   return (
-    <div className="flex flex-col items-center gap-2 w-[70px]">
+    <div className="flex flex-col items-center gap-2 w-[70px] group">
       <label
         className={`relative cursor-pointer ${
           included
-            ? "border-blue-500"
-            : "border-gray-300 hover:border-blue-500"
+            ? "border-[#4bc0d9]"
+            : "border-gray-300 group-hover:border-[#3ca8d0]"
         } border-2 rounded-[10px] transition duration-300`}
         htmlFor={`includeItem ${product.id}`}
       >
@@ -34,7 +34,7 @@ export const ProductCard = ({ product, included, include }) => {
         />
         <div
           className={`absolute -top-4 left-4 ${
-            included ? "bg-blue-500 text-gray-100 " : "bg-white text-gray-600"
+            included ? "bg-[#4bc0d9] group-hover:bg-[#3ca8d0] text-gray-100 " : "bg-white text-gray-600"
           }  p-1 rounded-full shadow text-sm`}
         >
           {included ? "Included" : "Include"}
@@ -225,7 +225,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
                   console.log(includedProducts)
                   return(
                     <ProductCard
-                      key={product.id}
+                      key={`create Collection Form (included): ${product.id}`}
                       product={product}
                       include={include}
                       included={true}
@@ -241,7 +241,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
               if(includedProducts.length === 0 || !isIncluded){
                 return(
                   <ProductCard
-                    key={`create Collection Form: ${product.node.id}`}
+                    key={`create Collection Form (not included): ${product.node.id}`}
                     product={product.node}
                     include={include}
                     included={false}
@@ -258,7 +258,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
                 className={`${
                   !hasPreviousPage
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : isFetching ? "bg-gray-300 text-gray-500 cursor-waiting" : "bg-blue-500 hover:bg-blue-700"
+                    : isFetching ? "bg-gray-300 text-gray-500 cursor-waiting" : "bg-[#4bc0d9] hover:bg-[#3ca8d0]"
                 } text-white font-bold py-2 px-4 rounded-full focus:outline-none`}
               >
                 &lt;
@@ -270,7 +270,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
                 className={`${
                   !hasNextPage
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : isFetching ? "bg-gray-300 text-gray-500 cursor-waiting" : "bg-blue-500 hover:bg-blue-700"
+                    : isFetching ? "bg-gray-300 text-gray-500 cursor-waiting" : "bg-[#4bc0d9] hover:bg-[#3ca8d0]"
                 } text-white font-bold py-2 px-4 rounded-full focus:outline-none`}
               >
                 &gt;
@@ -280,30 +280,30 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
 
           </div>
         </div>
-        <div className="flexCenter flex-col lg:min-h-[200px] min-h-[100px] relative w-full py-16">
+        <div className="flexCenter flex-col  lg:min-h-[200px] min-h-[100px] relative w-full py-16">
           {/* TODO: make input size only inside dashed border */}
           {!imageUpload && (
             <label htmlFor="poster" className="flexCenter z-10 text-center w-full h-[300px] p-20 dashedBorder rounded-lg aspect-square fontColor absolute">
-              Choose an Image <br /> (optional)
+              Choose an Image <br /> (Optional)
             </label>
           )}
           <div className="flexCenter bg-gray-500 rounded-lg aspect-square overflow-hidden w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-[200px] ">
             <input
-              id="image"
+              id="poster"
               type="file"
               accept="image/*"
-              className="form_image-input "
+              className="form_image-input lg:max-h-[300px] lg:mt-5 "
               onChange={(e) => handleChangeImage(e)}
             />
             {form.imageUrl && (
-                <Image
-                  src={form.imageUrl}
-                  className=" object-cover z-20 w-full h-full rounded-lg "
-                  alt="image"
-                  // fill
-                  width={100}
-                  height={100}
-                />
+              <Image
+                src={form.imageUrl}
+                className=" object-cover z-20 w-full h-full rounded-lg "
+                alt="image"
+                // fill
+                width={100}
+                height={100}
+              />
               
             )}
           </div>
@@ -313,7 +313,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
         <button
           disabled={isSaving}
           onClick={handleSubmit}
-          className="bg-[#4bc0d9] hover:bg-[#4aa9bf] text-white font-semibold py-2 rounded-lg transition-colors duration-300"
+          className="bg-[#4bc0d9] hover:bg-[#3ca8d0] text-white font-semibold py-2 rounded-lg transition-colors duration-300"
         >
           {isSaving ? "Saving..." : "Submit"}
         </button>

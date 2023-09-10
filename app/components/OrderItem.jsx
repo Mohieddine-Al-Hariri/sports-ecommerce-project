@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const OrderItem = ({ item }) => {
   const { quantity, total, product, id, createdAt, orderItemVariants, variant, collection } = item;
-  
+  //TODO: Fix styling and responsiveness
   return (
     <div className="flex justify-around items-center w-screen gap-5 border-b-2 rounded-md">
       {/* <Image width={86} height={108} className="relative w-[86px] h-[108px] rounded-[20px]" src={product.imageUrls[0].url} alt={product.name}  /> */}
@@ -10,7 +10,7 @@ const OrderItem = ({ item }) => {
         <Image
           width={86}
           height={108}
-          className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+          className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
           src={product.imageUrls[0].url}
           alt={product.name}
         /> :
@@ -18,7 +18,7 @@ const OrderItem = ({ item }) => {
           <Image
             width={86}
             height={108}
-            className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+            className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
             src={collection.imageUrl}
             alt={product.name}
           />
@@ -29,7 +29,7 @@ const OrderItem = ({ item }) => {
                 <Image
                   width={86}
                   height={108}
-                  className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-blue-500 transition duration-300"
+                  className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
                   src={product.imageUrls[0].url}
                   alt={product.name}
                   key={`collection.product Image ${index}`}

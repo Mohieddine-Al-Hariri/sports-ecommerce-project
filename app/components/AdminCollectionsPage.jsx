@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteCollection, publishCollection, updateCollection } from "@/lib";
+import { deleteCollection, publishCollection, updateCollection, updateCollectionState } from "@/lib";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateCategoryForm from "./CreateCategoryForm";
@@ -11,19 +11,19 @@ import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage
 import { storage } from "@/lib/firebaseConfig";
 import { v4 } from "uuid";
 
-export const ProductCard = ({ product, included, include }) => {
+export const ProductCard = ({ product, included, include, inputId }) => {
   return (
-    <div className="flex flex-col items-center gap-2 w-[70px]">
+    <div className="flex flex-col items-center gap-2 w-[70px] group">
       <label
         className={`relative cursor-pointer ${
-          included ? "border-blue-500" : "border-gray-300 hover:border-blue-500"
+          included ? "border-[#4bc0d9]" : "border-gray-300 group-hover:border-[#3ca8d0]"
         } border-2 rounded-[10px] transition duration-300`}
-        htmlFor={`includeItem ${product.id}`}
+        htmlFor={inputId}
       >
         <input
           className="hidden"
           type="checkbox"
-          id={`includeItem ${product.id}`}
+          id={inputId}
           name="includeItem"
           onChange={() => include(included, {id: product.id, imageUrls: product.imageUrls, name: product.name} )}
           checked={included}
@@ -37,7 +37,7 @@ export const ProductCard = ({ product, included, include }) => {
         />
         <div
           className={`absolute -top-4 left-4 ${
-            included ? "bg-blue-500 text-gray-100 " : "bg-white text-gray-600 "
+            included ? "bg-[#4bc0d9] group-hover:bg-[#3ca8d0] text-gray-100 " : "bg-white text-gray-600 "
           }  p-1 rounded-full shadow`}
         >
           {included ? "Included" : "Include"}
@@ -75,22 +75,26 @@ export const CollectionStateMenu = ({
     };
   }, []);
 
-  const changeCollectionState = async (state) => {
-    const updatedProduct = await updateCollectionState({ collectionId, state });
-    await publishCollection(collectionId);
+  const updateCollectionShowState = async (newState) => {
+    const updatedCollection = await updateCollectionState({
+      collectionId,
+      state: newState,
+    });
+    setCollectionState(newState);
     //publishOrderItems && publishTheUser??
+    setIsOpen(false);
+    await publishCollection(collectionId);
     router.refresh();
-    setCollectionState(updatedProduct.updateProduct.state);
   };
   return (
     <div
       ref={cardMenuRef}
-      className={`absolute w-48 h-10 bgColor fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 `}
+      className={`absolute w-48 h-10 bgColorGray fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 `}
     >
       <div>
         <div className="w-full flex justify-end">
           <button
-            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#2482c8] rounded-full focus:outline-none"
+            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#4bc0d9] rounded-full focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
             <svg
@@ -110,26 +114,15 @@ export const CollectionStateMenu = ({
           </button>
         </div>
 
-        <div className="absolute right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
+        <div className="absolute right-0 w-48 fontColor rounded-md shadow-lg z-10 bgColorGray">
           <ul>
             {states.map((state) => {
-              let bg = "bg-white";
-              let disable = false;
-              let txtClr = "fontColor";
-              if (state === collectionState) {
-                bg = "bg-[#2482c8]";
-                disable = true;
-                txtClr = "text-white";
-              }
               return (
                 <button
                   key={state}
-                  disabled={disable}
-                  onClick={() => {
-                    changeCollectionState(state);
-                    setIsOpen(false);
-                  }}
-                  className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}
+                  disabled={state === collectionState}
+                  onClick={() => updateCollectionShowState(state)}
+                  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] ${state === collectionState ? "text-whiter" : " fontColor "} hover:text-white flex w-full justify-between `}
                 >
                   {state}
                   {/* {svg} */}
@@ -152,7 +145,8 @@ const CollectionCard = ({
   productsPageNumber,
   hasNextPage,
   hasPreviousPage,
-  isFetching
+  isFetching,
+  index
 }) => {
   const [show, setShow] = useState(collection.show);
   const [collectionName, setCollectionName] = useState(collection.name);
@@ -181,8 +175,7 @@ const CollectionCard = ({
     );
   }, [updatingCollectionName]);
 
-
-  useEffect(() => {
+  const updateDisplayedProducts = () => {
     const filteredProducts = products.map((product) => {
       // Initialize a flag to check if the product is included
       let isIncluded = false;
@@ -194,6 +187,9 @@ const CollectionCard = ({
         }
       }
 
+      // Return null for products that should not be rendered; else, continue checking
+      if (isIncluded) return null;
+      
       // Check if the product is in the prevIncludedProducts array
       for (const prevIncludedProduct of prevIncludedProducts) {
         if (prevIncludedProduct.id === product.node.id) {
@@ -211,7 +207,47 @@ const CollectionCard = ({
       return null;
     }).filter((item) => item !== null)
     setDisplayedProducts(filteredProducts);
-  }, [products, includedProducts, prevIncludedProducts]);
+  }
+  useEffect(() => {
+    updateDisplayedProducts();
+  }, [products]);
+
+  const include = (isIncluded, product) => {
+    console.log("product.id: ", product.id);
+    // Check if the product should be included
+    if (isIncluded) {
+      // Remove from the includedProducts collection
+      setIncludedProducts((prevIncluded) =>
+        prevIncluded.filter((item) => item.id !== product.id)
+      ); // TODO: Consider handling errors if setIncludedProducts fails
+      
+      // Check if the product was previously in the collection
+      const isInPrev = collection.products.some((item) => item.id === product.id);
+  
+      // Add to prevIncluded, only if it was connected to the collection previously in DB
+      // else, Add to displayedProducts
+      isInPrev 
+        ? setPrevIncludedProducts((prevIncluded) =>[...prevIncluded, product]) 
+        : setDisplayedProducts((prevDisplayed) => [...prevDisplayed, {node: product}]);;
+      
+      // No need to update displayedProducts in this case
+      return;
+    }
+    
+    // Add to the includedProducts collection
+    setIncludedProducts((prevIncluded) => [...prevIncluded, product]);
+  
+    // Remove from prevIncluded if it was in it
+    setPrevIncludedProducts((prevIncluded) =>
+      prevIncluded.filter((item) => item.id !== product.id)
+    );
+  
+    // Remove from displayedProducts if it was in it
+    setDisplayedProducts((prevDisplayed) =>
+      prevDisplayed.filter((item) => item.node.id !== product.id)
+    );
+  };
+  
   
   const handlePriceChange = (e) => {
     const newValue = e.target.value;
@@ -254,18 +290,6 @@ const CollectionCard = ({
     setUpdatingCollectionName(false);
     setIsUpdating(false);
   };
-  const updateCollectionShowState = async () => {
-    const showState = !show;
-    const updatedCollection = await updateCollection({
-      CollectionId: collection.id,
-      name: collectionName,
-      show: showState,
-      description,
-    });
-    await publishCollection(collection.id);
-    router.refresh();
-    setShow(!show);
-  };
 
   const handleChangeImage = (e) => {
     e.preventDefault();
@@ -292,42 +316,31 @@ const CollectionCard = ({
       setImageUrl(result);
     };
   };
-  const cancelUpdateCollection = () => { //TODO: Finish
-    setUpdatingCollectionName(false);
-    setShow(collection.show);
-    setCollectionName(collection.name);
-    setDescription(collection.description);
-  };
 
-  const deleteCollectionFunc = async () => { //TODO: put in parent?
+  const deleteCollectionFunc = async () => { 
     setIsDeleting(true);
     await deleteCollection(collection.id);
     router.refresh();
     setIsDeleting(false);
   };
+  const resetCollectionDetailsFunc = () => {
+    updateDisplayedProducts();
+    setCollectionName(collection.name);
+    // setCollectionState(collection.state);
+    setDescription(collection.description);
+    setImageUrl(collection.imageUrl);
+    setImageUpload(null);
+    setNumericPrice(collection.price);
+    // setIncludedProducts([]);
+    setPrevIncludedProducts([]);
+    setIsDeleting(false);
+    setIsUpdating(false);
+    // setUpdatingCollectionName(false);
+    // setShow(collection.show);
+    setPrice(collection.price);
 
-  const include = (isIncluded, product) => {//TODO: Finish prev...
-    if (isIncluded){
-      setIncludedProducts((prevIncluded) =>
-        prevIncluded.filter((item) => item.id !== product.id)
-        ); //Remove from collection
-
-      setPrevIncludedProducts((prevIncluded) =>{ 
-        let isInPrev = false;
-        collection.products.map((item) => item.id === product.id ? isInPrev = true : undefined);
-        return isInPrev ?  [...prevIncluded, product] : prevIncluded
-      });
-      return
-    }
-    setIncludedProducts((prevIncluded) => [
-      ...prevIncluded,
-      product,
-    ]); //Add to collection
-    setPrevIncludedProducts((prevIncluded) => prevIncluded.filter((item) => item.id !== product.id));
-    
   };
-  //TODO: Add the ability to connect and disconnect product (onSumbit)
-  //TODO: Make it more responsive
+    
   return (
     <div
       className={`border-2 ${
@@ -436,7 +449,7 @@ const CollectionCard = ({
         >
           {updatingCollectionName ? (
             <button
-              className="flex w-full sm:justify-between max-sm:flex-col items-center sm:gap-2"
+              className="flex w-full justify-center sm:justify-between max-sm:flex-col items-center sm:gap-2"
               onClick={updateCollectionDetails}
             >
               <span className="text-md">Submit</span>
@@ -460,7 +473,7 @@ const CollectionCard = ({
               </svg>
             </button>
           ) : (
-            <button onClick={() => setUpdatingCollectionName(true)}>
+            <button className="hover:text-[#4bc0d9]" onClick={() => setUpdatingCollectionName(true)}>
               <svg
                 fill="currentColor"
                 width="30px"
@@ -470,7 +483,7 @@ const CollectionCard = ({
                 xmlns="http://www.w3.org/2000/svg"
                 xmlnsXlink="http://www.w3.org/1999/xlink"
               >
-                <title>{"edit-line"}</title>
+                <title className="rounded-lg">{"Edit-Card"}</title>
                 <path
                   className="clr-i-outline clr-i-outline-path-1"
                   d="M1.27 0.312 1.05 0.091a0.078 0.078 0 0 0 -0.11 0L0.16 0.87l-0.071 0.307a0.077 0.077 0 0 0 0.075 0.094 0.08 0.08 0 0 0 0.016 0l0.311 -0.071 0.779 -0.779a0.078 0.078 0 0 0 0 -0.11ZM0.453 1.132l-0.291 0.061 0.066 -0.286L0.812 0.326l0.225 0.225ZM1.087 0.497l-0.225 -0.225 0.131 -0.13 0.221 0.225Z"
@@ -505,11 +518,11 @@ const CollectionCard = ({
               </button>
             </div>
           ) : (
-            <div className="sm:flex items-center gap-2">
+            <div className="sm:flex sm:justify-between items-center gap-2">
               {updatingCollectionName && <h2 className="text-center">State</h2>}
               <button
                 onClick={() => setOpenMenu(true)}
-                className="border-2 border-gray-500 rounded-full px-3 py-1 "
+                className="border-2 border-gray-500 hover:border-[#4bc0d9] rounded-full px-3 py-1 "
               >
                 <h1 className={`${stateTxtClr} font-bold`}>
                   {collectionState}
@@ -519,7 +532,7 @@ const CollectionCard = ({
           )}
 
           {!updatingCollectionName ? (
-            <button disabled={isDeleting} onClick={deleteCollectionFunc}>
+            <button className="hover:text-red-500" disabled={isDeleting} onClick={deleteCollectionFunc}>
               {!isDeleting ? (
                 <svg
                   width="30px"
@@ -558,50 +571,100 @@ const CollectionCard = ({
               )}
             </button>
           ) : (
-            <button
-              className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2"
-              onClick={cancelUpdateCollection}
-            >
-              Cancel
-              <svg
-                fill="currentColor"
-                width="30px"
-                height="30px"
-                viewBox="0 0 1.35 1.35"
-                preserveAspectRatio="xMidYMid meet"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
+            <>
+              <button
+                className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2"
+                onClick={() => setUpdatingCollectionName(false)}
               >
-                <title>{"cancel-line"}</title>
-                <path
-                  className="clr-i-outline clr-i-outline-path-1"
-                  d="M0.675 0.075a0.6 0.6 0 1 0 0.6 0.6A0.6 0.6 0 0 0 0.675 0.075ZM0.15 0.675a0.522 0.522 0 0 1 0.129 -0.343l0.739 0.739A0.525 0.525 0 0 1 0.15 0.675Zm0.921 0.343L0.332 0.279a0.525 0.525 0 0 1 0.739 0.739Z"
-                />
-                <path
-                  x={0}
-                  y={0}
-                  width={36}
-                  height={36}
-                  fillOpacity={0}
-                  d="M0 0H1.35V1.35H0V0z"
-                />
-              </svg>
-            </button>
+                Cancel
+                <svg
+                  fill="currentColor"
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 1.35 1.35"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                >
+                  <title>{"Cancel"}</title>
+                  <path
+                    className="clr-i-outline clr-i-outline-path-1"
+                    d="M0.675 0.075a0.6 0.6 0 1 0 0.6 0.6A0.6 0.6 0 0 0 0.675 0.075ZM0.15 0.675a0.522 0.522 0 0 1 0.129 -0.343l0.739 0.739A0.525 0.525 0 0 1 0.15 0.675Zm0.921 0.343L0.332 0.279a0.525 0.525 0 0 1 0.739 0.739Z"
+                  />
+                  <path
+                    x={0}
+                    y={0}
+                    width={36}
+                    height={36}
+                    fillOpacity={0}
+                    d="M0 0H1.35V1.35H0V0z"
+                  />
+                </svg>
+              </button>
+              <button
+                className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2"
+                onClick={resetCollectionDetailsFunc}
+              >
+                Default
+                <svg
+                  id="Layer_1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 30 30"
+                  enableBackground="new 0 0 32 32"
+                  xmlSpace="preserve"
+                  width={30}
+                  height={30}
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.875}
+                    strokeMiterlimit={10}
+                    d="M24.094 10.219C22.406 6.938 18.938 4.688 15 4.688c-4.406 0 -8.063 2.719 -9.563 6.563"
+                  />
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.875}
+                    strokeMiterlimit={10}
+                    d="M5.813 19.688c1.688 3.281 5.156 5.625 9.188 5.625 4.406 0 8.063 -2.719 9.563 -6.563"
+                  />
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.875}
+                    strokeMiterlimit={10}
+                    points="26,5 26,11 20,11 "
+                    d="M24.375 4.688L24.375 10.313L18.75 10.313"
+                  />
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.875}
+                    strokeMiterlimit={10}
+                    points="6,27 6,21 12,21 "
+                    d="M5.625 25.313L5.625 19.688L11.25 19.688"
+                  />
+                </svg>
+              </button>
+            </>
           )}
         </div>
       </div>
-      {updatingCollectionName && (
+      {updatingCollectionName && (//TODO: Add reset button for the collection card details
         <div className="flex flex-col gap-3 mt-3">
           <h1 className="text-xl mb-2">Products</h1>
           <div className="flex flex-wrap gap-4">
-            {includedProducts.map((product) => {
+            {includedProducts.map((product, productIndex) => {
               return (
                 <ProductCard
-                  key={`Update Collection: ${product.id}`}
+                  key={`Update Collection (Included Products): ${product.id} ${index} ${collection.id}`}
                   product={product}
                   collectionId={collection.id}
                   include={include}
                   included={true}
+                  inputId={`inputId: ${product.id} ${productIndex} ${collection.id}`}
                 />
               );
             })}
@@ -609,51 +672,37 @@ const CollectionCard = ({
           {(includedProducts.length > 0 && (prevIncludedProducts.length > 0 || products.length > 0)) && <div className="bgColorGray w-3/4 h-1 rounded-full mt-1 mb-4"></div>}
           {prevIncludedProducts.length > 0 && <div className="flex flex-wrap gap-4">
             <h2 className="w-full">Removed</h2>
-            {prevIncludedProducts.map((product) => {
+            {prevIncludedProducts.map((product, productIndex) => {
               return (
                 <ProductCard
-                  key={`Update Collection: ${product.id}`}
+                  key={`Update Collection (Previous Included Products): ${product.id} ${index} ${collection.id}`}
                   product={product}
                   collectionId={collection.id}
                   include={include}
                   included={false}
+                  inputId={`inputId: ${product.id} ${productIndex} ${collection.id}`}
                 />
               );
             })}
           </div>}
           {(prevIncludedProducts.length > 0 && products.length > 0) && <div className="bgColorGray w-3/4 h-1 rounded-full mt-1 mb-4"></div>}
           <div className="flex flex-wrap gap-4">
-            {/* {products.map((product) => {
-              let isIncluded = false
-              includedProducts.map(includedProduct => {if(includedProduct.id === product.node.id) isIncluded = true})
-              prevIncludedProducts.map(prevIncludedProduct => {if(prevIncludedProduct.id === product.node.id) isIncluded = true})
-              if(includedProducts.length === 0 || !isIncluded){
-                return(
-                  <ProductCard
-                    key={`Update Collection: ${product.node.id}`}
-                    product={product.node}
-                    include={include}
-                    included={false}
-                  />
-                )
-              }
-            })} */}
             {
               displayedProducts.length === 0 ? 
                 <h1 className="w-full text-center fontColor">All products in this page are used <br /> Move to the next/previous page</h1>
               :
-                displayedProducts.map((product) => (
+                displayedProducts.map((product, productIndex) => (
                   <ProductCard
-                    key={`Update Collection: ${product.node.id}`}
+                    key={`Update Collection (Displayed Products): ${product.node.id} ${index} ${collection.id}`}
                     product={product.node}
                     include={include}
                     included={false}
+                    inputId={`inputId: ${product.id} ${productIndex} ${collection.id}`}
                   />
                 ))
             }
 
           </div>
-          {/* TODO: Fix Colors to the theme */}
           <div className="flex items-center justify-center space-x-4 w-full">
             <button
               disabled={!hasPreviousPage ? true : isFetching }
@@ -661,7 +710,7 @@ const CollectionCard = ({
               className={`${
                 !hasPreviousPage
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : isFetching ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700"
+                  : isFetching ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#4bc0d9] hover:bg-[#3ca8d0]"
               } text-white font-bold py-2 px-4 rounded-full focus:outline-none`}
             >
               &lt;
@@ -673,7 +722,7 @@ const CollectionCard = ({
               className={`${
                 !hasNextPage
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : isFetching ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700"
+                  : isFetching ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#4bc0d9] hover:bg-[#3ca8d0]"
               } text-white font-bold py-2 px-4 rounded-full focus:outline-none`}
             >
               &gt;
@@ -683,6 +732,7 @@ const CollectionCard = ({
       )}
     </div>
   );
+
 };
 
 const AdminCollectionsPage = ({
@@ -764,9 +814,9 @@ const AdminCollectionsPage = ({
   return (
     <div className="h-screen bgColor fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
       <div className=" flex gap-4 flex-col ">
-        {collectionsData.map((collection) => (
+        {collectionsData.map((collection, index) => (
           <CollectionCard
-            key={collection.node.id}
+            key={`${index}: ${collection.node.id}`}
             collection={collection.node}
             products={productsData}
             deletePrevImage={deletePrevImage}
@@ -777,6 +827,7 @@ const AdminCollectionsPage = ({
             hasNextPage={hasNextPage}
             hasPreviousPage={hasPreviousPage}
             isFetching={isFetching}
+            index={index}
           />
         ))}
       </div>

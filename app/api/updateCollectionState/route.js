@@ -7,56 +7,28 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-  const {
-    name,
-    description,
-    price,
-    state,
-    imageUrl,
-    products,
-    prevProducts,
-    id,
-  } = body;
-
+  const { state, collectionId } = body;
   try {
     const updatedCollection = await client.request(
       `
         mutation UpdateCollection(
-          $id: ID!,
-          $name: String!, 
+          $collectionId: ID!,
           $state: ProductStates!, 
-          $description: String!, 
-          $price: Float!, 
-          $products: [ProductConnectInput!],
-          $prevProducts: [ProductWhereUniqueInput!]!
-          $imageUrl: String
         ) {
           updateCollection(
-            where: {id: $id},
+            where: {id: $collectionId},
             data: {
-              name: $name, 
               state: $state, 
-              description: $description, 
-              price: $price, 
-              products: {connect: $products, disconnect: $prevProducts}
-              imageUrl: $imageUrl
             }) {
             id
           }
         }
       `,
       {
-        id,
-        name,
-        description,
-        price,
+        collectionId,
         state,
-        imageUrl,
-        products,
-        prevProducts,
       }
     );
-    //eg of products format: {where: [{id: 1}, {id: 2}]}
     return new Response(JSON.stringify(updatedCollection));
 
   } catch (error) {

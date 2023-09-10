@@ -120,7 +120,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
               name="category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-blue-500 colorScheme"
+              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] colorScheme"
             >
               <option value="All">All</option>
               {categoriesData.map((category) => (

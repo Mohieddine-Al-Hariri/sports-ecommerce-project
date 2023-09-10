@@ -259,7 +259,7 @@ const ProfilePage = ({ user, orders }) => {
                   name="firstName"
                   value={updatedUserDetails.firstName}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
                 />
               </div>
               <div>
@@ -269,7 +269,7 @@ const ProfilePage = ({ user, orders }) => {
                   name="lastName"
                   value={updatedUserDetails.lastName}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500"
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
                 />
               </div>
             </div>
@@ -280,7 +280,7 @@ const ProfilePage = ({ user, orders }) => {
                 name="birthDate"
                 value={updatedUserDetails.birthDate}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-500"
+                className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
                 min={new Date().toISOString().split("T")[0]}
               />
             </div>

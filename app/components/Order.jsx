@@ -10,7 +10,7 @@ const Order = ({ order }) => {
   const router = useRouter();
   let stateColor = "text-green-500";
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
-  else if(order.state === "Delivering") stateColor = "text-blue-500";
+  else if(order.state === "Delivering") stateColor = "text-[#4bc0d9]";
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
   
   const cancelOrder = async () => { 

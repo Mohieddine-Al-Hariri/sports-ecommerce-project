@@ -144,7 +144,7 @@ const AdminProductCard = ({ product }) => {
           </button>
         }
         <div className="px-2 ">
-          <button className="rounded-lg bg-[#4bc0d9] hover:bg-[#4aa9bf] py-1 text-white w-full " onClick={() => router.push(`/itemsDetails/${product.id}`)}>Details</button>
+          <button className="rounded-lg bg-[#4bc0d9] hover:bg-[#3ca8d0] py-1 text-white w-full " onClick={() => router.push(`/itemsDetails/${product.id}`)}>Details</button>
         </div>
       </div>
     </div>
