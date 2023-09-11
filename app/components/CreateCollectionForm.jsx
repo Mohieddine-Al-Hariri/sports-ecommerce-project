@@ -43,9 +43,9 @@ export const ProductCard = ({ product, included, include }) => {
       <p className="text-center text-xs">{product.name}</p>
     </div>
   );
-};
+}; //TODO: put in seperate component
 
-const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, isFetching, setProductsPageNumber, hasNextPage, hasPreviousPage }) => {
+const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, isFetching, hasNextPage, hasPreviousPage, uploadImage }) => {
 
   const [form, setForm] = useState({
     name: "",
@@ -62,8 +62,6 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
   const [isSaving, setIsSaving] = useState(false);
   const [isError, setIsError] = useState(false)
   const router = useRouter();
-  console.log("includedProducts in form: ", includedProducts)
-  console.log("products in form: ", products)
   const handlePriceChange = (e) => {
     const newValue = e.target.value;
     setForm({ ...form, price: newValue });
@@ -74,22 +72,22 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
   };
   
 
-  const uploadImage = async (imagePath) => { //TODO: Get func from Parent
-    //To add the new profile image to the database
-    if (imagePath == null || !imagePath) {
-      return imageUrl;
-    }
-    const imageRef = ref(storage, `profileImages/${imagePath.name + v4()}`);
-    const imageUrl = await uploadBytes(imageRef, imagePath).then(
-      async (snapshot) => {
-        const downloadUrl = await getDownloadURL(snapshot.ref).then((url) => {
-          return url;
-        });
-        return downloadUrl;
-      }
-    );
-    return imageUrl;
-  };
+  // const uploadImage = async (imagePath) => { //TODO: Get func from Parent, Fix if didnt work
+  //   //To add the new profile image to the database
+  //   if (imagePath == null || !imagePath) {
+  //     return imageUrl;
+  //   }
+  //   const imageRef = ref(storage, `profileImages/${imagePath.name + v4()}`);
+  //   const imageUrl = await uploadBytes(imageRef, imagePath).then(
+  //     async (snapshot) => {
+  //       const downloadUrl = await getDownloadURL(snapshot.ref).then((url) => {
+  //         return url;
+  //       });
+  //       return downloadUrl;
+  //     }
+  //   );
+  //   return imageUrl;
+  // };
   const handleChangeImage = (e) => {
     e.preventDefault();
 
@@ -149,8 +147,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
     setImageUpload(null);
     setIncludedProducts([]);
   }
-  const include = (isIncluded, product) => { //TODO: Fix, it doesnt work when a card is opened for edit
-    console.log("first")
+  const include = (isIncluded, product) => {
     if (!isIncluded)
       setIncludedProducts((prevIncluded) => [
         ...prevIncluded,
@@ -222,7 +219,6 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
           <div className="border-2 borderColor rounded-lg p-2 pt-4 ">
             <div className="flex flex-wrap gap-2 ">
               {includedProducts.map((product) => {
-                  console.log(includedProducts)
                   return(
                     <ProductCard
                       key={`create Collection Form (included): ${product.id}`}
@@ -250,7 +246,6 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
               }
             })}
             </div>
-            {/* TODO: Fix Colors to the theme */}
             <div className="flex items-center justify-center space-x-4 w-full">
               <button
                 disabled={!hasPreviousPage ? true : isFetching }
@@ -281,7 +276,6 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
           </div>
         </div>
         <div className="flexCenter flex-col  lg:min-h-[200px] min-h-[100px] relative w-full py-16">
-          {/* TODO: make input size only inside dashed border */}
           {!imageUpload && (
             <label htmlFor="poster" className="flexCenter z-10 text-center w-full h-[300px] p-20 dashedBorder rounded-lg aspect-square fontColor absolute">
               Choose an Image <br /> (Optional)

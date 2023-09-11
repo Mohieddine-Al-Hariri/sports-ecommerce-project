@@ -7,18 +7,20 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-  const { name, show, description, categoryId } = body;
+  const { name, show, description, categoryId, products, prevProducts } = body;
+  console.log("\n\nprevProducts: \n", prevProducts)
   try {
     const updateCategory = await client.request(
       `
-        mutation updateCategory($name: String!, $categoryId: ID!, $description: String!, $show: Boolean!) {
-          updateCategory(data: {name: $name, show: $show, description: $description}, where: {id: $categoryId}) {
+        mutation updateCategory($name: String!, $categoryId: ID!, $description: String!, $show: Boolean!, $products: [ProductConnectInput!], $prevProducts: [ProductWhereUniqueInput!]!) {
+          updateCategory(data: {name: $name, show: $show, description: $description, products: {connect: $products, disconnect: $prevProducts}}, where: {id: $categoryId}) {
             id
           }
         }
       `,
-      { name, show, description, categoryId }
+      { name, show, description, categoryId, products, prevProducts }
     );
+    console.log(updateCategory);
     return new Response(JSON.stringify(updateCategory)); // Should return the id
   } catch (error) {
     console.error("Error in POST:", error);

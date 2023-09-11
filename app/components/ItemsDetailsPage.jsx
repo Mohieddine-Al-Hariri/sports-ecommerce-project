@@ -269,7 +269,7 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
 
   return (
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
-      <div className="max-sm:w-[428px] w-full relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
+      <div className="max-sm:w-[428px] w-full max-sm:pb-4 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           <div className="relative max-sm:w-full px-3 w-[428px] inline-block ">

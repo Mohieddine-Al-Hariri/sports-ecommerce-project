@@ -7,17 +7,17 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-  const { name, slug, description } = body;
+  const { name, slug, description, products } = body;
   try {
     const createdProduct = await client.request(
       `
-        mutation CreateProduct($name: String!, $slug: String!, $description: String!) {
-          createCategory(data: {name: $name, slug: $slug, show: true, description: $description}) {
+        mutation CreateProduct($name: String!, $slug: String!, $description: String!, $products: [ProductWhereUniqueInput!]!) {
+          createCategory(data: {name: $name, slug: $slug, show: true, description: $description, products: {connect: $products}}) {
             id
           }
         }
       `,
-      { name, slug, description }
+      { name, slug, description, products }
     );
     return new Response(JSON.stringify(createdProduct)); // Should return the id
   } catch (error) {

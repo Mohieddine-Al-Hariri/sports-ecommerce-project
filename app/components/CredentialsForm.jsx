@@ -55,7 +55,7 @@ const CredentialsForm = ({ isModal }) => {
 			firstName: firstName,
 			lastName: lastName,
 			isLogIn: isLogIn,
-			birthDate: dateState
+			// birthDate: dateState
 		});
 		if (signInResponse && !signInResponse.error) {
 			router.push("/");
@@ -163,7 +163,7 @@ const CredentialsForm = ({ isModal }) => {
 							<input value={formData.lastName} onChange={(e) => setFromData(prev => ({...prev, lastName: e.target.value}))} type="text" name="lastName" placeholder="Last Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 						</div>
 					}
-					<input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/>
+					{/* <input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/> */}
 					<input value={formData.password} onChange={(e) => setFromData(prev => ({...prev, password: e.target.value}))} type="password" name="password" placeholder="Password" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
 					<button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Sign In with Phone Number</button>
 					{error && <p className="text-red-500">{error}</p>}

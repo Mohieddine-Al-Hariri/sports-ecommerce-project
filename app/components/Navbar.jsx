@@ -7,7 +7,7 @@ const Navbar = ({ userSlug, userRole }) => {
   const pathName = usePathname();
 
   return (
-    <div className=" w-full flex items-center justify-center px-10 fixed bottom-5 overflow-hidden ">
+    <div className=" w-full flex items-center justify-center px-10 fixed z-30 bottom-5 overflow-hidden ">
       <div className="w-[310px] h-fit flex items-center justify-between bg-white bg-opacity-75 rounded-full px-4 ">
       <Link href={`/Cart/${userSlug}`} className={` ${pathName.slice(0,6) === "/Cart/" ? "border-[#4bc0d9] " : "border-none "} border-b-2 rounded-full text-[black] hover:bg-[#4bc0d9] hover:text-[#f3f3f3] p-2  `}>
         <svg width="24px" height="24px" viewBox="0 0 0.72 0.72" fill="none" xmlns="http://www.w3.org/2000/  svg"><path d="M0.15 0.21h0.414a0.06 0.06 0 0 1 0.06 0.066l-0.018 0.18A0.06 0.06 0 0 1 0.546 0.51H0.259a0.06 0.06 0 0 1 -0.059 -0.048L0.15 0.21Z" stroke="currentColor" strokeWidth="0.06" strokeLinejoin="round"/><path d="m0.15 0.21 -0.024 -0.097A0.03 0.03 0 0 0 0.097 0.09H0.06" stroke="currentColor" strokeWidth="0.06" strokeLinecap="round" strokeLinejoin="round"/><path d="M0.24 0.63h0.06" stroke="currentColor" strokeWidth="0.06" strokeLinecap="round" strokeLinejoin="round"/><path d="M0.48 0.63h0.06" stroke="currentColor" strokeWidth="0.06" strokeLinecap="round" strokeLinejoin="round"/></svg>

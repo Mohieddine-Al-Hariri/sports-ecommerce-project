@@ -382,15 +382,14 @@ const CollectionCard = ({
                 className="form_image-input "
                 onChange={(e) => handleChangeImage(e)}
               /> 
-              {/* TODO: Fix image Styling */}
               {imageUrl && (
                 <Image
                   src={imageUrl}
                   className=" object-cover z-20 w-full h-full rounded-lg "
                   alt="image"
                   // fill
-                  width={100}
-                  height={100}
+                  width={1000}
+                  height={1000}
                 />
               )}
             </div>
@@ -652,7 +651,7 @@ const CollectionCard = ({
           )}
         </div>
       </div>
-      {updatingCollectionName && (//TODO: Add reset button for the collection card details
+      {updatingCollectionName && (
         <div className="flex flex-col gap-3 mt-3">
           <h1 className="text-xl mb-2">Products</h1>
           <div className="flex flex-wrap gap-4">
@@ -839,6 +838,7 @@ const AdminCollectionsPage = ({
         hasNextPage={hasNextPage}
         hasPreviousPage={hasPreviousPage}
         isFetching={isFetching}
+        uploadImage={uploadImage}
       />
     </div>
   );
