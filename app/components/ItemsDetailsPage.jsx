@@ -2,7 +2,7 @@
 import { addItemToCart, publishCart, publishItemAddedToCart, publishManyVariants } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import the carousel styles
@@ -10,6 +10,7 @@ import { ProductCard } from ".";
 import ReactStars from "react-rating-star-with-type";
 import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from "next/navigation";
+import { useIsVisible } from "./UseVisible";
 
 export function Variants({
   variant,
@@ -92,6 +93,10 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
   const [isReachedLimit, setIsReachedLimit] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
+
+  const detailsRef = useRef(null);
+  const isLastOrderCardVisible = useIsVisible(detailsRef);
+
 
   const [showFullDescription, setShowFullDescription] = useState(false);
   const maxDescriptionWords = 5;
@@ -264,12 +269,17 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
     }
     setQuantity((quantity) => quantity + 1);
   };
+
+  const scrollToBottom = () => {
+    detailsRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
-
+  //TODO: Fix scrolling down problem for mobile
   return (
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
-      <div className="max-sm:w-[428px] w-full max-sm:pb-4 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
+      <div className="max-sm:w-[428px] w-full max-sm:pb-6 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           <div className="relative max-sm:w-full px-3 w-[428px] inline-block ">
@@ -295,7 +305,7 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
               ))}
             </Carousel>
           </div>
-          <div className="flex flex-col gap-10 sm:h-full">
+          <div ref={detailsRef} className="flex flex-col gap-10 sm:h-full">
             <div className="max-sm:w-full w-[440px] relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
               <div>
                 <div className="left-[30px] top-[22px] text-xl font-bold mb-1">
@@ -519,6 +529,31 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
           <ReviewCard key={review.id} review={review} />
         ))}
       </div>
+      <button
+        //TODO: put in seperate component
+        disabled={isLastOrderCardVisible}
+        onClick={scrollToBottom}
+        className={`fixed bottom-4 scrollButton right-4 max-sm:right-3 max-sm:bottom-10 rounded-full fontColor staticBgColor p-2 ${
+          !isLastOrderCardVisible ? "show-button " : "hide-button"
+        }`}
+      >
+        <svg
+          width="30px"
+          height="30px"
+          viewBox="0 0 1.8 1.8"
+          xmlns="http://www.w3.org/2000/svg"
+          className="rotate-180"
+        >
+          <path d="M0 0h1.8v1.8H0z" fill="none" />
+          <g id="Shopicon">
+            <path
+              fill="currentColor"
+              points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
+              d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
+            />
+          </g>
+        </svg>
+      </button>
     </div>
   );
 };

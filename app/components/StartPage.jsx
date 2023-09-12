@@ -28,9 +28,15 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const [isFirstRedner, setIsFirstRender] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
-
+  
+  const topRef = useRef(null);
+  const isLastOrderCardVisible = useIsVisible(topRef);
   const router = useRouter();
 
+  const scrollToTop = () => {
+    topRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+ 
   const addItemsToCart = async (localCart) => { 
   //Add items to cart in DB from localStorage since user logged in
     const cartId = user.cartId;
@@ -111,7 +117,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   return (
       <div>
         <div className="w-full flex justify-center max-sm:items-center items-end  max-sm:gap-2 gap-4 mb-4 max-sm:flex-col fontColor">
-          <div className="max-sm:mb-4">
+          <div ref={topRef} className="max-sm:mb-4">
             <label htmlFor="category" className="block text-lg font-semibold mb-2">
               Filter by Category
             </label>
@@ -138,7 +144,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             collectionsData?.collections.map(collection => {
               const images = collection.node.products?.map(product => product.imageUrls[0]);
               return(
-                <ProductCard key={collection.node.id} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
+                <ProductCard key={`collections products ${collection.node.id}`} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
               )
             })
           :
@@ -164,6 +170,50 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
           {/* Add an invisible element to act as the previousProductCardRef */}
           <div className="w-full h-[60px]" ref={lastProductCardRef} style={{ visibility: "hidden" }} />
         </div>
+        <button 
+          //TODO:put in seperate component
+          href="#top"
+          disabled={isLastOrderCardVisible}
+          onClick={scrollToTop}
+          className={`fixed z-10 bottom-4 scrollButton right-4 max-sm:bottom-10 max-sm:right-3 rounded-full text-white bg-[#4bc0d9] hover:bg-[#3ca8d0] p-2 ${
+            !isLastOrderCardVisible ? "show-button" : "hide-button"
+          }`}
+        >
+          <svg
+            width="30px"
+            height="30px"
+            viewBox="0 0 1.8 1.8"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M0 0h1.8v1.8H0z" fill="none" />
+            <g id="Shopicon">
+              <path
+                fill="white"
+                points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
+                d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
+              />
+            </g>
+          </svg>
+        </button>
+
+
+        {/* <button href="#top" disabled={!isLastOrderCardVisible} onClick={scrollToTop} className="fixed bottom-4 right-4 rounded-full text-white bg-[#4bc0d9] hover:bg-[#3ca8d0] p-2">
+          <svg
+            width="30px"
+            height="30px"
+            viewBox="0 0 1.8 1.8"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M0 0h1.8v1.8H0z" fill="none" />
+            <g id="Shopicon">
+              <path
+                fill="white"
+                points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
+                d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
+              />
+            </g>
+          </svg>
+        </button> */}
       </div>
       
     

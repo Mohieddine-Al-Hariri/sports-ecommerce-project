@@ -29,6 +29,7 @@ body {
   --fontColor: #030303;
   --fontColorGray: rgb(75 85 99);
   --bgColor: white;
+  --staticBgColor: white;
   --bgColorGray: rgb(243 244 246);
   --colorScheme: light;
   --opBgColor: black;
@@ -50,6 +51,7 @@ body {
 body.dark{
   --Bg: #343434;
   --bgColor: linear-gradient(to top, #000, #131313, #161616);
+  --staticBgColor: black;
   --bgColorGray: #343434;
   background: var(--bgColor);
   --opBgColor: #f3f3f3 ;
@@ -89,6 +91,9 @@ body.dark{
 }
 .bgColor{
   background-color: var(--bgColor);
+}
+.staticBgColor{
+  background-color: var(--staticBgColor);
 }
 .bgColorGray{
   background-color: var(--bgColorGray);
@@ -212,4 +217,23 @@ body.dark{
 }
 .flexCenter {
   @apply flex justify-center items-center;
+}
+
+/* Define the initial state for the button */
+.scrollButton {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Define the styles for when the button is visible */
+.show-button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Define the styles for when the button is hidden */
+.hide-button {
+  opacity: 0;
+  transform: translateY(20px);
 }
