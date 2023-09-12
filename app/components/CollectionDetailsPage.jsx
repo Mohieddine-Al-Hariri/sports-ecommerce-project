@@ -2,7 +2,7 @@
 import { addItemToCart, publishCart, publishItemAddedToCart } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import the carousel styles
@@ -10,6 +10,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import the ca
 import ReactStars from "react-rating-star-with-type";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
+import { useIsVisible } from "./UseVisible";
 
 export function Variants({
   variant,
@@ -97,6 +98,9 @@ export const AddItemForm = ({
   const [isReachedLimit, setIsReachedLimit] = useState(false);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const router = useRouter();
+
+  const detailsRef = useRef(null);
+  const isLastOrderCardVisible = useIsVisible(detailsRef);
 
   const itemToCart = async () => {
     // if(!isLoggedin){
@@ -211,9 +215,13 @@ export const AddItemForm = ({
     });
   };
 
+  const scrollToBottom = () => {
+    detailsRef.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
-      <div className="flex flex-col w-full px-4 ">
+      <div ref={detailsRef} className="flex flex-col w-full px-4 ">
         {collection.products[currentImageIndex].productVariants.length > 0 && (
           <div className="left-[31px] top-[88px] text-sm font-bold leading-tight mb-2">
             Variants
@@ -345,6 +353,31 @@ export const AddItemForm = ({
           <p className="text-green-500 text-center ">Item Added Successfuly</p>
         )}
       </div>
+      <button
+        //TODO: put in seperate component
+        disabled={isLastOrderCardVisible}
+        onClick={scrollToBottom}
+        className={`fixed bottom-4 scrollButton right-4 max-sm:right-3 max-sm:bottom-10 rounded-full fontColor staticBgColor p-2 ${
+          !isLastOrderCardVisible ? "show-button " : "hide-button"
+        }`}
+      >
+        <svg
+          width="30px"
+          height="30px"
+          viewBox="0 0 1.8 1.8"
+          xmlns="http://www.w3.org/2000/svg"
+          className="rotate-180"
+        >
+          <path d="M0 0h1.8v1.8H0z" fill="none" />
+          <g id="Shopicon">
+            <path
+              fill="currentColor"
+              points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
+              d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
+            />
+          </g>
+        </svg>
+      </button>
     </>
   );
 };

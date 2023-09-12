@@ -282,6 +282,30 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
       <div className="max-sm:w-[428px] w-full max-sm:pb-6 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
+          {/* TODO: Make the image size based on the used images dimensions */}
+          {/* <div className="relative max-sm:w-full py-8 px-8 sm:px-3 border-b-2 w-[428px] inline-block ">
+            <Carousel
+              showArrows={true}
+              selectedItem={currentImageIndex}
+              onChange={(index) => setCurrentImageIndex(index)}
+              showThumbs={false}
+            >
+              {product.imageUrls.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative flex justify-center w-full "
+                >
+                  <Image
+                    className="max-sm:w-[300px] max-sm:h-[300px] rounded-lg object-cover"
+                    width={300}
+                    height={300}
+                    src={image.url}
+                    alt={`Image ${index + 1}`}
+                  />
+                </div>
+              ))}
+            </Carousel>
+          </div> */}
           <div className="relative max-sm:w-full px-3 w-[428px] inline-block ">
             <Carousel
               showArrows={true}
