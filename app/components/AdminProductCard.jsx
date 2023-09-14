@@ -122,7 +122,7 @@ const AdminProductCard = ({ product }) => {
           />
         </svg>
       </button>
-      <Image className="rounded-t-md" src={product.imageUrls[0].url} alt={product.name} width={102} height={109.03}/>
+      <Image className="rounded-t-md" src={product.imageUrls[0]?.url} alt={product.name} width={102} height={109.03}/>
       <div className="w-full flex-col text-center fontColor ">
         <div className=" fontColorGray text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 14) + '...' : product.name}</div>
         <div className=" fontColorGray text-[10px] font-thin ">{product.excerpt}</div>

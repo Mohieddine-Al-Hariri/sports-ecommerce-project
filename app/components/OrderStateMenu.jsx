@@ -2,12 +2,11 @@
 import { deleteOrder, publishOrder, updateOrderState } from '@/lib';
 import { useRef, useEffect, useState } from 'react';
 
-export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, bg, disable, txtClr, orderState }) => {
+export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, orderState }) => {
   return(
     <button 
       disabled={state === orderState} 
       onClick={() => {changeOrderState(state); setIsOpen(false)}}  
-      // className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}
       className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${
         state === orderState ? "text-white bg-[#2482c8]" : " fontColor "
       }
@@ -142,9 +141,6 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
       key={state.state} 
       state={state.state} 
       orderState={orderState}
-      bg={bg} 
-      txtClr={txtClr} 
-      disable={disable} 
       changeOrderState={changeOrderState} 
       svg={state.svg} 
       setIsOpen={setIsOpen} 

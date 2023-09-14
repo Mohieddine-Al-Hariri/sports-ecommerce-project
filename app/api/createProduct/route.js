@@ -11,7 +11,7 @@ export async function POST(req) {
   });
 
   const {
-    name, slug, description, price, state, imgUrls, excerpt, categories, variants, collections
+    name, slug, description, price, state, imgUrls, excerpt, categories, variants, collections, isOnSale, previousPrice
   } = body;
 
   let variantInput = {};
@@ -34,28 +34,32 @@ export async function POST(req) {
   const query = `
     mutation CreateProduct(
       $name: String!
-      $slug: String!
+      $excerpt: String!
       $description: String!
       $price: Float!
       $state: ProductStates!
+      $slug: String!
       $imageUrls: [ImageUrlCreateInput!]
-      $excerpt: String!
-      $categories: [CategoryWhereUniqueInput!]
+      $isOnSale: Boolean!
+      $previousPrice: Float
       $variants: ProductVariantCreateManyInlineInput
-      $collection: [CategoryWhereUniqueInput!]
+      $categories: [CategoryWhereUniqueInput!]
+      $collection: [CollectionWhereUniqueInput!]
     ) {
       createProduct(
         data: {
           name: $name
-          slug: $slug
+          excerpt: $excerpt
           description: $description
           price: $price
           state: $state
+          slug: $slug
           imageUrls: { create: $imageUrls }
+          isOnSale: $isOnSale
+          previousPrice: $previousPrice
           productVariants: $variants
-          excerpt: $excerpt
           categories: { connect: $categories }
-          collection: { connect: $collection }
+          collections: { connect: $collection }
         }
       ) {
         id
@@ -80,9 +84,11 @@ export async function POST(req) {
       excerpt,
       categories: categories.map((category) => ({ id: category })),
       collection: collections.map((collection) => ({ id: collection })),
-      variants: variantInput
+      variants: variantInput,
+      isOnSale, 
+      previousPrice
     });
-    return new Response(JSON.stringify(createdProduct));
+    return new Response(JSON.stringify(createdProduct.createProduct));
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response(JSON.stringify({ status: 500, body: error.message }), { status: 500 });

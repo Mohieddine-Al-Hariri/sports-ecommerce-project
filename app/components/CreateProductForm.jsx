@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { v4 } from "uuid";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
+import { CheckBox } from ".";
 
 const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
 
@@ -299,7 +300,9 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     categories: [],
   });
   const [price, setPrice] = useState(0); //TODO: Add Is On Sale? and previous price if true
+  const [prevPrice, setPrevPrice] = useState(0); //TODO: Add Is On Sale? and previous price if true
   const [imageError, setImageError] = useState("");
+  const [isOnSale, setIsOnSale] = useState(false);
   const router = useRouter();
 
   const [selectedPills, setSelectedPills] = useState([]); //Variants State
@@ -362,7 +365,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     const imageRes = await Promise.all(imagePromises);
     return imageRes; // list of url like ["https://..", ...]
   }
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => { //TODO: ADD Image Compression before upload
     event.preventDefault();
     const imgUrls = await uploadImages();
     const slug = v4();
@@ -372,11 +375,15 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
       slug,
       price,
       variants: selectedPills,
+      isOnSale,
+      previousPrice: isOnSale ? prevPrice : 0,
     });
-    await publishProduct(createdProduct.createProduct.id);
-    await publishImagesUrls(createdProduct.createProduct.imageUrls);
-    await publishProductVariants(createdProduct.createProduct.productVariants);
-    router.push(`/itemsDetails/${createdProduct.createProduct.id}`);
+
+    const publishProductPromise = publishProduct(createdProduct.id);
+    const publishImagesUrlsPromise = publishImagesUrls(createdProduct.imageUrls);
+    const publishProductVariantsPromise = publishProductVariants(createdProduct.productVariants);
+    await Promise.all([publishProductPromise, publishImagesUrlsPromise, publishProductVariantsPromise]);
+    router.push(`/itemsDetails/${createdProduct.id}`);
   };
 
   const reactSelectStyles = {
@@ -482,25 +489,49 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             {form.description}
           </ReactMarkdown>
         </div>
-        <div className="mb-4">
-          <label htmlFor="price" className="block text-lg font-semibold mb-2">
+        {/* <label htmlFor="isOnSale">
+          <h2>Is Product On Sale?</h2>
+          <input className="text-[#4bc0d9] focus:border-[#4bc0d9] " type="checkbox" name="isOnSale" id="isOnSale" />
+        </label> */}
+        <CheckBox label="Is Product On Sale?" isChecked={isOnSale} setIsChecked={setIsOnSale}/>
+        <div className="mb-4 flex gap-2 " >
+          <label htmlFor="price" className="block text-lg font-semibold mb-2 w-full">
             Price
+            <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
+              <span className="fontColorGray px-3">$</span>
+              <input
+                type="number"
+                id="price"
+                required
+                name="price"
+                value={price}
+                onChange={(e) => setPrice(parseFloat(e.target.value))}
+                className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+              />
+            </div>
           </label>
-          <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
-            <span className="fontColorGray px-3">$</span>
-            <input
-              type="number"
-              id="price"
-              required
-              name="price"
-              value={price}
-              onChange={(e) => setPrice(parseFloat(e.target.value))}
-              className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-            />
-          </div>
           {/* {isNaN(parseFloat(form.price)) && form.price.trim() !== '' && (
             <p className="text-red-500 text-sm mt-1">Please enter a valid price.</p>
           )} */}
+          {isOnSale && (
+            <>
+              <label htmlFor="previousPrice" className="block text-lg font-semibold mb-2 w-full">
+                Previous Price
+                <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
+                  <span className="fontColorGray px-3">$</span>
+                  <input
+                    type="number"
+                    id="previousPrice"
+                    required
+                    name="previousPrice"
+                    value={prevPrice}
+                    onChange={(e) => setPrevPrice(parseFloat(e.target.value))}
+                    className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+                  />
+                </div>
+              </label>
+            </>
+          )}
         </div>
         <div className="mb-4">
           <label

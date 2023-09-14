@@ -29,7 +29,7 @@ body {
   --fontColor: #030303;
   --fontColorGray: rgb(75 85 99);
   --bgColor: white;
-  --staticBgColor: white;
+  --staticBgColor: rgb(245, 245, 245);
   --bgColorGray: rgb(243 244 246);
   --colorScheme: light;
   --opBgColor: black;
@@ -52,7 +52,7 @@ body {
 body.dark{
   --Bg: #343434;
   --bgColor: linear-gradient(to top, #000, #131313, #161616);
-  --staticBgColor: black; /*TODO: chose a better color better */
+  --staticBgColor: #131313; /*TODO: chose a better color better */
   --bgColorGray: #343434;
   background: var(--bgColor);
   --opBgColor: #f3f3f3 ;

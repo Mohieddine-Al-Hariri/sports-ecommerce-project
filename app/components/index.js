@@ -11,4 +11,5 @@ export {default as ProductCard} from './ProductCard';
 export {default as ImagesCarouselModal} from './ImagesCarouselModal';
 export {default as ScrollButton} from './ScrollButton';
 export {default as NoResultsFound} from './NoResultsFound';
+export {default as CheckBox} from './CheckBox';
 
