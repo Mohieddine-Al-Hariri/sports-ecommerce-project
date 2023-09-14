@@ -38,7 +38,7 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
   return (
     <div 
       ref={cardMenuRef}
-      className="absolute w-48 h-10 bg-white fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
+      className="absolute w-48 h-10 staticBgColor fontColorGray rounded-t-md right-2 -top-2 pt-1 pr-1 "
     >
       <div>
         <div className='w-full flex justify-end'>
@@ -51,7 +51,6 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
             width="24"
             height="24"
             viewBox="0 0 24 24"
-            // fill={!isDarkMode ? '#030303' : '#fff'}
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
@@ -63,19 +62,17 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
           </button>
         </div>
 
-        <div className="absolute right-0 w-48 fontColor bg-white rounded-md shadow-lg z-10">
+        <div className="absolute right-0 w-48 fontColor staticBgColor rounded-md shadow-lg z-10">
           <ul>
             {states.map((state) =>{
-              let bg = "bg-white";
-              let disable = false;
-              let txtClr = "fontColor";
-              if(state === productState){
-                bg = "bg-[#2482c8]";
-                disable = true;
-                txtClr = "text-white"
-              }
+              
               return(
-                <button key={state} disabled={disable} onClick={() => {changeProductState(state); setIsOpen(false)}}  className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}>
+                <button key={state} disabled={state === productState} onClick={() => {changeProductState(state); setIsOpen(false)}}  
+                  className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${
+                    state === productState ? "text-whiter bg-[#2482c8]" : " fontColor "
+                  }
+                    flex w-full justify-between `}
+                >
                   {state}
                   {/* {svg} */}
                 </button>
@@ -99,7 +96,7 @@ const AdminProductCard = ({ product }) => {
   else if(product.state === "Out_of_Stock") stateTxtClr = "text-yellow-500";
 
   return (
-    <div className="flex relative w-full justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] productCardBg fontColor p-2 ">
+    <div className="flex relative w-full lg:w-1/3 grow justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] productCardBg fontColor p-2 ">
       <button className="p-1 absolute right-2 top-2 rounded-full hover:bg-[#4bc0d9] hover:text-white" onClick={() => router.push(`Products/updateProduct/${product.id}`)}>
         <svg
           fill="currentColor"
@@ -127,13 +124,15 @@ const AdminProductCard = ({ product }) => {
       </button>
       <Image className="rounded-t-md" src={product.imageUrls[0].url} alt={product.name} width={102} height={109.03}/>
       <div className="w-full flex-col text-center fontColor ">
-        <div className=" fontColorGray text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 11) + '...' : product.name}</div>
+        <div className=" fontColorGray text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 14) + '...' : product.name}</div>
         <div className=" fontColorGray text-[10px] font-thin ">{product.excerpt}</div>
         <h1 className="w-full p-1 ">${ product.price }</h1>
         {/* <h1 className="w-full p-1 ">{ product.state }</h1> */}
         {openMenu ?
-          <div className="mb-4 relative">
-            <ProductStateMenu isOpen={openMenu} setIsOpen={setOpenMenu} productState={productState} setProductState={setProductState} productId={product.id}/>
+          <div className="mb-4 relative flex flex-col justify-center items-center ">
+            <div className="w-32 relative">
+              <ProductStateMenu isOpen={openMenu} setIsOpen={setOpenMenu} productState={productState} setProductState={setProductState} productId={product.id}/>
+            </div>
             <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 ">
               <h1 className={`${stateTxtClr} font-bold`}>{productState}</h1> 
             </button>

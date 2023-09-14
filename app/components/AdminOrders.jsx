@@ -90,7 +90,7 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
   return ( //TODO: Make it responsive
-    <div className='flex flex-col items-center justify-between p-4 h-screen w-screen bgColor overflow-y-scroll overflow-x-hidden fontColor ' >
+    <div className='flex flex-col items-center justify-between p-4 pb-20 h-screen w-screen bgColor overflow-y-scroll overflow-x-hidden fontColor ' >
       
       <div className="mb-4 ">
         <SearchBar resetSearchText={resetSearchText} />
@@ -114,14 +114,16 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
       {/* {ordersState.map((order) => (
         <OrderCard key={order.node.id} order={order.node} />
       ))} */}
-      {array.map((item) => (
-        <div key={item[0].node.id}>
-          <h1 className="p-2 pb-0 text-xl font-semibold w-full text-center border-b-2 border-black ">{item[0].node.state}</h1>
-          {item.map((order) => (
-            <OrderCard key={order.node.id} order={order.node} handleDeleteOrder={handleDeleteOrder} />
-          ))}
-        </div>
-      ))}
+        {array.map((item) => (
+          <div key={item[0].node.id}>
+            <h1 className="p-2 pb-0 text-xl font-semibold w-full text-center border-b-2 opBorderColor ">{item[0].node.state}</h1>
+            <div className="sm:flex flex-wrap">
+              {item.map((order) => (
+                <OrderCard key={order.node.id} order={order.node} handleDeleteOrder={handleDeleteOrder} />
+              ))}
+            </div>
+          </div>
+        ))}
       {/* Pagination controls */}
       {isLoading && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">Loading...</div> }
       {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }

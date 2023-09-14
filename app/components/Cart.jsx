@@ -26,9 +26,9 @@ export const OrderButton = ({
   const orderItems = async () => {
     setSubmitting(true);
     const submittedOrder = await submitOrder({ userId, totalPrice, itemsIds });
-    const itemIds = submittedOrder.createOrder.orderItems.map(
-      (item) => item.id
-    );
+    // const itemIds = submittedOrder.createOrder.orderItems.map(
+    //   (item) => item.id
+    // );
     if (submittedOrder.createOrder) {
       await publishOrder(submittedOrder.createOrder.id);
       await disconnectItemfromCart({ itemsIds, cartId });
@@ -240,7 +240,12 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
           setIsOrderSubmitted={setIsOrderSubmitted}
           cartId={user?.cartId}
           userId={user?.id}
-          totalPrice={items?.reduce((acc, item) => acc + item.total, 0)}
+          totalPrice={
+            items
+              .filter(item => selectedItemsIds.includes(item.id)) // Filter items with matching IDs
+              .reduce((acc, item) => acc + item.total, 0) // Calculate total price for filtered items
+          }
+          // totalPrice={items?.reduce((acc, item) => acc + item.total, 0)}
           itemsIds={selectedItemsIds}
           setSelectedItemsIds={setSelectedItemsIds}
         />

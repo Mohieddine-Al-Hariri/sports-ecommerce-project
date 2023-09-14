@@ -6,7 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import the carousel styles
-import { ProductCard } from ".";
+import { ImagesCarouselModal, ProductCard, ScrollButton } from ".";
 import ReactStars from "react-rating-star-with-type";
 import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from "next/navigation";
@@ -78,7 +78,7 @@ export function ReviewCard({ review }) {
   );
 }
 
-const ItemsDetailsPage = ({ product, user }) => {console.log(product)
+const ItemsDetailsPage = ({ product, user }) => {
   const [chosenProductVariantName, setChosenProductVariantName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [quantityLimit, setQuantityLimit] = useState(null);
@@ -109,7 +109,7 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
     let outOfStock = true;
     if (product.productVariants.length > 0){
       for (const variant of product.productVariants) {
-        if (variant.quantity > 0) {
+        if (variant.quantity > 0 || variant.quantity === null) {
           outOfStock = false;
           break;
         }
@@ -215,7 +215,7 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
         total: totalPrice,
         chosenProductsVariants: [chosenProductVariant],
         product: {
-          imageUrls: [{url: product.imageUrls[0].url}],
+          imageUrls: [{ url: product.imageUrls[0].url }],
           name: product.name,
           price: product.excerpt,
           id: product.id
@@ -276,60 +276,13 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
 
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
-  //TODO: Fix scrolling down problem for mobile
   return (
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start justify-center px-2 pb-10 bgColor  ">
       <div className="max-sm:w-[428px] w-full max-sm:pb-6 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
-        {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           {/* TODO: Make the image size based on the used images dimensions */}
-          {/* <div className="relative max-sm:w-full py-8 px-8 sm:px-3 border-b-2 w-[428px] inline-block ">
-            <Carousel
-              showArrows={true}
-              selectedItem={currentImageIndex}
-              onChange={(index) => setCurrentImageIndex(index)}
-              showThumbs={false}
-            >
-              {product.imageUrls.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative flex justify-center w-full "
-                >
-                  <Image
-                    className="max-sm:w-[300px] max-sm:h-[300px] rounded-lg object-cover"
-                    width={300}
-                    height={300}
-                    src={image.url}
-                    alt={`Image ${index + 1}`}
-                  />
-                </div>
-              ))}
-            </Carousel>
-          </div> */}
-          <div className="relative max-sm:w-full px-3 w-[428px] inline-block ">
-            <Carousel
-              showArrows={true}
-              selectedItem={currentImageIndex}
-              onChange={(index) => setCurrentImageIndex(index)}
-              showThumbs={false}
-            >
-              {product.imageUrls.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative flex justify-center w-full "
-                >
-                  <Image
-                    className="max-sm:w-[428] max-sm:h-[428] object-cover"
-                    width={428}
-                    height={428}
-                    src={image.url}
-                    alt={`Image ${index + 1}`}
-                  />
-                </div>
-              ))}
-            </Carousel>
-          </div>
-          <div ref={detailsRef} className="flex flex-col gap-10 sm:h-full">
+          <ImagesCarouselModal product={product} setImageIndex={setCurrentImageIndex} />
+          <div className="flex flex-col gap-10 sm:h-full">
             <div className="max-sm:w-full w-[440px] relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
               <div>
                 <div className="left-[30px] top-[22px] text-xl font-bold mb-1">
@@ -416,7 +369,17 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
                       Price
                     </div>
                     <div className="fontColor text-2xl font-semibold leading-7">
-                      ${product.price}
+                      {/* ${product.price} */}
+                      {product.isOnSale ? 
+                        <div className="flex gap-2 ">
+                          <div className="relative flex items-end ">
+                            ${product.previousPrice}
+                            <span className="absolute right-0 transform -translate-x-1/2 rotate-12 -bottom-2 text-2xl text-red-500 ">/</span>
+                          </div>
+                          <h1 className="font-bold">${product.price}</h1>
+                        </div> 
+                      : product.price}
+                      
                     </div>
                   </div>
                 </div>
@@ -426,16 +389,6 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
                   </h1>
                 )}
               </div>
-              {/* {product.reviews && product.reviews.length > 0 &&
-                  <ReactStars
-                    count={5}
-                    value={rate}
-                    size={16}
-                    isHalf={true}
-                    activeColors={[ "red", "orange", "#FFCE00", "#FFCE00","#4bc0d9",]}
-                    className='absolute bottom-0 right-0'
-                  />
-                } */}
               <div
                 id="tooltip"
                 className="relative"
@@ -467,6 +420,7 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
             <div className="w-full flex justify-center items-center flex-col pb-8 ">
               <div className=" w-full flex justify-center bgColor pb-4">
                 <button
+                  ref={detailsRef} 
                   disabled={isOutOfStock}
                   onClick={itemToCart}
                   className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${
@@ -511,11 +465,11 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
                   </Link>
                 </div>
               )}
-              {showPleaseLogin && (
+              {/* {showPleaseLogin && (
                 <p className="text-red-500 text-center ">
                   To add item to cart, please Sign in
                 </p>
-              )}
+              )} */}
               {selectVariantError && (
                 <p className="text-[#4bc0d9] text-center ">
                   Please Select Your Desired Variant
@@ -553,31 +507,7 @@ const ItemsDetailsPage = ({ product, user }) => {console.log(product)
           <ReviewCard key={review.id} review={review} />
         ))}
       </div>
-      <button
-        //TODO: put in seperate component
-        disabled={isLastOrderCardVisible}
-        onClick={scrollToBottom}
-        className={`fixed bottom-4 scrollButton right-4 max-sm:right-3 max-sm:bottom-10 rounded-full fontColor staticBgColor p-2 ${
-          !isLastOrderCardVisible ? "show-button " : "hide-button"
-        }`}
-      >
-        <svg
-          width="30px"
-          height="30px"
-          viewBox="0 0 1.8 1.8"
-          xmlns="http://www.w3.org/2000/svg"
-          className="rotate-180"
-        >
-          <path d="M0 0h1.8v1.8H0z" fill="none" />
-          <g id="Shopicon">
-            <path
-              fill="currentColor"
-              points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
-              d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
-            />
-          </g>
-        </svg>
-      </button>
+      <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} handleClick={scrollToBottom} />
     </div>
   );
 };

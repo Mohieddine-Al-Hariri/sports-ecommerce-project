@@ -8,4 +8,7 @@ export {default as AdminProductCard} from './AdminProductCard';
 export {default as AdminProductsPage} from './AdminProductsPage';
 export {default as DarkMBtn} from './DarkMBtn';
 export {default as ProductCard} from './ProductCard';
+export {default as ImagesCarouselModal} from './ImagesCarouselModal';
+export {default as ScrollButton} from './ScrollButton';
+export {default as NoResultsFound} from './NoResultsFound';
 

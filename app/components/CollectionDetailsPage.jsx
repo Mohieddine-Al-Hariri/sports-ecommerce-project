@@ -1,5 +1,5 @@
 "use client";
-import { addItemToCart, publishCart, publishItemAddedToCart } from "@/lib";
+import { addItemToCart, publishCart, publishItemAddedToCart, publishManyVariants } from "@/lib";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
@@ -11,6 +11,7 @@ import ReactStars from "react-rating-star-with-type";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import { useIsVisible } from "./UseVisible";
+import { ImagesCarouselModal, ScrollButton } from ".";
 
 export function Variants({
   variant,
@@ -142,6 +143,7 @@ export const AddItemForm = ({
       }
     });
     if(isStop) return;
+    
     if (!isLoggedin) {
       const localCart = JSON.parse(localStorage.getItem("cart"));
       const id = uuidv4();
@@ -151,6 +153,7 @@ export const AddItemForm = ({
         price: product.excerpt,
         id: product.id,
       }));
+
       const cartItem = {
         id,
         quantity,
@@ -173,7 +176,6 @@ export const AddItemForm = ({
     //if user logged in, do this⬇️⬇️
     const cartId = user.cartId;
     const isAdded = await addItemToCart({
-      //TODO: Fix this
       itemId: collection.id,
       userSlug: user.slug,
       quantity,
@@ -182,10 +184,14 @@ export const AddItemForm = ({
       chosenProductsVariants,
       isCollection: true,
     });
-    await publishCart(cartId); //Needs publish after being updated
-    await publishItemAddedToCart(
+
+    const publishCartPromise = publishCart(cartId); //Needs publish after being updated
+    const publishItemPromise = publishItemAddedToCart(
       isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id
     );
+    const publishVariantsPromise = publishManyVariants(isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id);
+    await Promise.all([publishCartPromise, publishItemPromise, publishVariantsPromise])
+    
     setIsAdding(false);
     setIsAddedToCart(true);
     setIsItemAddedToCart(true);
@@ -221,7 +227,7 @@ export const AddItemForm = ({
 
   return (
     <>
-      <div ref={detailsRef} className="flex flex-col w-full px-4 ">
+      <div className="flex flex-col w-full px-4 ">
         {collection.products[currentImageIndex].productVariants.length > 0 && (
           <div className="left-[31px] top-[88px] text-sm font-bold leading-tight mb-2">
             Variants
@@ -293,6 +299,7 @@ export const AddItemForm = ({
         </div>
         <div className=" w-full flex justify-center bgColor pb-4">
           <button
+            ref={detailsRef}
             disabled={collection.state !== "Available"}
             onClick={itemToCart}
             className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${
@@ -353,31 +360,7 @@ export const AddItemForm = ({
           <p className="text-green-500 text-center ">Item Added Successfuly</p>
         )}
       </div>
-      <button
-        //TODO: put in seperate component
-        disabled={isLastOrderCardVisible}
-        onClick={scrollToBottom}
-        className={`fixed bottom-4 scrollButton right-4 max-sm:right-3 max-sm:bottom-10 rounded-full fontColor staticBgColor p-2 ${
-          !isLastOrderCardVisible ? "show-button " : "hide-button"
-        }`}
-      >
-        <svg
-          width="30px"
-          height="30px"
-          viewBox="0 0 1.8 1.8"
-          xmlns="http://www.w3.org/2000/svg"
-          className="rotate-180"
-        >
-          <path d="M0 0h1.8v1.8H0z" fill="none" />
-          <g id="Shopicon">
-            <path
-              fill="currentColor"
-              points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
-              d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
-            />
-          </g>
-        </svg>
-      </button>
+      <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} handleClick={scrollToBottom} />
     </>
   );
 };
@@ -402,10 +385,10 @@ const CollectionDetailsPage = ({ collection, user }) => {
   const showMoreLessLabel = showFullDescription ? "Show Less" : "Show More";
   function checkOutOfStock() {
     let outOfStock = true;
-    if (collection.products[currentImageIndex].productVariants > 0) {
+    if (collection.products[currentImageIndex].productVariants.length > 0) {
       for (const variant of collection.products[currentImageIndex]
         .productVariants) {
-        if (variant.quantity > 0) {
+        if (variant.quantity > 0 || variant.quantity === null) {
           outOfStock = false;
           break;
         }
@@ -415,10 +398,10 @@ const CollectionDetailsPage = ({ collection, user }) => {
       outOfStock = true;
     return outOfStock;
   }
-
+  console.log(collection.products)
   useEffect(() => {
     setIsOutOfStock(checkOutOfStock());
-    if (user) setisLoggedin(true);
+    if (user) setisLoggedin(true); //TODO: Put in useEffect?
   }, [currentImageIndex]);
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
@@ -463,7 +446,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
       <div className="max-sm:w-[428px] w-full relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
-          <div className="relative max-sm:w-full w-[428px] inline-block bg-[#4bc0d9]">
+          {/* <div className="relative max-sm:w-full w-[428px] inline-block bg-[#4bc0d9]">
             <Carousel
               showArrows={true}
               selectedItem={currentImageIndex}
@@ -476,7 +459,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
                   className="relative flex justify-center w-full"
                 >
                   <Image
-                    className="max-sm:w-[428] max-sm:h-[428] object-cover"
+                    className="max-sm:max-h-[500px] object-cover"
                     width={428}
                     height={428}
                     src={product.imageUrls[0].url}
@@ -485,7 +468,8 @@ const CollectionDetailsPage = ({ collection, user }) => {
                 </div>
               ))}
             </Carousel>
-          </div>
+          </div> */}
+          <ImagesCarouselModal setImageIndex={setCurrentImageIndex} product={{imageUrls: collection.products.map(product => product.imageUrls[0])}} />
           <div className="flex flex-col justify-between gap-10 sm:h-screen">
             <div className="max-sm:w-full w-[440px] relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
               <div>

@@ -96,8 +96,8 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
           <div className="lg:flex lg:justify-center lg:items-end lg:mb-4 gap-2">
             <SearchBar resetSearchText={resetSearchText} />
             <div className="flex gap-2 justify-center">
-              <div className="mb-4 lg:mb-0">
-                <label htmlFor="category" className="block text-lg font-semibold mb-2">
+              <div className="mb-4 lg:mb-0 ">
+                <label htmlFor="category" className="block text-lg font-semibold mb-2 pr-2 border-r-2 borderColorGray ">
                   Filter by Category
                 </label>
                 <select
@@ -114,7 +114,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
                 </select>
               </div>
                 <div className="mb-4 lg:mb-0">
-                  <label htmlFor="category" className="block text-lg font-semibold mb-2">
+                  <label htmlFor="category" className="block text-lg font-semibold mb-2 pl-2 border-l-2 borderColorGray ">
                     Filter by Collection
                   </label>
                   <select
@@ -132,14 +132,16 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
                 </div>
             </div>
           </div>
-          {productsState.map(({node}) => (
-            <AdminProductCard
-              key={node.id}
-              product= {node}
-              hasNextPage = {hasNextPage}
-              // categories={categoriesData} 
-            />
-          ))}
+          <div className="flex lg:flex-wrap max-lg:flex-col gap-2 bgColor ">
+            {productsState.map(({node}) => (
+              <AdminProductCard
+                key={node.id}
+                product= {node}
+                hasNextPage = {hasNextPage}
+                // categories={categoriesData} 
+              />
+            ))}
+          </div>
           {/* Pagination controls */}
           {isLoading && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">Loading...</div> }
           {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }

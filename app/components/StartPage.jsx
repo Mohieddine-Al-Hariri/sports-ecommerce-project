@@ -5,7 +5,8 @@ import SearchBar from "./SearchBar";
 import { useIsVisible } from "./UseVisible";
 import { addManyItemsToCart, getProducts, publishCart, publishItemAddedToCart, publishManyItemsAddedToCart } from "@/lib";
 import { useRouter } from 'next/navigation';
-import { ProductCard } from ".";
+import { NoResultsFound, ProductCard, ScrollButton } from ".";
+import { Fade } from "react-awesome-reveal";
 
 export const LoadingCard = () => {
   return (
@@ -30,13 +31,13 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
   
   const topRef = useRef(null);
-  const isLastOrderCardVisible = useIsVisible(topRef);
+  const isCategoryFilterVisible = useIsVisible(topRef);
   const router = useRouter();
 
   const scrollToTop = () => {
     topRef.current.scrollIntoView({ behavior: 'smooth' });
   };
- 
+  console.log("products: ", products);
   const addItemsToCart = async (localCart) => { 
   //Add items to cart in DB from localStorage since user logged in
     const cartId = user.cartId;
@@ -78,11 +79,19 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   },[products, hasNextPage])
 
   const getMoreProducts = async () => {
-    const searchedCategory = undefined;
+    let searchedCategoryPagination = undefined;
+    let isOnSale = false;
+    if(searchedCategory){
+      if(searchedCategory === "All") return
+      else if(searchedCategory === "Collections & Sales") isOnSale = true;
+      else searchedCategoryPagination = searchedCategory
+    }
+
     //TODO: create an env var specific for this pagination...
-    const paginatedProducts = await getProducts(lastProductCursor, searchText, searchedCategory);
+    const paginatedProducts = await getProducts(lastProductCursor, searchText, searchedCategory, undefined, false, isOnSale);
     return paginatedProducts;
   }
+
   useEffect(() => {
     if(isFirstRedner){
       setIsFirstRender(false);
@@ -113,7 +122,6 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   useEffect(() => {
     handleNavigation(selectedCategory);
   },[selectedCategory])
-
   return (
       <div>
         <div className="w-full flex justify-center max-sm:items-center items-end  max-sm:gap-2 gap-4 mb-4 max-sm:flex-col fontColor">
@@ -139,81 +147,78 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
           <SearchBar/>
         </div>
         <div className=" text-neutral-700 fontColorGray text-xl font-bold leading-normal ml-5">Items</div>
-        <div className="w-full h-full flex items-start justify-around lg:justify-between flex-wrap gap-1 p-4 relative ">
-          {selectedCategory === 'Collections & Sales' ?
-            collectionsData?.collections.map(collection => {
-              const images = collection.node.products?.map(product => product.imageUrls[0]);
-              return(
-                <ProductCard key={`collections products ${collection.node.id}`} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
-              )
-            })
-          :
-            collectionsData?.collections.slice(0, 4).map(collection => {
-              const images = collection.node.products?.map(product => product.imageUrls[0]);
-              return(
-                <ProductCard key={collection.node.id} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
-              )
-            })
-          }
-          {productsState?.map(item => (
-            <ProductCard key={item.node.id} id={item.node.id} name={item.node.name} excerpt={item.node.excerpt} imageUrl={item.node.imageUrls[0].url} reviews={item.node.reviews} />
-          ))}
-          {/* Pagination controls */}
-          {isLoading && 
-            <>
-              <LoadingCard/>
-              <LoadingCard/>
-              <LoadingCard/>
-            </>
-          }
-          {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }
-          {/* Add an invisible element to act as the previousProductCardRef */}
-          <div className="w-full h-[60px]" ref={lastProductCardRef} style={{ visibility: "hidden" }} />
-        </div>
-        <button 
-          //TODO:put in seperate component
-          href="#top"
-          disabled={isLastOrderCardVisible}
-          onClick={scrollToTop}
-          className={`fixed z-10 bottom-4 scrollButton right-4 max-sm:bottom-10 max-sm:right-3 rounded-full text-white bg-[#4bc0d9] hover:bg-[#3ca8d0] p-2 ${
-            !isLastOrderCardVisible ? "show-button" : "hide-button"
-          }`}
-        >
-          <svg
-            width="30px"
-            height="30px"
-            viewBox="0 0 1.8 1.8"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M0 0h1.8v1.8H0z" fill="none" />
-            <g id="Shopicon">
-              <path
-                fill="white"
-                points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
-                d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
-              />
-            </g>
-          </svg>
-        </button>
+          {/* TODO: Make the (collections and sales) be inside the products state too */}
+          <div className="w-full h-full flex items-start justify-around lg:justify-between flex-wrap gap-1 p-4 relative ">
+            <Fade triggerOnce={true} className="overflow-hidden rounded-lg h-[200px] max-w-[356px] w-full grow hover:scale-[1.1] duration-200  ">
+            {/* <Fade triggerOnce={true} className="overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4 "> */}
+              {selectedCategory === 'Collections & Sales' ?
+                collectionsData?.collections.map(collection => {
+                  const images = collection.node.products?.map(product => product.imageUrls[0]);
+                  return(
+                    <ProductCard key={`collections products ${collection.node.id}`} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
+                  )
+                })
+              :
+                collectionsData?.collections.slice(0, 4).map(collection => {
+                  const images = collection.node.products?.map(product => product.imageUrls[0]);
+                  return(
+                    <ProductCard key={collection.node.id} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
+                  )
+                })
+              }
+              {productsState?.map(item => (
+                <ProductCard 
+                  key={item.node.id} 
+                  id={item.node.id} 
+                  name={item.node.name} 
+                  excerpt={item.node.excerpt} 
+                  imageUrl={item.node.imageUrls[0].url} 
+                  reviews={item.node.reviews} 
+                  isOnSale={item.node.isOnSale}
+                />
+              ))}
+              {(productsState?.length === 0 && collectionsData.collections.length === 0) && <NoResultsFound/>}
+            </Fade>
 
+            {/* Pagination controls */}
+            {isLoading && 
+              <>
+                <LoadingCard/>
+                <LoadingCard/>
+                <LoadingCard/>
+              </>
+            }
+            {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">
+              <div className="w-full flex flex-col justify-center items-center fontColor pt-4 ">
+                You can contact us on
+                <div className="flex items-center mt-2 ">
+                  <a className={` flex justify-center bg-[#25D366] text-white items-center rounded-full aspect-square p-1  `} href="https://wa.me/+96176021231" target="_blank">
+                    <svg
+                      fill="currentColor"
+                      width= "26px"
+                      height= "26px"
+                      viewBox="-0.075 -0.075 0.9 0.9"
+                      xmlns="http://www.w3.org/2000/svg"
+                      preserveAspectRatio="xMinYMin"
+                      className="jam jam-whatsapp"
+                    >
+                      <path d="M0.357 0C0.158 0.01 0.001 0.174 0.001 0.372a0.367 0.367 0 0 0 0.041 0.167L0.002 0.731a0.015 0.015 0 0 0 0.018 0.017l0.189 -0.044a0.374 0.374 0 0 0 0.161 0.039c0.204 0.003 0.373 -0.157 0.379 -0.359C0.756 0.167 0.576 -0.01 0.357 0zm0.225 0.576a0.292 0.292 0 0 1 -0.207 0.085 0.291 0.291 0 0 1 -0.13 -0.03l-0.026 -0.013 -0.116 0.027 0.024 -0.117 -0.013 -0.025A0.286 0.286 0 0 1 0.082 0.371c0 -0.078 0.03 -0.151 0.086 -0.206a0.294 0.294 0 0 1 0.207 -0.085c0.078 0 0.152 0.03 0.207 0.085a0.288 0.288 0 0 1 0.086 0.206c0 0.077 -0.031 0.151 -0.086 0.206z" />
+                      <path d="m0.557 0.452 -0.072 -0.021a0.027 0.027 0 0 0 -0.027 0.007l-0.018 0.018a0.027 0.027 0 0 1 -0.029 0.006c-0.034 -0.014 -0.106 -0.077 -0.125 -0.109a0.026 0.026 0 0 1 0.002 -0.029l0.015 -0.02a0.027 0.027 0 0 0 0.003 -0.027L0.277 0.208a0.027 0.027 0 0 0 -0.042 -0.01c-0.02 0.017 -0.044 0.043 -0.047 0.071 -0.005 0.05 0.017 0.114 0.099 0.19 0.095 0.088 0.171 0.1 0.221 0.088 0.028 -0.007 0.051 -0.034 0.065 -0.056a0.027 0.027 0 0 0 -0.015 -0.04z" />
+                    </svg>
+                  </a>
+                  <a href="https://www.instagram.com/electronics_mohie/" target="_blank">
+                    <div className="">
+                      <Image src="/Instagram-Logo.wine.svg" width="80" height="80" alt="instagram logo" />
+                    </div>
+                  </a>
+                </div>
+              </div>  
+            </div> }
+            {/* Add an invisible element to act as the previousProductCardRef */}
+            <div className="w-full h-[60px]" ref={lastProductCardRef} style={{ visibility: "hidden" }} />
+          </div>
+        <ScrollButton rotationDegree={0} isObservedElementVisible={isCategoryFilterVisible} handleClick={scrollToTop} bgColor="bg-[#4bc0d9]" />
 
-        {/* <button href="#top" disabled={!isLastOrderCardVisible} onClick={scrollToTop} className="fixed bottom-4 right-4 rounded-full text-white bg-[#4bc0d9] hover:bg-[#3ca8d0] p-2">
-          <svg
-            width="30px"
-            height="30px"
-            viewBox="0 0 1.8 1.8"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M0 0h1.8v1.8H0z" fill="none" />
-            <g id="Shopicon">
-              <path
-                fill="white"
-                points="6.586,30.586 9.414,33.414 24,18.828 38.586,33.414 41.414,30.586 24,13.172  "
-                d="M0.247 1.147L0.353 1.253L0.9 0.706L1.447 1.253L1.553 1.147L0.9 0.494Z"
-              />
-            </g>
-          </svg>
-        </button> */}
       </div>
       
     

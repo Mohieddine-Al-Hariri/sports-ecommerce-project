@@ -1,24 +1,23 @@
 import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
-  const itemsVariantsIds = await req.json();
+  const orderItemId = await req.json();
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-
+  console.log("\n\norderItemId: \n", orderItemId);
   try {
     const publishedVariants = await client.request(
       `
-        mutation PublishManyOrderItemVariants($itemsVariantsIds: [ID]) {
-          publishManyOrderItemVariants(where: {id_in: $itemsVariantsIds}) {
+        mutation PublishManyOrderItemVariants($orderItemId: ID!) {
+          publishManyOrderItemVariants(where: {orderItem: {id: $orderItemId}}) {
             count
           }
         }
       `,
-      // eg: { itemsVariantsIds: ['clldvjfspkab60buo4vanqkm1', 'clldvjfsrkab80buodl6ov0zf'] }
-      { itemsVariantsIds: itemsVariantsIds.map((id) => (id.id)) }
+      { orderItemId }
     );
     return new Response(JSON.stringify(publishedVariants));
   } catch (error) {

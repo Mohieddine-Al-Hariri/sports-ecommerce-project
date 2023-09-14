@@ -34,6 +34,7 @@ body {
   --colorScheme: light;
   --opBgColor: black;
   --opTxtColor: white;
+  --opBorderColor: black;
   --productCardBg: rgb(230, 230, 230);
   --whatsappTxt: #25D366;
   /* --scrollbar-track-bg: linear-gradient(to top, #c6c4c6, #d8d8d8, #ececec);*/
@@ -51,11 +52,12 @@ body {
 body.dark{
   --Bg: #343434;
   --bgColor: linear-gradient(to top, #000, #131313, #161616);
-  --staticBgColor: black;
+  --staticBgColor: black; /*TODO: chose a better color better */
   --bgColorGray: #343434;
   background: var(--bgColor);
   --opBgColor: #f3f3f3 ;
   --opTxtColor: black;
+  --opBorderColor: white;
   --productCardBg: rgb(59, 59, 59) ;
   /* --postCardBgStart: #343434 ;
   --postCardBgEnd: #131313; */
@@ -103,6 +105,9 @@ body.dark{
 }
 .opTxtColor{
   color: var(--opTxtColor);
+}
+.opBorderColor{
+  border-color: var(--opBorderColor);
 }
 .selected { /*for the pill shaped cards in the Admin/Products > createProductForm*/
   border: 2px solid blue;

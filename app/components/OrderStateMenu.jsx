@@ -2,9 +2,17 @@
 import { deleteOrder, publishOrder, updateOrderState } from '@/lib';
 import { useRef, useEffect, useState } from 'react';
 
-export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, bg, disable, txtClr }) => {
+export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, bg, disable, txtClr, orderState }) => {
   return(
-    <button disabled={disable} onClick={() => {changeOrderState(state); setIsOpen(false)}}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}>
+    <button 
+      disabled={state === orderState} 
+      onClick={() => {changeOrderState(state); setIsOpen(false)}}  
+      // className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white ${txtClr} ${bg} flex w-full justify-between `}
+      className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${
+        state === orderState ? "text-white bg-[#2482c8]" : " fontColor "
+      }
+        flex w-full justify-between `}
+    >
       {state}
       {svg}
     </button>
@@ -133,6 +141,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
     return <StateBtn 
       key={state.state} 
       state={state.state} 
+      orderState={orderState}
       bg={bg} 
       txtClr={txtClr} 
       disable={disable} 
@@ -146,7 +155,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
   return (
     <div 
       ref={cardMenuRef}
-      className="absolute w-48 h-10 bgColor fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
+      className="absolute w-48 h-10 staticBgColor fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
     >
       <div>
         <div className='w-full flex justify-end'>
@@ -171,7 +180,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
           </button>
         </div>
 
-        <div className="absolute right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
+        <div className="absolute staticBgColor right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
           <ul>
             {statesBtns}
             <button onClick={() => handleDeleteOrder(orderId)}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white fontColor flex w-full justify-between `}>

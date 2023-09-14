@@ -5,8 +5,8 @@ import { getCategories, getCollections, getProducts } from '@/lib'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
-export async function getProductsData(searchText, category) {
-  const products = (await getProducts(undefined, searchText, category)) || [];
+export async function getProductsData(searchText, category, onlyOnSale) {
+  const products = (await getProducts(undefined, searchText, category, undefined, false, onlyOnSale)) || [];
   return products;
 }
 export async function getCollectionsData(searchText) {
@@ -24,7 +24,7 @@ export const revalidate = 0;
 
 export default async function Home({ searchParams: { searchText, category } }) {
   const sessionData = await getServerSession(authOptions);
-  const productsData = category !== "Collections & Sales" ? await getProductsData(searchText, category) : [];
+  const productsData = category !== "Collections & Sales" ? await getProductsData(searchText, category) : await getProductsData(searchText, undefined, true);
   const collectionsData = await getCollectionsData(searchText, category);
   const categoriesData = await getCategoriesData();
   //TODO: https://github.com/vercel/swr OR <Suspense fallback={...}/>

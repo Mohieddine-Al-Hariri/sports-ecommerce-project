@@ -7,12 +7,13 @@ import Link from "next/link";
 const OrderCard = ({ order, handleDeleteOrder }) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [orderState, setOrderState] = useState(order.state);
+
   let stateColor = "text-green-500";
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
   else if(order.state === "Delivering") stateColor = "text-[#4bc0d9]";
   else if(order.state === "Ordered") stateColor = "text-yellow-500";
   const item = order.orderItems[0];
-  console.log(order)
+
   let source = null;
   if(item?.collection) {
     if(item.collection.imageUrl) source = item.collection.imageUrl;
@@ -20,10 +21,10 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   }else if(item?.product.imageUrls) source = item.product.imageUrls[0].url;
 
   return (
-    <div className="border border-gray-300 fontColor rounded-lg relative shadow-md w-64 m-4 ">
+    <div className="border border-gray-300 fontColor rounded-lg relative shadow-md w-64 m-4 grow ">
       <div className="h-32 overflow-hidden">
         <Link href={`/orderDetails/${order.id}`}>
-          {source ? //TODO: Finish adding collection, here and in api call
+          {source ? 
             Array.isArray(source) ?
               <div className="aspect-square w-full h-full overflow-hidden flex -space-x-2">
                 <Image src={source[0].imageUrls[0].url} width={100} height={100} alt={source[0].name}/>
@@ -31,7 +32,7 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
                 <Image src={source[2].imageUrls[0].url} width={100} height={100} alt={source[2].name}/>
               </div>
             :
-              <Image height={100} width={100} src={source} alt={item.product?.name || item.collection.products[0].name} className="w-full h-full object-cover" />
+              <Image height={100} width={100} src={source} alt={item.product?.name || item.collection.products[0].name} className="w-full max-w-[500px] h-full object-cover" />
           :
           <div className="w-full h-full bg-black rounded-md"></div>
           }

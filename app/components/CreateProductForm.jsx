@@ -298,7 +298,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     state: "Available",
     categories: [],
   });
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState(0); //TODO: Add Is On Sale? and previous price if true
   const [imageError, setImageError] = useState("");
   const router = useRouter();
 
@@ -379,34 +379,6 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     router.push(`/itemsDetails/${createdProduct.createProduct.id}`);
   };
 
-  // const reactSelectStyles = {
-  //   control: (provided, state) => ({
-  //     ...provided,
-  //     backgroundColor: "bgColor", // Adjust the background color
-  //     borderColor: "borderColor", // Adjust the border color
-  //     color: "fontColor", // Adjust the text color
-  //     // '&:hover': {
-  //     //   borderColor: theme.colors.blue[500],    // Adjust the hover border color
-  //     // },
-  //   }),
-  //   option: (provided, ishoverd) => ({
-  //     ...provided,
-  //     backgroundColor: isDarkMode ? "black" : "white", // Adjust the background color for selected options
-  //     color: isDarkMode ? "white" : "black", // Adjust the text color
-  //   }),
-  //   '&:hover': {
-  //     backgroundColor: "blue",
-  //   },
-  //   // option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-  //   //   return {
-  //   //     ...styles,
-  //   //     backgroundColor: "bgColor",
-  //   //     color: 'fontColor',
-  //   //     cursor: isDisabled ? 'not-allowed' : 'default',
-  //   //   };
-  //   // },
-  //   // Other style overrides as needed...
-  // };
   const reactSelectStyles = {
     control: (provided, state) => ({
       ...provided,

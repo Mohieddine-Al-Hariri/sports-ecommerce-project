@@ -55,12 +55,12 @@ export const SVGComponent = (props) => (
   </svg>
 );
 
-const ProductCard = ({ id, name, excerpt, isCollection, imageUrl, imageUrls, reviews }) => {
+const ProductCard = ({ id, name, excerpt, isCollection, imageUrl, imageUrls, reviews, isOnSale }) => {
   const rates = reviews?.map(review => review.rating)
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return (
-    <Link href={isCollection ? `/collectionDetails/${id}` :`/itemsDetails/${id}`} className="relative hover:scale-[1.1] duration-200 shadow-lg overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-      {isCollection &&
+    <Link href={isCollection ? `/collectionDetails/${id}` :`/itemsDetails/${id}`} className="relative shadow-lg ">
+      {(isCollection || isOnSale) &&
         <SVGComponent className="absolute -top-2 -right-2 z-10" />
       }
       {imageUrl ? 
