@@ -489,10 +489,8 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             {form.description}
           </ReactMarkdown>
         </div>
-        {/* <label htmlFor="isOnSale">
-          <h2>Is Product On Sale?</h2>
-          <input className="text-[#4bc0d9] focus:border-[#4bc0d9] " type="checkbox" name="isOnSale" id="isOnSale" />
-        </label> */}
+
+
         <CheckBox label="Is Product On Sale?" isChecked={isOnSale} setIsChecked={setIsOnSale}/>
         <div className="mb-4 flex gap-2 " >
           <label htmlFor="price" className="block text-lg font-semibold mb-2 w-full">
@@ -554,29 +552,9 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] "
           />
         </div>
+
         <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} />
 
-
-        {/* <div className="mb-4">
-          <label
-            htmlFor="collection"
-            className="block text-lg font-semibold mb-2"
-          >
-            Collection
-          </label>
-          <select
-            id="collection"
-            name="collection"
-            value={form.collection}
-            onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-          >
-            <option value="">Select a Collection</option>
-            {collectionsData.map((collection, index) => (
-              <option key={index} value={collection.id}>{collection.name}</option>
-            ))}
-          </select>
-        </div> */}
         <div className="mb-4">
           <label
             htmlFor="collections"

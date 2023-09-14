@@ -276,7 +276,7 @@ const ItemsDetailsPage = ({ product, user }) => {
 
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
-  return (
+  return ( //TODO: Fix styling for large+ screens
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start justify-center px-2 max-lg:pb-10 bgColor  ">
       <div className="max-sm:w-[428px] w-full max-sm:pb-6 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
@@ -368,15 +368,15 @@ const ItemsDetailsPage = ({ product, user }) => {
                     <div className=" fontColor text-xs font-thin leading-[14px]">
                       Price
                     </div>
-                    <div className="fontColor text-2xl font-semibold leading-7">
+                    <div className="fontColor text-xl leading-7">
                       {/* ${product.price} */}
                       {product.isOnSale ? 
                         <div className="flex gap-2 ">
                           <div className="relative flex items-end ">
                             ${product.previousPrice}
-                            <span className="absolute right-0 transform -translate-x-1/2 rotate-12 -bottom-2 text-2xl text-red-500 ">/</span>
+                            <p className="absolute w-0.5 h-10 right-4 -top-1 transform rotate-45 rounded-full text-4xl bg-red-500 "></p>
                           </div>
-                          <h1 className="font-bold">${product.price}</h1>
+                          <h1 className="font-bold text-2xl">${product.price}</h1>
                         </div> 
                       : `$${product.price}`}
                       
