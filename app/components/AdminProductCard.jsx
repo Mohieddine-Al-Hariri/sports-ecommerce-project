@@ -3,8 +3,10 @@ import { publishProduct, updateProductState } from "@/lib";
 import Image from "next/image"
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { SVGComponent } from "./ProductCard";
+import { SVGLoading, SVGPencil, SVGTrash, SVGX } from ".";
 
-export const ProductStateMenu = ({ productState, setProductState, productId, isOpen, setIsOpen }) => {
+export const ProductStateMenu = ({ productState, setProductState, productId, isOpen, setIsOpen, setIsDeleting, deleteProductFromDb }) => {
   const router = useRouter()
   const states = ["Available", "Out_of_Stock", "Removed"];
   // Ref for the card menu container
@@ -33,7 +35,11 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
     router.refresh();
   }
 
-
+  const deleteTheProduct = async () => {
+    setIsDeleting(true);
+    await deleteProductFromDb(productId);
+    setIsDeleting(false);
+  }
 
   return (
     <div 
@@ -43,22 +49,10 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
       <div>
         <div className='w-full flex justify-end'>
           <button
-            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#2482c8] rounded-full focus:outline-none"
+            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#4bc0d9] rounded-full focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <svg 
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <SVGX />
           </button>
         </div>
 
@@ -68,16 +62,22 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
               
               return(
                 <button key={state} disabled={state === productState} onClick={() => {changeProductState(state); setIsOpen(false)}}  
-                  className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${
-                    state === productState ? "text-whiter bg-[#2482c8]" : " fontColor "
+                  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white ${
+                    state === productState ? "text-white bg-[#4bc0d9]" : " fontColor "
                   }
                     flex w-full justify-between `}
                 >
                   {state}
-                  {/* {svg} */}
                 </button>
               )
             })}
+            <button 
+              onClick={() => {deleteTheProduct(); setIsOpen(false)}}  
+              className="px-4 py-2 rounded-md text-red-500 hover:bg-red-500 hover:text-white flex w-full justify-between "
+            >
+              Delete
+              <SVGTrash/>
+            </button>
           </ul>
         </div>
       </div>
@@ -87,41 +87,24 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
   
 }
 
-const AdminProductCard = ({ product }) => {
+const AdminProductCard = ({ product, deleteProductFromDb }) => {
   const [openMenu, setOpenMenu] = useState(false);
   const [productState, setProductState] = useState(product.state);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+
   let stateTxtClr = "text-green-500";
-  if(product.state === "Removed") stateTxtClr = "text-red-500";
-  else if(product.state === "Out_of_Stock") stateTxtClr = "text-yellow-500";
+  if(productState === "Removed") stateTxtClr = "text-red-500";
+  else if(productState === "Out_of_Stock") stateTxtClr = "text-yellow-500";
 
   return (
     <div className="flex relative w-full lg:w-1/3 grow justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] productCardBg fontColor p-2 ">
       <button className="p-1 absolute right-2 top-2 rounded-full hover:bg-[#4bc0d9] hover:text-white" onClick={() => router.push(`Products/updateProduct/${product.id}`)}>
-        <svg
-          fill="currentColor"
-          width="24px"
-          height="24px"
-          viewBox="0 0 1.35 1.35"
-          preserveAspectRatio="xMidYMid meet"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-        >
-          <title>{"edit-line"}</title>
-          <path
-            className="clr-i-outline clr-i-outline-path-1"
-            d="M1.27 0.312 1.05 0.091a0.078 0.078 0 0 0 -0.11 0L0.16 0.87l-0.071 0.307a0.077 0.077 0 0 0 0.075 0.094 0.08 0.08 0 0 0 0.016 0l0.311 -0.071 0.779 -0.779a0.078 0.078 0 0 0 0 -0.11ZM0.453 1.132l-0.291 0.061 0.066 -0.286L0.812 0.326l0.225 0.225ZM1.087 0.497l-0.225 -0.225 0.131 -0.13 0.221 0.225Z"
-          />
-          <path
-            x={0}
-            y={0}
-            width={36}
-            height={36}
-            fillOpacity={0}
-            d="M0 0H1.35V1.35H0V0z"
-          />
-        </svg>
+        <SVGPencil />
       </button>
+      {product.isOnSale &&
+        <SVGComponent className="absolute -rotate-[90deg] -top-[6px] -left-[6px] z-10" />
+      }
       <Image className="rounded-t-md" src={product.imageUrls[0]?.url} alt={product.name} width={102} height={109.03}/>
       <div className="w-full flex-col text-center fontColor ">
         <div className=" fontColorGray text-sm font-bold ">{product.name.length > 15 ? product.name.slice(0, 14) + '...' : product.name}</div>
@@ -131,16 +114,24 @@ const AdminProductCard = ({ product }) => {
         {openMenu ?
           <div className="mb-4 relative flex flex-col justify-center items-center ">
             <div className="w-32 relative">
-              <ProductStateMenu isOpen={openMenu} setIsOpen={setOpenMenu} productState={productState} setProductState={setProductState} productId={product.id}/>
+              <ProductStateMenu setIsDeleting={setIsDeleting} deleteProductFromDb={deleteProductFromDb} isOpen={openMenu} setIsOpen={setOpenMenu} productState={productState} setProductState={setProductState} productId={product.id}/>
             </div>
             <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 ">
               <h1 className={`${stateTxtClr} font-bold`}>{productState}</h1> 
             </button>
           </div>
           :
-          <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 mb-4  ">
-            <h1 className={`${stateTxtClr} font-bold`}>{productState}</h1>
-          </button>
+          isDeleting ? (
+            <div className="w-full flex justify-center">
+              <button disabled className="border-2 border-gray-500 rounded-full pr-3 pl-5 py-1 mb-4 flex justify-center items-center ">
+                <SVGLoading />
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 mb-4  ">
+              <h1 className={`${stateTxtClr} font-bold`}>{productState}</h1>
+            </button>
+          )
         }
         <div className="px-2 ">
           <button className="rounded-lg bg-[#4bc0d9] hover:bg-[#3ca8d0] py-1 text-white w-full " onClick={() => router.push(`/itemsDetails/${product.id}`)}>Details</button>

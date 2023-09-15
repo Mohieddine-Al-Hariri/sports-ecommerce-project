@@ -20,7 +20,7 @@ export async function POST(req) {
       { productId }
     );
     
-    return new Response(JSON.stringify(deletedProduct)); // Should return the post's title
+    return new Response(JSON.stringify(deletedProduct.deleteProduct)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({status:500, body: error.message});

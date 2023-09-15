@@ -18,7 +18,7 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   if(item?.collection) {
     if(item.collection.imageUrl) source = item.collection.imageUrl;
     else source = item.collection.products;
-  }else if(item?.product.imageUrls) source = item.product.imageUrls[0].url;
+  }else if(item?.product?.imageUrls) source = item.product.imageUrls[0].url;
 
   return (
     <div className="border border-gray-300 fontColor rounded-lg relative shadow-md w-64 m-4 grow ">

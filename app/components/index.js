@@ -12,4 +12,11 @@ export {default as ImagesCarouselModal} from './ImagesCarouselModal';
 export {default as ScrollButton} from './ScrollButton';
 export {default as NoResultsFound} from './NoResultsFound';
 export {default as CheckBox} from './CheckBox';
+export {default as SVGLoading} from './SVGLoading';
+export {default as SVGTrash} from './SVGTrash';
+export {default as SVGCheck} from './SVGCheck';
+export {default as SVGPencil} from './SVGPencil';
+export {default as SVGCancel} from './SVGCancel';
+export {default as SVGX} from './SVGX';
+
 

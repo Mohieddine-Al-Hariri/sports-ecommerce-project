@@ -1,6 +1,7 @@
 "use client"
-import { deleteOrder, publishOrder, updateOrderState } from '@/lib';
-import { useRef, useEffect, useState } from 'react';
+import { publishOrder, updateOrderState } from '@/lib';
+import { useEffect, useRef } from 'react';
+import { SVGCancel, SVGTrash, SVGX } from '.';
 
 export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, orderState }) => {
   return(
@@ -103,29 +104,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
       <polyline points="22 4 12 14.01 9 11.01" />
     </svg>
   }, {state: 'Cancelled',
-      svg: <svg
-        fill="currentColor"
-        width="24px"
-        height="24px"
-        viewBox="0 0 1.35 1.35"
-        preserveAspectRatio="xMidYMid meet"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-      >
-        <title>{"cancel-line"}</title>
-        <path
-          className="clr-i-outline clr-i-outline-path-1"
-          d="M0.675 0.075a0.6 0.6 0 1 0 0.6 0.6A0.6 0.6 0 0 0 0.675 0.075ZM0.15 0.675a0.522 0.522 0 0 1 0.129 -0.343l0.739 0.739A0.525 0.525 0 0 1 0.15 0.675Zm0.921 0.343L0.332 0.279a0.525 0.525 0 0 1 0.739 0.739Z"
-        />
-        <path
-          x={0}
-          y={0}
-          width={36}
-          height={36}
-          fillOpacity={0}
-          d="M0 0H1.35V1.35H0V0z"
-        />
-      </svg>
+      svg: <SVGCancel/>
   }];
 
   const statesBtns = states.map((state) => {
@@ -159,20 +138,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
             className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#2482c8] rounded-full focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <svg 
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            // fill={!isDarkMode ? '#030303' : '#fff'}
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <SVGX />
           </button>
         </div>
 
@@ -181,20 +147,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
             {statesBtns}
             <button onClick={() => handleDeleteOrder(orderId)}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white fontColor flex w-full justify-between `}>
               Delete
-              <svg
-                width="30px"
-                height="30px"
-                viewBox="0 0 0.563 0.563"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M0.206 0.037a0.019 0.019 0 0 0 0 0.037h0.15a0.019 0.019 0 0 0 0 -0.037h-0.15ZM0.112 0.131a0.019 0.019 0 0 1 0.019 -0.019h0.3a0.019 0.019 0 0 1 0 0.037H0.412v0.3a0.037 0.037 0 0 1 -0.037 0.037H0.188a0.037 0.037 0 0 1 -0.037 -0.037V0.15h-0.019a0.019 0.019 0 0 1 -0.019 -0.019ZM0.188 0.15h0.188v0.3H0.188V0.15Z"
-                  fill="currentColor"
-                />
-              </svg>
+              <SVGTrash width="30px" height="30px" />
             </button>
           </ul>
         </div>

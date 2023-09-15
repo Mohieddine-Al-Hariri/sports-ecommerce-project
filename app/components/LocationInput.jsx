@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SVGCheck } from '.';
 
 const LocationInput = ({ selectedLocation, setSelectedLocation }) => {
   const [error, setError] = useState('');
@@ -49,22 +50,10 @@ const LocationInput = ({ selectedLocation, setSelectedLocation }) => {
           <svg width="24px" height="24px" viewBox="0 0 0.6 0.6" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M0.406 0.101A0.152 0.152 0 0 0 0.301 0.056h-0.002a0.152 0.152 0 0 0 -0.15 0.15c0 0.028 0.007 0.056 0.023 0.079L0.29 0.525h0.02l0.118 -0.239c0.015 -0.024 0.023 -0.051 0.023 -0.079a0.152 0.152 0 0 0 -0.045 -0.105zM0.297 0.094l0.003 0 0.003 0a0.115 0.115 0 0 1 0.11 0.114 0.103 0.103 0 0 1 -0.018 0.059l-0.001 0.001 -0.001 0.001L0.3 0.46l-0.094 -0.191 -0.001 -0.001 -0.001 -0.001a0.103 0.103 0 0 1 -0.018 -0.059A0.115 0.115 0 0 1 0.297 0.094zm0.023 0.081a0.037 0.037 0 1 0 -0.042 0.062 0.037 0.037 0 0 0 0.042 -0.062zM0.258 0.144a0.075 0.075 0 1 1 0.083 0.125 0.075 0.075 0 0 1 -0.083 -0.125z"/></svg>
           Get Current Location
         </button>
-        <button className='bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded flex gap-3 justify-center items-center'><svg
-          fill="currentColor"
-          width="24px"
-          height="24px"
-          viewBox="0 0 24 24"
-          id="check"
-          data-name="Flat Color"
-          xmlns="http://www.w3.org/2000/svg"
-          className="icon flat-color"
-        >
-          <path
-            id="primary"
-            d="M10,18a1,1,0,0,1-.71-.29l-5-5a1,1,0,0,1,1.42-1.42L10,15.59l8.29-8.3a1,1,0,1,1,1.42,1.42l-9,9A1,1,0,0,1,10,18Z"
-            fill="currentColor"
-          />
-        </svg></button>
+        <button className='bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded flex gap-3 justify-center items-center'>
+          <SVGCheck />
+          {/* TODO: Check SVG styling */}
+        </button>
       </div>
       {error && <p className="mt-2 text-red-500">{error}</p>}
     </div>

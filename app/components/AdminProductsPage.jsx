@@ -5,7 +5,7 @@ import CreateProductForm from "./CreateProductForm";
 import { AdminProductCard } from ".";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/navigation";
-import { getProducts } from "@/lib";
+import { deleteProduct, getProducts } from "@/lib";
 
 const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, searchedCategory, collectionsData, searchedCollection }) => {
 
@@ -21,6 +21,9 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
   const [selectedCollection, setSelectedCollection] = useState(searchedCollection || 'All');
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const [deletedProductId, setDeletedProductId] = useState(null);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -60,7 +63,13 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   },[isLastProductCardVisible]);
 
   useEffect(() => {
-    setProductsState(products);
+    setProductsState(() => {
+    //Removes Deleted Product From State
+    const updatedProducts = deletedProductId
+        ? [...products.filter(product => product.node.id !== deletedProductId)]
+        : products;
+      return updatedProducts;
+    });
     setDoesHaveNextPage(hasNextPage);
   },[products, hasNextPage])
 
@@ -84,8 +93,14 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
     handleNavigation(selectedCategory, selectedCollection);
   },[selectedCategory, selectedCollection])
 
+  const deleteProductFromDb = async (productId) => {
+    const deletedProduct = await deleteProduct(productId);
+    router.refresh();
+    setDeletedProductId(deletedProduct.id);
+  }
+
   return (
-    <div className="overflow-y-scroll bgColor fontColor ">
+    <div className="overflow-y-scroll bgColor fontColor lg:pb-4  ">
       <div className="p-2 ">
         <button onClick={() => setIsCreating(!isCreating)} className="border-2 borderColor rounded-lg p-2 fontColor w-full hover:border-[#4bc0d9] hover:bg-[#4bc0d9] hover:text-white ">{isCreating ? "Products" : "Create"}</button>
       </div>
@@ -138,6 +153,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
                 key={node.id}
                 product= {node}
                 hasNextPage = {hasNextPage}
+                deleteProductFromDb={deleteProductFromDb}
                 // categories={categoriesData} 
               />
             ))}

@@ -3,13 +3,13 @@
 import { deleteCollection, publishCollection, updateCollection, updateCollectionState } from "@/lib";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import CreateCategoryForm from "./CreateCategoryForm";
 import { useRef } from "react";
 import Image from "next/image";
 import CreateCollectionForm from "./CreateCollectionForm";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 import { v4 } from "uuid";
+import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash, SVGX } from ".";
 
 export const ProductCard = ({ product, included, include, inputId }) => {
   return (
@@ -95,22 +95,9 @@ export const CollectionStateMenu = ({
         <div className="w-full flex justify-end">
           <button
             className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#4bc0d9] rounded-full focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen(!isOpen)} title="Close" 
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              // fill={!isDarkMode ? '#030303' : '#fff'}
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <SVGX />
           </button>
         </div>
 
@@ -452,50 +439,11 @@ const CollectionCard = ({
               onClick={updateCollectionDetails}
             >
               <span className="text-md">Submit</span>
-              <svg
-                fill="currentColor"
-                width="30px"
-                height="30px"
-                viewBox="0 0 0.9 0.9"
-                id="check"
-                data-name="Flat Color"
-                xmlns="http://www.w3.org/2000/svg"
-                className="m-0 inline-block"
-              >
-                <path
-                  id="primary"
-                  d="M0.375 0.675a0.037 0.037 0 0 1 -0.027 -0.011l-0.188 -0.188a0.037 0.037 0 0 1 0.053 -0.053l0.161 0.161 0.311 -0.311a0.037 0.037 0 1 1 0.053 0.053l-0.337 0.337A0.037 0.037 0 0 1 0.375 0.675Z"
-                  style={{
-                    fill: "currentColor",
-                  }}
-                />
-              </svg>
+              <SVGCheck/>
             </button>
           ) : (
             <button className="hover:text-[#4bc0d9]" onClick={() => setUpdatingCollectionName(true)}>
-              <svg
-                fill="currentColor"
-                width="30px"
-                height="30px"
-                viewBox="0 0 1.35 1.35"
-                preserveAspectRatio="xMidYMid meet"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <title className="rounded-lg">{"Edit-Card"}</title>
-                <path
-                  className="clr-i-outline clr-i-outline-path-1"
-                  d="M1.27 0.312 1.05 0.091a0.078 0.078 0 0 0 -0.11 0L0.16 0.87l-0.071 0.307a0.077 0.077 0 0 0 0.075 0.094 0.08 0.08 0 0 0 0.016 0l0.311 -0.071 0.779 -0.779a0.078 0.078 0 0 0 0 -0.11ZM0.453 1.132l-0.291 0.061 0.066 -0.286L0.812 0.326l0.225 0.225ZM1.087 0.497l-0.225 -0.225 0.131 -0.13 0.221 0.225Z"
-                />
-                <path
-                  x={0}
-                  y={0}
-                  width={36}
-                  height={36}
-                  fillOpacity={0}
-                  d="M0 0H1.35V1.35H0V0z"
-                />
-              </svg>
+              <SVGPencil/>
             </button>
           )}
           {openMenu ? (
@@ -533,40 +481,9 @@ const CollectionCard = ({
           {!updatingCollectionName ? (
             <button className="hover:text-red-500" disabled={isDeleting} onClick={deleteCollectionFunc}>
               {!isDeleting ? (
-                <svg
-                  width="30px"
-                  height="30px"
-                  viewBox="0 0 0.563 0.563"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M0.206 0.037a0.019 0.019 0 0 0 0 0.037h0.15a0.019 0.019 0 0 0 0 -0.037h-0.15ZM0.112 0.131a0.019 0.019 0 0 1 0.019 -0.019h0.3a0.019 0.019 0 0 1 0 0.037H0.412v0.3a0.037 0.037 0 0 1 -0.037 0.037H0.188a0.037 0.037 0 0 1 -0.037 -0.037V0.15h-0.019a0.019 0.019 0 0 1 -0.019 -0.019ZM0.188 0.15h0.188v0.3H0.188V0.15Z"
-                    fill="currentColor"
-                  />
-                </svg>
+                <SVGTrash width="30px" height="30px" />
               ) : (
-                <div role="status">
-                  <svg
-                    aria-hidden="true"
-                    className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-[#4bc0d9]"
-                    viewBox="0 0 100 101"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                      fill="currentFill"
-                    />
-                  </svg>
-                  <span className="sr-only">Loading...</span>
-                </div>
+                <SVGLoading/>
               )}
             </button>
           ) : (
@@ -576,29 +493,7 @@ const CollectionCard = ({
                 onClick={() => setUpdatingCollectionName(false)}
               >
                 Cancel
-                <svg
-                  fill="currentColor"
-                  width="30px"
-                  height="30px"
-                  viewBox="0 0 1.35 1.35"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <title>{"Cancel"}</title>
-                  <path
-                    className="clr-i-outline clr-i-outline-path-1"
-                    d="M0.675 0.075a0.6 0.6 0 1 0 0.6 0.6A0.6 0.6 0 0 0 0.675 0.075ZM0.15 0.675a0.522 0.522 0 0 1 0.129 -0.343l0.739 0.739A0.525 0.525 0 0 1 0.15 0.675Zm0.921 0.343L0.332 0.279a0.525 0.525 0 0 1 0.739 0.739Z"
-                  />
-                  <path
-                    x={0}
-                    y={0}
-                    width={36}
-                    height={36}
-                    fillOpacity={0}
-                    d="M0 0H1.35V1.35H0V0z"
-                  />
-                </svg>
+                <SVGCancel width="30px" height="30px" />
               </button>
               <button
                 className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2"

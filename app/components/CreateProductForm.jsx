@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { v4 } from "uuid";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
-import { CheckBox } from ".";
+import { CheckBox, SVGLoading } from ".";
 
 const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
 
@@ -299,10 +299,12 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     state: "Available",
     categories: [],
   });
-  const [price, setPrice] = useState(0); //TODO: Add Is On Sale? and previous price if true
-  const [prevPrice, setPrevPrice] = useState(0); //TODO: Add Is On Sale? and previous price if true
+  const [price, setPrice] = useState(0); 
+  const [prevPrice, setPrevPrice] = useState(0); 
   const [imageError, setImageError] = useState("");
   const [isOnSale, setIsOnSale] = useState(false);
+
+  const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
 
   const [selectedPills, setSelectedPills] = useState([]); //Variants State
@@ -367,6 +369,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
   }
   const handleSubmit = async (event) => { //TODO: ADD Image Compression before upload
     event.preventDefault();
+    setIsCreating(true);
     const imgUrls = await uploadImages();
     const slug = v4();
     const createdProduct = await createProduct({
@@ -384,6 +387,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     const publishProductVariantsPromise = publishProductVariants(createdProduct.productVariants);
     await Promise.all([publishProductPromise, publishImagesUrlsPromise, publishProductVariantsPromise]);
     router.push(`/itemsDetails/${createdProduct.id}`);
+    setIsCreating(false);
   };
 
   const reactSelectStyles = {
@@ -412,6 +416,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     <div className="max-w-2xl mx-auto p-6 bgColor colorScheme fontColor shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
       <h2 className="text-3xl font-semibold mb-6">Create a Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
+
         <div className="mb-4">
           <label htmlFor="images" className="block text-lg font-semibold mb-2">
             Images
@@ -424,7 +429,9 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             onChange={handleImageUpload}
             className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
+
           {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
+
           <div className="flex space-x-4">
             {images.map((image, index) => (
               <div key={index} className="relative">
@@ -443,6 +450,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             ))}
           </div>
         </div>
+
         <div className="mb-4">
           <label htmlFor="name" className="block text-lg font-semibold mb-2">
             Name
@@ -457,6 +465,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
+
         <div className="mb-4">
           <label htmlFor="excerpt" className="block text-lg font-semibold mb-2">
             Excerpt
@@ -470,6 +479,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
         </div>
+
         <div className="mb-4">
           <label
             htmlFor="description"
@@ -490,8 +500,8 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
           </ReactMarkdown>
         </div>
 
-
         <CheckBox label="Is Product On Sale?" isChecked={isOnSale} setIsChecked={setIsOnSale}/>
+
         <div className="mb-4 flex gap-2 " >
           <label htmlFor="price" className="block text-lg font-semibold mb-2 w-full">
             Price
@@ -531,6 +541,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             </>
           )}
         </div>
+
         <div className="mb-4">
           <label
             htmlFor="categories"
@@ -576,6 +587,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] "
           />
         </div>
+
         <div className="mb-4">
           <label htmlFor="state" className="block text-lg font-semibold mb-2">
             State
@@ -592,12 +604,21 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             <option value="Removed">Removed</option>
           </select>
         </div>
-        <button
-          type="submit"
-          className="hover:bg-[#3ca8d0] bg-[#4bc0d9] text-white py-3 px-6 rounded  focus:outline-none focus:ring focus:border-[#4bc0d9]"
-        >
-          Create Product
-        </button>
+
+        {isCreating ? 
+          <button disabled type="button" className="py-3 px-6 rounded mr-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 inline-flex items-center">
+            <SVGLoading className="inline w-4 h-4 mr-3 text-gray-200 animate-spin dark:text-gray-600 fill-[#4bc0d9]" />
+            Creating...
+          </button>
+        :
+          <button
+            type="submit"
+            className="hover:bg-[#3ca8d0] bg-[#4bc0d9] text-white py-3 px-6 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+          >
+            Create Product
+          </button>
+        }
+
       </form>
     </div>
   );

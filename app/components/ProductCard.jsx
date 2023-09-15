@@ -3,26 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ReactStars from 'react-rating-star-with-type';
 
-// export const SVGComponent = (props) => (
-//   <svg
-//     width="100px"
-//     height="100px"
-//     viewBox="0 11.25 76.5 76.5"
-//     xmlns="http://www.w3.org/2000/svg"
-//     {...props}
-//   >
-//     <path
-//       fill="#C0392B"
-//       d="M72.763 87.75v-7.463l3.737 -3.737v7.463L72.763 87.75zM0 14.988 3.737 11.25h7.463l-3.737 3.737H0z"
-//     />
-//     <path
-//       fill="#E74C3C"
-//       d="M3.737 11.25h28.925L76.5 55.1v28.925L3.737 11.25z"
-//     />
-    
-//     <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="18"  >Sale!</text>
-//   </svg>
-// );
 export const SVGComponent = (props) => (
   <svg
     width="100px"
