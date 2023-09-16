@@ -5,12 +5,14 @@ import SearchBar from "./SearchBar";
 import { useIsVisible } from "./UseVisible";
 import { addManyItemsToCart, getProducts, publishCart, publishItemAddedToCart, publishManyItemsAddedToCart } from "@/lib";
 import { useRouter } from 'next/navigation';
-import { NoResultsFound, ProductCard, ScrollButton } from ".";
+import { FilterSelect, NoResultsFound, ProductCard, ScrollButton } from ".";
 import { Fade } from "react-awesome-reveal";
 
 export const LoadingCard = () => {
   return (
-    <div className={`relative hover:scale-[1.1] duration-200 shadow-lg overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4 bgColorTransition transition-all`}>
+    <div 
+      className="relative overflow-hidden rounded-lg h-[200px] max-w-[356px] w-full grow hover:scale-[1.1] duration-200 shadow-lg bg-gray-200 animate-pulse"
+    >
       <div className='absolute bottom-0 left-0 px-4 py-2 w-full'>
         <h1 className=" bg-white rounded-full w-1/2 h-4 mb-2"></h1>
         <h1 className=" bg-white rounded-full w-3/4 h-4"></h1>
@@ -21,6 +23,7 @@ export const LoadingCard = () => {
 const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, searchedCategory, collectionsData }) => {
   const [productsState, setProductsState] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
   //Pagination
   const [lastProductCursor, setLastProductCursor] = useState(products ? products[products?.length - 1]?.cursor : "");
   const [doesHaveNextPage, setDoesHaveNextPage] = useState(hasNextPage);
@@ -28,7 +31,9 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const isLastProductCardVisible = useIsVisible(lastProductCardRef);
   const [isFirstRedner, setIsFirstRender] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
   const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
+  const [resetSearchText, setResetSearchText] = useState(false);
   
   const topRef = useRef(null);
   const isCategoryFilterVisible = useIsVisible(topRef);
@@ -124,28 +129,19 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   },[selectedCategory])
   return (
       <div>
-        <div className="w-full flex justify-center max-sm:items-center items-end  max-sm:gap-2 gap-4 mb-4 max-sm:flex-col fontColor">
-          <div ref={topRef} className="max-sm:mb-4">
-            <label htmlFor="category" className="block text-lg font-semibold mb-2">
-              Filter by Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] colorScheme"
-            >
-              <option value="All">All</option>
-              {categoriesData.map((category) => (
-                <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
-              ))}
-                <option className="fontColor" >Collections & Sales</option>
-            </select>
-          </div>
 
+        <div className="w-full flex justify-center max-sm:items-center items-end  max-sm:gap-2 gap-4 mb-4 max-sm:flex-col fontColor">
+          <FilterSelect 
+            refe={topRef} 
+            options={categoriesData} 
+            extraOptions={[{name: "Collections & Sales", slug: "Collections & Sales"}]} 
+            searchedSelection={searchedCategory}
+            filterBy="Category"
+            setResetSearchText={setResetSearchText}
+          />
           <SearchBar/>
         </div>
+
         <div className=" text-neutral-700 fontColorGray text-xl font-bold leading-normal ml-5">Items</div>
           {/* TODO: Make the (collections and sales) be inside the products state too */}
           <div className="w-full h-full flex items-start justify-around lg:justify-between flex-wrap gap-1 p-4 relative ">
@@ -183,6 +179,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             {/* Pagination controls */}
             {isLoading && 
               <>
+              
                 <LoadingCard/>
                 <LoadingCard/>
                 <LoadingCard/>

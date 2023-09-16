@@ -44,9 +44,18 @@ export default async function Home({ searchParams: { searchText, category } }) {
     <main className="h-full w-full">
       <div className="w-full h-full gap-12 relative bgColor flex-col justify-start items-center py-10 inline-flex overflow-y-scroll">
         <div className="w-full flex flex-col justify-center items-center relative bgColorGray rounded-[20px] ">
-          <Image width={300} height={334} className="w-[333px] h-[250px] rounded-[20px] object-cover " src="/ElecrtoMLogo.png" alt="gear up"/>
+          
+          <div className="relative max-w-7xl mx-auto ">
+            <div className="animate-pulse duration-200 ">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#308ec7] to-[#3ca8d0] rounded-lg blur  opacity-50"></div>
+            </div>
+            <div className="relative rounded-[20px] bg-white ring-1 ring-gray-900/5 leading-none flex items-center justify-center ">
+              <Image width={300} height={334} className="w-[333px] h-[250px] rounded-[20px] object-cover " src="/ElecrtoMLogo.png" alt="gear up"/>
+            </div>
+          </div>
           <div className=" text-neutral-700 fontColor text-xl font-bold m-2 mb-0 ">Special for You.</div>
           <div className=" text-neutral-700 fontColorGray text-sm font-thin m-2 mt-0 text-center ">"Empower Your Tech Life with Our Accessories Delight!"</div>
+          
           <div className="w-full flex flex-col justify-center items-center fontColor pt-4 ">
             <div className="flex items-center ">
               <a className={` flex justify-center bg-[#25D366] text-white items-center rounded-full aspect-square p-1  `} href="https://wa.me/+96176021231" target="_blank">

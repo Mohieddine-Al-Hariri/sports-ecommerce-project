@@ -325,7 +325,7 @@ const CategoryCard = ({
               <SVGLoading/>
             ) : (
               <button
-                className="flex justify-between items-center w-full"
+                className="flex justify-between items-center w-full hover:text-[#4bc0d9]"
                 onClick={updateCategoryDetails}
               >
                 Submit
@@ -334,14 +334,14 @@ const CategoryCard = ({
             )
           ) : (
             <button onClick={() => setUpdatingCategoryName(true)}>
-              <SVGPencil/>
+              <SVGPencil className="hover:text-[#4bc0d9]"/>
             </button>
           )}
           {isUpdatingShow ? (
             <SVGLoading/>
           ) : show ? (
             <button
-              className="flex justify-between items-center w-full"
+              className="flex justify-between items-center w-full hover:text-yellow-500"
               onClick={updateCategoryShowState}
             >
               {updatingCategoryName && "Hide"}
@@ -358,7 +358,7 @@ const CategoryCard = ({
             </button>
           ) : (
             <button
-              className="flex justify-between items-center w-full"
+              className="flex justify-between items-center w-full hover:text-yellow-500"
               onClick={updateCategoryShowState}
             >
               {updatingCategoryName && "Show"}
@@ -384,13 +384,13 @@ const CategoryCard = ({
               <SVGLoading/>
             ) : (
               <button onClick={deleteCategoryFunc}>
-                <SVGTrash width="30px" height="30px" />
+                <SVGTrash  className="hover:text-red-500" width="30px" height="30px" />
               </button>
             )
           ) : (
             <>
               <button
-                className="flex justify-between gap-1 items-center w-full"
+                className="flex justify-between gap-1 items-center w-full hover:text-yellow-500"
                 onClick={cancelUpdateCategory}
               >
                 Cancel
@@ -398,7 +398,7 @@ const CategoryCard = ({
 
               </button>
               <button
-                className="flex justify-between gap-1 items-center w-full"
+                className="flex justify-between gap-1 items-center w-full hover:text-[#4bc0d9]"
                 onClick={resetCollectionDetailsFunc}
               >
                 Default

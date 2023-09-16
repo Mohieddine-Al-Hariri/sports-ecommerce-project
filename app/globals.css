@@ -52,7 +52,7 @@ body {
 body.dark{
   --Bg: #343434;
   --bgColor: linear-gradient(to top, #000, #131313, #161616);
-  --staticBgColor: #131313; /*TODO: chose a better color better */
+  --staticBgColor: #161616;
   --bgColorGray: #343434;
   background: var(--bgColor);
   --opBgColor: #f3f3f3 ;
@@ -241,4 +241,9 @@ body.dark{
 .hide-button {
   opacity: 0;
   transform: translateY(20px);
+}
+
+.focus-glow {
+  box-shadow: 0 0 10px rgba(75, 192, 217, 0.5); /* Add your desired box-shadow properties */
+  transition: box-shadow 0.3s ease; /* Add a transition for a smooth effect */
 }

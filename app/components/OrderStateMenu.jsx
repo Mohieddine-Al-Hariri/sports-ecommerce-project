@@ -130,7 +130,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
   return (
     <div 
       ref={cardMenuRef}
-      className="absolute w-48 h-10 staticBgColor fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
+      className="absolute w-48 h-10 bgColorGray fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
     >
       <div>
         <div className='w-full flex justify-end'>
@@ -142,7 +142,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
           </button>
         </div>
 
-        <div className="absolute staticBgColor right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
+        <div className="absolute bgColorGray right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
           <ul>
             {statesBtns}
             <button onClick={() => handleDeleteOrder(orderId)}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white fontColor flex w-full justify-between `}>

@@ -44,7 +44,7 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
   return (
     <div 
       ref={cardMenuRef}
-      className="absolute w-48 h-10 staticBgColor fontColorGray rounded-t-md right-2 -top-2 pt-1 pr-1 "
+      className="absolute w-48 h-10 bgColorGray fontColorGray rounded-t-md right-2 -top-2 pt-1 pr-1 "
     >
       <div>
         <div className='w-full flex justify-end'>
@@ -56,7 +56,7 @@ export const ProductStateMenu = ({ productState, setProductState, productId, isO
           </button>
         </div>
 
-        <div className="absolute right-0 w-48 fontColor staticBgColor rounded-md shadow-lg z-10">
+        <div className="absolute right-0 w-48 fontColor bgColorGray rounded-md shadow-lg z-10">
           <ul>
             {states.map((state) =>{
               
@@ -128,7 +128,7 @@ const AdminProductCard = ({ product, deleteProductFromDb }) => {
               </button>
             </div>
           ) : (
-            <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 mb-4  ">
+            <button onClick={() => setOpenMenu(true)} className="border-2 hover:border-[#4bc0d9] border-gray-500 rounded-full px-3 py-1 mb-4  ">
               <h1 className={`${stateTxtClr} font-bold`}>{productState}</h1>
             </button>
           )

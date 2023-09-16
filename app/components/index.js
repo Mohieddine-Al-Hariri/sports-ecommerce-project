@@ -18,5 +18,6 @@ export {default as SVGCheck} from './SVGCheck';
 export {default as SVGPencil} from './SVGPencil';
 export {default as SVGCancel} from './SVGCancel';
 export {default as SVGX} from './SVGX';
+export {default as FilterSelect} from './FilterSelect';
 
 

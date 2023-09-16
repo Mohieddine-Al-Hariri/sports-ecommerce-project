@@ -435,7 +435,7 @@ const CollectionCard = ({
         >
           {updatingCollectionName ? (
             <button
-              className="flex w-full justify-center sm:justify-between max-sm:flex-col items-center sm:gap-2"
+              className="flex w-full justify-center sm:justify-between hover:text-[#4bc0d9] max-sm:flex-col items-center sm:gap-2"
               onClick={updateCollectionDetails}
             >
               <span className="text-md">Submit</span>
@@ -489,14 +489,14 @@ const CollectionCard = ({
           ) : (
             <>
               <button
-                className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2"
+                className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2 hover:text-yellow-500"
                 onClick={() => setUpdatingCollectionName(false)}
               >
                 Cancel
                 <SVGCancel width="30px" height="30px" />
               </button>
               <button
-                className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2"
+                className="flex w-full max-sm:flex-col items-center justify-center sm:justify-between sm:gap-2 hover:text-[#4bc0d9]"
                 onClick={resetCollectionDetailsFunc}
               >
                 Default

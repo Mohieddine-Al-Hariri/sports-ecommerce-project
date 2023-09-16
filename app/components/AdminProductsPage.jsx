@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useIsVisible } from "./UseVisible";
 import CreateProductForm from "./CreateProductForm";
-import { AdminProductCard } from ".";
+import { AdminProductCard, FilterSelect } from ".";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/navigation";
 import { deleteProduct, getProducts } from "@/lib";
@@ -10,16 +10,16 @@ import { deleteProduct, getProducts } from "@/lib";
 const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, searchedCategory, collectionsData, searchedCollection }) => {
 
   const [productsState, setProductsState] = useState([]);
-  const [lastProductCursor, setLastProductCursor] = useState(products[products.length - 1]?.cursor);
   const [isCreating, setIsCreating] = useState(false);
+  
+  const [lastProductCursor, setLastProductCursor] = useState(products[products.length - 1]?.cursor);
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [doesHaveNextPage, setDoesHaveNextPage] = useState(hasNextPage);
+
   const lastProductCardRef = useRef();
   const isLastProductCardVisible = useIsVisible(lastProductCardRef);
   const [resetSearchText, setResetSearchText] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(searchedCategory || 'All');
-  const [selectedCollection, setSelectedCollection] = useState(searchedCollection || 'All');
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [deletedProductId, setDeletedProductId] = useState(null);
@@ -73,26 +73,6 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
     setDoesHaveNextPage(hasNextPage);
   },[products, hasNextPage])
 
-  const handleNavigation = (category, collection) => {
-    const currentParams = new URLSearchParams(window.location.search);
-    if(category === 'All') currentParams.delete("category");
-    else currentParams.set("category", category);
-    if(collection === 'All') currentParams.delete("collection");
-    else currentParams.set("collection", collection);
-    currentParams.delete("cursor");
-    currentParams.delete("search");
-    // currentParams.delete("category");
-
-    const newSearchParams = currentParams.toString();
-    const newPathname = `${window.location.pathname}?${newSearchParams}`;
-    // TODO: Change states in parent component to the new category and pageInfo ...
-    setResetSearchText(!resetSearchText);
-    router.push(newPathname);
-  };
-  useEffect(() => {
-    handleNavigation(selectedCategory, selectedCollection);
-  },[selectedCategory, selectedCollection])
-
   const deleteProductFromDb = async (productId) => {
     const deletedProduct = await deleteProduct(productId);
     router.refresh();
@@ -109,42 +89,21 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
         :
         <div className="flex flex-col gap-2 p-1 bgColor ">
           <div className="lg:flex lg:justify-center lg:items-end lg:mb-4 gap-2">
+            
             <SearchBar resetSearchText={resetSearchText} />
             <div className="flex gap-2 justify-center">
-              <div className="mb-4 lg:mb-0 ">
-                <label htmlFor="category" className="block text-lg font-semibold mb-2 pr-2 border-r-2 borderColorGray ">
-                  Filter by Category
-                </label>
-                <select
-                  id="category"
-                  name="category"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] ${selectedCategory !== "All" && "border-red-500 "}`}
-                >
-                  <option value="All">All</option>
-                  {categoriesData.map(category => (
-                    <option className="fontColor" href={`/categories/${category.slug}`} key={category.name} >{category.name}</option>
-                  ))}
-                </select>
-              </div>
-                <div className="mb-4 lg:mb-0">
-                  <label htmlFor="category" className="block text-lg font-semibold mb-2 pl-2 border-l-2 borderColorGray ">
-                    Filter by Collection
-                  </label>
-                  <select
-                    id="collection"
-                    name="collection"
-                    value={selectedCollection}
-                    onChange={(e) => setSelectedCollection(e.target.value)}
-                    className={`w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9] ${selectedCollection !== "All" && "border-red-500"}`}
-                  >
-                    <option value="All">All</option>
-                    {collectionsData.map((collection, index) => (
-                      <option className="fontColor" href={`/categories/${collection.slug}`} key={collection.name} >{collection.name}</option>
-                    ))}
-                  </select>
-                </div>
+              <FilterSelect 
+                options={categoriesData} 
+                searchedSelection={searchedCategory}
+                filterBy="Category"
+                setResetSearchText={setResetSearchText}
+              />
+              <FilterSelect 
+                options={collectionsData} 
+                searchedSelection={searchedCollection}
+                filterBy="Collection"
+                setResetSearchText={setResetSearchText}
+              />
             </div>
           </div>
           <div className="flex lg:flex-wrap max-lg:flex-col gap-2 bgColor ">
@@ -160,8 +119,8 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
           </div>
           {/* Pagination controls */}
           {isLoading && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">Loading...</div> }
+          {/* An invisible element to act as the previousPostCardRef */}
           {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }
-          {/* Add an invisible element to act as the previousPostCardRef */}
         </div>
       }
       <div ref={lastProductCardRef} style={{ visibility: "hidden" }} />
