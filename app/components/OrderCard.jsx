@@ -22,10 +22,10 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   }else if(item?.product?.imageUrls) source = item.product.imageUrls[0].url;
 
   return (
-    <div className={`border border-gray-300 pointer-events-none ${
+    <div className={`border border-gray-300 ${
       isImageHovered ? 'focus-glow' : ''
     } fontColor rounded-lg relative shadow-md w-64 m-4 grow `}>
-      <div className="h-32 overflow-hidden pointer-events-auto " onMouseEnter={() => setIsImageHovered(true)} onMouseLeave={() => setIsImageHovered(false)} >
+      <div className="h-32 overflow-hidden" onMouseEnter={() => setIsImageHovered(true)} onMouseLeave={() => setIsImageHovered(false)} >
         <Link href={`/orderDetails/${order.id}`}>
           {source ? 
             Array.isArray(source) ?
@@ -52,12 +52,12 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
           {openMenu ? 
             <div>
               <OrderStateMenu handleDeleteOrder={handleDeleteOrder} isOpen={openMenu} setIsOpen={setOpenMenu} orderState={orderState} setOrderState={setOrderState} orderId={order.id}/>
-              <button onClick={() => setOpenMenu(true)} className=" pointer-events-auto border-2 border-gray-500 rounded-full px-3 py-1 ">
+              <button onClick={() => setOpenMenu(true)} className=" border-2 border-gray-500 rounded-full px-3 py-1 ">
                 <h1 className={`${stateColor} font-bold`}>{orderState}</h1> 
               </button>
             </div>
             :
-            <button onClick={() => setOpenMenu(true)} className=" pointer-events-auto hover:border-[#4bc0d9] border-2 border-gray-500 rounded-full px-3 py-1 ">
+            <button onClick={() => setOpenMenu(true)} className=" hover:border-[#4bc0d9] border-2 border-gray-500 rounded-full px-3 py-1 ">
               <h1 className={`${stateColor} font-bold`}>{orderState}</h1>
             </button>
           }
