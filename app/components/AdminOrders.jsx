@@ -5,6 +5,7 @@ import SearchBar from "./SearchBar";
 import { deleteOrder, getAdminOrders } from "@/lib";
 import { useIsVisible } from "./UseVisible";
 import { useRouter } from "next/navigation";
+import { FilterSelect } from ".";
 // import Link from "next/link";
 
 const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
@@ -51,7 +52,7 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
     setDoesHaveNextPage(hasNextPage);
   },[orders, hasNextPage])
 
-  const allState = ["All", "Ordered", "Delivering", "Recieved", "Cancelled", "Deleted"];
+  const allState = ["Ordered", "Delivering", "Recieved", "Cancelled", "Deleted"];
   let orderedState = [], 
   deliveringState = [], 
   recievedState = [], 
@@ -89,29 +90,19 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
 
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
-  return ( //TODO: Make it responsive
+  return (
     <div className='flex flex-col items-center justify-between p-4 pb-20 h-screen w-screen bgColor overflow-y-scroll overflow-x-hidden fontColor ' >
       
-      <div className="mb-4 ">
+      <div className="mb-4 fontColor ">
         <SearchBar resetSearchText={resetSearchText} />
-        <div className="my-4">
-          <label htmlFor="state" className="block text-lg font-semibold mb-2">
-            Filter by State
-          </label>
-          <select
-            id="state"
-            name="state"
-            value={selectedState}
-            onChange={(e) => setSelectedState(e.target.value)}
-            className="w-full colorScheme py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-          >
-            {allState.map((state, index) => (
-              <option className="fontColor" key={state} >{state}</option>
-            ))}
-          </select>
-        </div>
+        <FilterSelect 
+          options={allState.map((item) => ({name: item}))}
+          searchedSelection={filteredState}
+          filterBy="State"
+          setResetSearchText={setResetSearchText}
+        />
       </div>
-      {/* {ordersState.map((order) => (
+      {/*  {ordersState.map((order) => (
         <OrderCard key={order.node.id} order={order.node} />
       ))} */}
         {array.map((item) => (

@@ -42,7 +42,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const scrollToTop = () => {
     topRef.current.scrollIntoView({ behavior: 'smooth' });
   };
-  console.log("products: ", products);
+
   const addItemsToCart = async (localCart) => { 
   //Add items to cart in DB from localStorage since user logged in
     const cartId = user.cartId;
@@ -78,11 +78,77 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
     }
   }, []);
 
+  
   useEffect(() => {
-    setProductsState(products);
-    setDoesHaveNextPage(hasNextPage);
-  },[products, hasNextPage])
+    let colls = [];
 
+  if (collectionsData) {
+    colls = collectionsData.collections.slice(0, selectedCategory === 'Collections & Sales' ? undefined : 4);
+    colls = colls.map(collection => {
+      const images = collection.node.products?.map(product => product.imageUrls[0]);
+      return {
+        node: {
+          ...collection.node,
+          excerpt: collection.node.description,
+          reviews: collection.node.reviews,
+          imageUrls: images,
+          isCollection: true,
+        },
+      };
+    });
+  }
+
+    
+    const combined = products.slice(); // Create a shallow copy of products
+    let collsIndex = 0;
+
+    for (let i = 0; i < combined.length + colls.length; i++) {
+      if (i % 2 === 1 && collsIndex < colls.length) {
+        combined.splice(i, 0, colls[collsIndex++]);
+      }
+    }
+  
+    setProductsState(combined);
+  
+    setDoesHaveNextPage(hasNextPage);
+  }, [products, hasNextPage, selectedCategory, collectionsData]);
+  // useEffect(() => {
+  //   let colls = [];
+  //   // if (selectedCategory === 'Collections & Sales') {
+  //   //   setProductsState(products);
+  //   // } else {
+  //     colls = collectionsData?.collections.slice(0, 4).map(collection => {
+  //       const images = collection.node.products?.map(product => product.imageUrls[0]);
+  //       return {
+  //         node: {
+  //           ...collection.node,
+  //           excerpt: collection.node.description,
+  //           reviews: collection.node.reviews,
+  //           imageUrls: images,
+  //           isCollection: true,
+  //         },
+  //       };
+  //     });
+  //   // }
+
+  //   // if (selectedCategory === 'Collections & Sales') {
+  //   //   setProductsState(products);
+  //   // } else {
+  //     const combined = products.slice(); // Create a shallow copy of products
+  //     let collsIndex = 0;
+  
+  //     for (let i = 0; i < combined.length + colls.length; i++) {
+  //       if (i % 2 === 1 && collsIndex < colls.length) {
+  //         combined.splice(i, 0, colls[collsIndex++]);
+  //       }
+  //     }
+  
+  //     setProductsState(combined);
+  //   // }
+  
+  //   setDoesHaveNextPage(hasNextPage);
+  // }, [products, hasNextPage, selectedCategory, collectionsData]);
+  
   const getMoreProducts = async () => {
     let searchedCategoryPagination = undefined;
     let isOnSale = false;
@@ -143,37 +209,21 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
         </div>
 
         <div className=" text-neutral-700 fontColorGray text-xl font-bold leading-normal ml-5">Items</div>
-          {/* TODO: Make the (collections and sales) be inside the products state too */}
           <div className="w-full h-full flex items-start justify-around lg:justify-between flex-wrap gap-1 p-4 relative ">
-            <Fade triggerOnce={true} className="overflow-hidden rounded-lg h-[200px] max-w-[356px] w-full grow hover:scale-[1.1] duration-200  ">
-            {/* <Fade triggerOnce={true} className="overflow-hidden rounded-lg h-[200px] w-full sm:w-1/2 md:w-1/3 lg:w-1/4 "> */}
-              {selectedCategory === 'Collections & Sales' ?
-                collectionsData?.collections.map(collection => {
-                  const images = collection.node.products?.map(product => product.imageUrls[0]);
-                  return(
-                    <ProductCard key={`collections products ${collection.node.id}`} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
-                  )
-                })
-              :
-                collectionsData?.collections.slice(0, 4).map(collection => {
-                  const images = collection.node.products?.map(product => product.imageUrls[0]);
-                  return(
-                    <ProductCard key={collection.node.id} id={collection.node.id} name={collection.node.name} excerpt={collection.node.decription} imageUrl={collection.node.imageUrl} imageUrls={images} isCollection={true} />
-                  )
-                })
-              }
-              {productsState?.map(item => (
+            <Fade triggerOnce={true} className="overflow-hidden rounded-lg h-[200px] max-w-[356px] w-full grow hover:scale-[1.1] hover:z-10 relative duration-200  ">
+              {productsState?.map(({node}) => (
                 <ProductCard 
-                  key={item.node.id} 
-                  id={item.node.id} 
-                  name={item.node.name} 
-                  excerpt={item.node.excerpt} 
-                  imageUrl={item.node.imageUrls[0].url} 
-                  reviews={item.node.reviews} 
-                  isOnSale={item.node.isOnSale}
+                  key={node.id} 
+                  id={node.id} 
+                  name={node.name} 
+                  excerpt={node.excerpt} 
+                  imageUrl={node.imageUrl ? node.imageUrl : node.imageUrls[0].url} 
+                  reviews={node.reviews} 
+                  isOnSale={node.isOnSale}
+                  isCollection={node.isCollection}
                 />
               ))}
-              {(productsState?.length === 0 && collectionsData.collections.length === 0) && <NoResultsFound/>}
+              {productsState?.length === 0 && <NoResultsFound/>}
             </Fade>
 
             {/* Pagination controls */}
@@ -214,7 +264,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             {/* Add an invisible element to act as the previousProductCardRef */}
             <div className="w-full h-[60px]" ref={lastProductCardRef} style={{ visibility: "hidden" }} />
           </div>
-        <ScrollButton rotationDegree={0} isObservedElementVisible={isCategoryFilterVisible} handleClick={scrollToTop} bgColor="bg-[#4bc0d9]" />
+        <ScrollButton rotationDegree={0} isObservedElementVisible={isCategoryFilterVisible} handleClick={scrollToTop} bgColor="bg-[#4bc0d9]" textColor="text-white" />
 
       </div>
       

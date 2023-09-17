@@ -9,8 +9,8 @@ export async function getProductsData(searchText, category, onlyOnSale) {
   const products = (await getProducts(undefined, searchText, category, undefined, false, onlyOnSale)) || [];
   return products;
 }
-export async function getCollectionsData(searchText) {
-  const products = (await getCollections(undefined, searchText)) || [];
+export async function getCollectionsData(searchText, category) {
+  const products = (await getCollections(undefined, searchText, false, category)) || [];
   return products;
 }
 export async function getCategoriesData() {

@@ -23,9 +23,7 @@ export async function POST(req) {
           variantInput.name = variant.size;
         }
         if (variant.color) {
-          variantInput.name = variant.color;
-          // variantInput.name = `${variantInput.name}/${variant.color}`
-          //TODO: Continue from HERE
+          variantInput.name = `${variantInput.name}/${variant.color}`
         }
         if(variant.quantity) variantInput.quantity = variant.quantity;
         return variantInput;

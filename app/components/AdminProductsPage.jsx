@@ -78,9 +78,8 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
     router.refresh();
     setDeletedProductId(deletedProduct.id);
   }
-
   return (
-    <div className="overflow-y-scroll h-full bgColor fontColor lg:pb-4  ">
+    <div className="overflow-y-scroll h-full bgColor fontColor lg:pb-4 max-sm:pb-10 ">
       <div className="p-2 ">
         <button onClick={() => setIsCreating(!isCreating)} className="border-2 borderColor rounded-lg p-2 fontColor w-full hover:border-[#4bc0d9] hover:bg-[#4bc0d9] hover:text-white ">{isCreating ? "Products" : "Create"}</button>
       </div>

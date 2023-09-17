@@ -44,11 +44,11 @@ const ProductCard = ({ id, name, excerpt, isCollection, imageUrl, imageUrls, rev
         <SVGComponent className="absolute -top-2 -right-2 z-10" />
       }
       {imageUrl ? 
-        <Image width={100} height={100} className="h-full w-full object-cover" alt={name} src={imageUrl}/>
+        <Image width={400} height={400} className="h-full w-full object-cover" alt={name} src={imageUrl}/>
         :
         <div className='w-full h-full flex flex-wrap'> 
           {imageUrls?.map((image) => (
-            <Image width={100} height={100} className={`${isCollection ? "w-1/3 grow" : "w-full object-cover h-full"}  `} alt={name} src={image.url}/>
+            <Image width={400} height={400} className={`${isCollection ? "w-1/3 grow" : "w-full object-cover h-full"}  `} alt={name} src={image?.url}/>
           ))}
         </div>
       }
