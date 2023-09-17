@@ -307,7 +307,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
         <button
           disabled={isSaving}
           onClick={handleSubmit}
-          className="bg-[#4bc0d9] hover:bg-[#3ca8d0] text-white font-semibold py-2 rounded-lg transition-colors duration-300"
+          className="bg-[#4bc0d9] hover:bg-[#3ca8d0] text-white font-semibold py-2 max-sm:mb-6 rounded-lg transition-colors duration-300"
         >
           {isSaving ? "Saving..." : "Submit"}
         </button>

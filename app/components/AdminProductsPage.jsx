@@ -123,6 +123,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
         </div>
       }
       <div ref={lastProductCardRef} style={{ visibility: "hidden" }} />
+      <div className="max-sm:h-10 "></div>
     </div>
   )
 }

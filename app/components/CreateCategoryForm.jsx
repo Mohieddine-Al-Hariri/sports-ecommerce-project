@@ -197,7 +197,7 @@ const CreateCategoryForm = ({ products, hasNextPage, hasPreviousPage, getOtherPr
 
           </div>
         </div>
-        <button disabled={creatingCategory} type="submit" className="bg-[#4bc0d9] hover:bg-[#3ca8d0] text-white px-4 py-2 rounded w-full">
+        <button disabled={creatingCategory} type="submit" className="max-sm:mb-6 bg-[#4bc0d9] hover:bg-[#3ca8d0] text-white px-4 py-2 rounded w-full">
           {creatingCategory ? 
             <div className='flex gap-4 justify-center items-center '>
               <SVGLoading/>
