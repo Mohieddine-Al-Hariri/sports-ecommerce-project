@@ -273,12 +273,12 @@ const ItemsDetailsPage = ({ product, user }) => {
   const scrollToBottom = () => {
     detailsRef.current.scrollIntoView({ behavior: 'smooth' });
   };
-
+  console.log(product)
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
-  return ( //TODO: Fix styling for large+ screens
-    <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start justify-center px-2 max-lg:pb-10 bgColor  ">
-      <div className="max-sm:w-[428px] w-full max-sm:pb-6 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
+  return ( 
+    <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start lg:items-center justify-center px-2 max-lg:pb-10 bgColor  ">
+      <div className="max-sm:w-[428px] w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           {/* TODO: Make the image size based on the used images dimensions */}
           <ImagesCarouselModal product={product} setImageIndex={setCurrentImageIndex} />

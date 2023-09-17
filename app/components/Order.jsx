@@ -27,7 +27,7 @@ const Order = ({ order }) => {
     await publishOrder(order.id);
     router.refresh();
   }
-  //TODO: Make the image bigger
+  //TODO: Add Order Detais Link
   const item = order.orderItems[0];
   return (
     <div className="flex flex-col fontColor gap-2 p-2 h-[100px] border-2 borderColor border-solid rounded-lg">

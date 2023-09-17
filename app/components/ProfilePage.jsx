@@ -140,8 +140,8 @@ const ProfilePage = ({ user, orders }) => {
 
   if (isEdit)
     return (
-      <div className="bgColor h-screen flex flex-col justify-start items-center gap-5 ">
-        <div className="w-full h-fit flex justify-between p-6 fontColor">
+      <div className="bgColor h-full flex flex-col justify-start items-center gap-5 overflow-y-scroll">
+        <div className="w-full h-fit flex justify-between p-6 max-sm:py-2 fontColor">
           <button
             onClick={() => setIsEdit(false)}
             className="w-[19.78px] relative "
@@ -186,7 +186,7 @@ const ProfilePage = ({ user, orders }) => {
             </button>
           )}
         </div>
-        <div className="flexCenter flex-col form_image-container rounded-full ">
+        <div className="flexCenter h-full flex-col w-full lg:min-h-[200px] relative rounded-full ">
           {!updatedUserDetails.profileImageUrl && (
             <label
               htmlFor="poster"
@@ -195,7 +195,7 @@ const ProfilePage = ({ user, orders }) => {
               Choose a Profile Image
             </label>
           )}
-          <div className="flexCenter bg-gray-500 rounded-full aspect-square overflow-hidden p-4 w-[167px] h-[167px] ">
+          <div className="flexCenter bg-gray-500 rounded-full overflow-hidden p-4 w-[140px] h-[140px] ">
             <input
               id="image"
               type="file"
@@ -205,14 +205,12 @@ const ProfilePage = ({ user, orders }) => {
               onChange={(e) => handleChangeImage(e)}
             />
             {updatedUserDetails.profileImageUrl && (
-              <div className="rounded-full aspect-square w-[167px] h-[167px]">
+              <div className="relative rounded-full aspect-square w-[140px] h-[140px]">
                 <Image
                   src={updatedUserDetails?.profileImageUrl}
-                  className=" object-cover z-20 rounded-full w-[167px] h-[167px] aspect-square md:inline-block"
+                  className=" object-cover z-20 rounded-full w-[140px] h-[140px] aspect-square md:inline-block"
                   alt="image"
-                  // fill
-                  width={167}
-                  height={167}
+                  fill
                 />
               </div>
             )}
@@ -268,21 +266,21 @@ const ProfilePage = ({ user, orders }) => {
               Selected Location: {selectedLocation}
             </p>
           )} */}
+          <div className="h-[75px] w-full "></div>
         </div>
         {/* <div className="w-full h-full border-solid border-t-2 border-[#8f8f8f] fontColor overflow-y-scroll ">
           <h1 className="p-2 text-xl font-semibold ">Orders</h1>
           {orders?.map((order) => (
             <Order order={order.node} key={order.node.id} />
           ))}
-          <div className="h-20 w-full "></div>
         </div> */}
       </div>
     );
   
   return (
-    <div className="bgColor fontColor h-screen flex flex-col justify-start items-center gap-5 ">
-      <div className="w-full h-fit flex justify-between p-6">
-        <button onClick={signOut} className="w-[19.78px] relative fontColor ">
+    <div className="bgColor fontColor h-screen flex flex-col justify-start items-center gap-5 max-sm:gap-3 ">
+      <div className="w-full h-fit flex justify-between p-6 max-sm:py-2 max-sm:px-4">
+        <button onClick={signOut} className="w-[19.78px] max-sm:w-fit relative fontColor ">
           <svg
             width="30px"
             height="30px"
@@ -329,14 +327,14 @@ const ProfilePage = ({ user, orders }) => {
         src={profileImageUrl || "/Ellipse 32.png"}
         width={167}
         height={167}
-        className="w-[167px] h-[167px] rounded-full"
+        className="w-[167px] h-[167px] max-sm:w-[100px] max-sm:h-[100px] rounded-full"
         alt="profileImg"
       />
       <div className="text-center">
-        <h1 className="text-2xl font-semibold mb-2">
+        <h1 className="text-2xl max-sm:text-xl font-semibold mb-2">
           {firstName} {lastName}
         </h1>
-        <ul className="list-none p-0">
+        <ul className="list-none p-0 max-sm:text-sm">
           <li className="fontColorGray mb-1">{phoneNumber}</li>
           <li className="fontColorGray mb-1">{email}</li>
           <li className="fontColorGray mb-1">Location: {location}</li>
@@ -350,7 +348,7 @@ const ProfilePage = ({ user, orders }) => {
         {orders?.map((order) => (
           <Order key={order.node.id} order={order.node} />
         ))}
-        <div className="h-20 w-full "></div>
+        <div className="h-[80px] w-full "></div>
       </div>
     </div>
   );

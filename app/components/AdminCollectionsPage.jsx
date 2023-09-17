@@ -133,7 +133,8 @@ const CollectionCard = ({
   hasNextPage,
   hasPreviousPage,
   isFetching,
-  index
+  index,
+  deleteACollection,
 }) => {
   const [show, setShow] = useState(collection.show);
   const [collectionName, setCollectionName] = useState(collection.name);
@@ -251,7 +252,7 @@ const CollectionCard = ({
     if(!numericPrice || !collectionName) return;
     setIsUpdating(true);
     if(imageUpload && collection.imageUrl) await deletePrevImage(collection.imageUrl);
-    const uploadedImageUrl = await uploadImage(imageUpload, imageUrl);
+    const uploadedImageUrl = await uploadImage(imageUpload, imageUrl, collection.name);
 
     // const productsToInclude = includedProducts.map((product) => ({id: product.id})).filter((id) => !collection.products.map((product) => product.id).includes(id.id));
     const productIdsInCollection = new Set(collection.products.map((product) => product.id));
@@ -306,8 +307,8 @@ const CollectionCard = ({
 
   const deleteCollectionFunc = async () => { 
     setIsDeleting(true);
-    await deleteCollection(collection.id);
-    router.refresh();
+    if(collection.imageUrl) await deletePrevImage(collection.imageUrl);
+    await deleteACollection(collection.id);
     setIsDeleting(false);
   };
   const resetCollectionDetailsFunc = () => {
@@ -666,12 +667,12 @@ const AdminCollectionsPage = ({
       console.log(error.message);
     }
   };
-  const uploadImage = async (imagePath, givenImageUrl) => {
+  const uploadImage = async (imagePath, givenImageUrl, collectionName) => {
     //To add the new profile image to the database
     if (imagePath == null || !imagePath) {
       return givenImageUrl;
     }
-    const imageRef = ref(storage, `profileImages/${imagePath.name + v4()}`);
+    const imageRef = ref(storage, `collections/${collectionName}/${imagePath.name + v4()}`);
     const imageUrl = await uploadBytes(imageRef, imagePath).then(
       async (snapshot) => {
         const downloadUrl = await getDownloadURL(snapshot.ref).then((url) => {
@@ -683,8 +684,8 @@ const AdminCollectionsPage = ({
     return imageUrl;
   };
   const getOtherProducts = async (e, beforeOrAfter) => {
+    //Paginate to the next/previous page
     e.preventDefault();
-    //TODO: put in child component Or keep it??
     if(beforeOrAfter === "after" && !hasNextPage) return;
     if(beforeOrAfter === "before" && !hasPreviousPage) return;
     setIsFetching(true);
@@ -705,6 +706,12 @@ const AdminCollectionsPage = ({
       setIsFetching(false);
     }, 1000);
   };
+
+  const deleteACollection = async (collectionId) => {
+    await deleteCollection(collectionId);
+    router.refresh();
+  }
+
   return (
     <div className="h-full bgColor fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
       <div className=" flex gap-4 flex-col ">
@@ -717,10 +724,10 @@ const AdminCollectionsPage = ({
             uploadImage={uploadImage}
             getOtherProducts={getOtherProducts}
             productsPageNumber={productsPageNumber}
-            // setProductsPageNumber={setProductsPageNumber}
             hasNextPage={hasNextPage}
             hasPreviousPage={hasPreviousPage}
             isFetching={isFetching}
+            deleteACollection={deleteACollection}
             index={index}
           />
         ))}

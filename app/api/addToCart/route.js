@@ -33,12 +33,10 @@ export async function POST(req) {
       { itemId, userSlug, quantity, totalPrice, cartId, variants: variantsInput }
     );
     console.log("____isItemAdded: ____\n\n", isItemAdded);
-    return new Response(JSON.stringify(isItemAdded)); // Should return the id
-    // res.status(201).json(newComment.createComment);
+    return new Response(JSON.stringify(isItemAdded)); 
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({status:500, body: error.message});
   }
 
-  // res.status(405).json({ message: 'Method not allowed.' });
 }

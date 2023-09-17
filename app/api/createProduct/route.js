@@ -30,7 +30,7 @@ export async function POST(req) {
       }),
     };
   }
-
+  console.log("variantInput: ", variantInput);//TODO:FIX
   const query = `
     mutation CreateProduct(
       $name: String!

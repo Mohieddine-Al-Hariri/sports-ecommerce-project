@@ -73,17 +73,18 @@ const ImagesCarouselModal = ({ product, setImageIndex }) => {
           onChange={(index) => {setCurrentImageIndex(index); setImageIndex(index)}}
           showThumbs={false}
           infiniteLoop={true}
+          className='border-none'
         >
           {product.imageUrls.map((image, index) => (
             <div
               key={index}
-              className="relative flex justify-center w-full "
+              className="relative flex justify-center w-full"
               onClick={() => openModal(currentImageIndex)}
             >
               <Image
-                className="max-sm:max-h-[500px] object-cover"
-                width={428}
-                height={428}
+                className="max-sm:max-h-[500px] object-cover lg:rounded-lg overflow-hidden  "
+                width={800}
+                height={800}
                 src={image.url}
                 alt={`Image ${index + 1}`}
               />

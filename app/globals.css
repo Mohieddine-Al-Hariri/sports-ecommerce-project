@@ -247,3 +247,8 @@ body.dark{
   box-shadow: 0 0 10px rgba(75, 192, 217, 0.5); /* Add your desired box-shadow properties */
   transition: box-shadow 0.3s ease; /* Add a transition for a smooth effect */
 }
+
+.carousel .slide{
+  background: none!important;
+  border: none;
+}

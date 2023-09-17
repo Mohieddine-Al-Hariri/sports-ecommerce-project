@@ -124,7 +124,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
       return;
     }
     setIsSaving(true);
-    const imageUrl = imageUpload ? await uploadImage(imageUpload) : null;
+    const imageUrl = imageUpload ? await uploadImage(imageUpload, undefined, form.name) : null;
     const slug = form.name.replace(/\s+/g, '-').toLowerCase() + v4();
     const createdCollection = await createCollection({
       ...form,

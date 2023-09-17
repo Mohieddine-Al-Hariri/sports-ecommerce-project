@@ -290,6 +290,8 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
 };
 
 const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
+  //TODO: ADD products Tags
+
   const [images, setImages] = useState([]);
   const [form, setForm] = useState({
     name: "",
