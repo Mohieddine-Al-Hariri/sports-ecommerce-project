@@ -424,6 +424,7 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
           <input
             type="file"
             id="images"
+            accept="image/*"
             required
             multiple
             onChange={handleImageUpload}

@@ -24,6 +24,8 @@ export async function POST(req) {
         }
         if (variant.color) {
           variantInput.name = variant.color;
+          // variantInput.name = `${variantInput.name}/${variant.color}`
+          //TODO: Continue from HERE
         }
         if(variant.quantity) variantInput.quantity = variant.quantity;
         return variantInput;

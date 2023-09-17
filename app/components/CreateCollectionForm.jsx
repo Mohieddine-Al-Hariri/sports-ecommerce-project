@@ -162,7 +162,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
 
   
   return (
-    <div className="flex flex-col pb-4">
+    <div className="flex flex-col pb-10 ">
       <h2 className="text-xl font-semibold mb-4 mt-5">Create a Collection</h2>
       <form className="flex flex-col space-y-4 colorScheme fontColor">
         <div className="flex flex-col">
@@ -277,7 +277,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
         </div>
         <div className="flexCenter flex-col  lg:min-h-[200px] min-h-[100px] relative w-full py-16">
           {!imageUpload && (
-            <label htmlFor="poster" className="flexCenter z-10 text-center w-full h-[300px] p-20 dashedBorder rounded-lg aspect-square fontColor absolute">
+            <label htmlFor="poster" className="flexCenter z-10 text-center w-full h-[300px] p-20 dashedBorder rounded-lg aspect-square text-gray-200 absolute">
               Choose an Image <br /> (Optional)
             </label>
           )}

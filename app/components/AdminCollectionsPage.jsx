@@ -706,7 +706,7 @@ const AdminCollectionsPage = ({
     }, 1000);
   };
   return (
-    <div className="h-screen bgColor fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
+    <div className="h-full bgColor fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
       <div className=" flex gap-4 flex-col ">
         {collectionsData.map((collection, index) => (
           <CollectionCard

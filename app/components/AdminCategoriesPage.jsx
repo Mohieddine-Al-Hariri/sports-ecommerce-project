@@ -12,6 +12,16 @@ import CreateCategoryForm from "./CreateCategoryForm";
 import Image from "next/image";
 import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash } from ".";
 
+export const ButtonSVG = ({ func, text, svg, hoverColor }) => (
+  <button
+    className={`flex justify-between items-center max-sm:w-fit max-sm:flex-col w-full ${hoverColor ? `hover:${hoverColor}` : "hover:text-[#4bc0d9]"}` }
+    onClick={func}
+  >
+    {text}
+    {svg}
+  </button>
+)
+
 export const ProductCard = ({ product, included, include, inputId }) => {
   //TODO: Remove this from here and collections, out in seperate component
   return (
@@ -273,13 +283,17 @@ const CategoryCard = ({
     updateDisplayedProducts();
   };
 
+  //TODO: Make buttons with svgs a component with props...?
+
   return (
     <div
       className={`flex flex-col border-2 ${
         show ? "borderColor fontColor" : "border-gray-500 fontColorGray"
       } rounded-lg p-2`}
     >
-      <div className={` flex justify-between`}>
+      <div className={` flex justify-between ${
+        updatingCategoryName ? "max-sm:flex-col-reverse gap-2 mb-2" : ""
+      } `}>
         <div>
           {updatingCategoryName ? (
             <div className="flex flex-col justify-around items-center h-full">
@@ -317,20 +331,14 @@ const CategoryCard = ({
         
         <div
           className={`flex gap-4 items-start ${
-            updatingCategoryName ? "flex-col" : ""
+            updatingCategoryName ? "sm:flex-col max-sm:flex-wrap sm:w-1/6 w-full max-sm:justify-evenly items-end" : ""
           }`}
         >
           {updatingCategoryName ? (
             isUpdating ? (
               <SVGLoading/>
             ) : (
-              <button
-                className="flex justify-between items-center w-full hover:text-[#4bc0d9]"
-                onClick={updateCategoryDetails}
-              >
-                Submit
-                <SVGCheck/>
-              </button>
+              <ButtonSVG func={updateCategoryDetails} text="Submit" svg={<SVGCheck/>} />
             )
           ) : (
             <button onClick={() => setUpdatingCategoryName(true)}>
@@ -340,44 +348,46 @@ const CategoryCard = ({
           {isUpdatingShow ? (
             <SVGLoading/>
           ) : show ? (
-            <button
-              className="flex justify-between items-center w-full hover:text-yellow-500"
-              onClick={updateCategoryShowState}
-            >
-              {updatingCategoryName && "Hide"}
-              <svg
-                fill="currentColor"
-                width="30px"
-                height="30px"
-                viewBox="0 -0.6 20.4 20.4"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <title>Hide from user</title>
-                <path d="M10.2 15q-2.512 0 -4.537 -1.462 -2.063 -1.462 -3.262 -3.938 1.2 -2.475 3.262 -3.938 2.025 -1.462 4.537 -1.462 2.4 0 4.5 1.537 2.1 1.5 3.3 3.862 -1.2 2.362 -3.3 3.9 -2.1 1.5 -4.5 1.5Zm0 -1.8q1.5 0 2.55 -1.05t1.05 -2.55q0 -1.5 -1.05 -2.55t-2.55 -1.05q-1.5 0 -2.55 1.05t-1.05 2.55q0 1.5 1.05 2.55t2.55 1.05Zm0 -1.5q-0.862 0 -1.462 -0.6 -0.637 -0.637 -0.637 -1.5t0.637 -1.462q0.6 -0.637 1.462 -0.637t1.5 0.637q0.6 0.6 0.6 1.462t-0.6 1.5q-0.637 0.6 -1.5 0.6Z" />
-              </svg>
-            </button>
+            <ButtonSVG 
+              func={updateCategoryShowState} 
+              text={updatingCategoryName ? "Hide" : ""}
+              hoverColor="text-yellow-500" 
+              svg={
+                <svg
+                  fill="currentColor"
+                  width="30px"
+                  height="30px"
+                  viewBox="0 -0.6 20.4 20.4"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <title>Hide from user</title>
+                  <path d="M10.2 15q-2.512 0 -4.537 -1.462 -2.063 -1.462 -3.262 -3.938 1.2 -2.475 3.262 -3.938 2.025 -1.462 4.537 -1.462 2.4 0 4.5 1.537 2.1 1.5 3.3 3.862 -1.2 2.362 -3.3 3.9 -2.1 1.5 -4.5 1.5Zm0 -1.8q1.5 0 2.55 -1.05t1.05 -2.55q0 -1.5 -1.05 -2.55t-2.55 -1.05q-1.5 0 -2.55 1.05t-1.05 2.55q0 1.5 1.05 2.55t2.55 1.05Zm0 -1.5q-0.862 0 -1.462 -0.6 -0.637 -0.637 -0.637 -1.5t0.637 -1.462q0.6 -0.637 1.462 -0.637t1.5 0.637q0.6 0.6 0.6 1.462t-0.6 1.5q-0.637 0.6 -1.5 0.6Z" />
+                </svg>
+              } 
+            />
           ) : (
-            <button
-              className="flex justify-between items-center w-full hover:text-yellow-500"
-              onClick={updateCategoryShowState}
-            >
-              {updatingCategoryName && "Show"}
-              <svg
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-                width="30px"
-                height="30px"
-                viewBox="0 0 1.95 1.95"
-                enableBackground="new 0 0 52 52"
-                xmlSpace="preserve"
-              >
-                <title>Show to user</title>
-                <g>
-                  <path d="M1.942 0.941c-0.06 -0.12 -0.139 -0.229 -0.236 -0.315L1.387 0.941v0.034c0 0.229 -0.184 0.412 -0.412 0.412h-0.034l-0.203 0.203c0.075 0.015 0.154 0.026 0.232 0.026 0.424 0 0.791 -0.247 0.968 -0.604 0.015 -0.026 0.015 -0.049 0.004 -0.071z" />
-                  <path d="m1.819 0.21 -0.079 -0.079c-0.022 -0.022 -0.064 -0.019 -0.09 0.011l-0.274 0.274C1.252 0.364 1.117 0.337 0.975 0.337 0.551 0.337 0.184 0.585 0.007 0.941c-0.011 0.022 -0.011 0.049 0 0.068 0.083 0.169 0.206 0.307 0.36 0.412l-0.225 0.229c-0.026 0.026 -0.03 0.068 -0.011 0.09l0.079 0.079c0.022 0.022 0.064 0.019 0.09 -0.011L1.808 0.3c0.03 -0.026 0.034 -0.068 0.011 -0.09zM0.563 0.975c0 -0.229 0.184 -0.412 0.412 -0.412 0.075 0 0.142 0.019 0.203 0.052l-0.112 0.112c-0.03 -0.007 -0.06 -0.015 -0.09 -0.015 -0.146 0 -0.263 0.116 -0.263 0.263 0 0.03 0.007 0.06 0.015 0.09l-0.112 0.112C0.581 1.117 0.563 1.05 0.563 0.975z" />
-                </g>
-              </svg>
-            </button>
+            <ButtonSVG 
+              func={updateCategoryShowState} 
+              text={updatingCategoryName ? "Show" : ""}
+              hoverColor="text-yellow-500" 
+              svg={
+                <svg
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="30px"
+                  height="30px"
+                  viewBox="0 0 1.95 1.95"
+                  enableBackground="new 0 0 52 52"
+                  xmlSpace="preserve"
+                >
+                  <title>Show to user</title>
+                  <g>
+                    <path d="M1.942 0.941c-0.06 -0.12 -0.139 -0.229 -0.236 -0.315L1.387 0.941v0.034c0 0.229 -0.184 0.412 -0.412 0.412h-0.034l-0.203 0.203c0.075 0.015 0.154 0.026 0.232 0.026 0.424 0 0.791 -0.247 0.968 -0.604 0.015 -0.026 0.015 -0.049 0.004 -0.071z" />
+                    <path d="m1.819 0.21 -0.079 -0.079c-0.022 -0.022 -0.064 -0.019 -0.09 0.011l-0.274 0.274C1.252 0.364 1.117 0.337 0.975 0.337 0.551 0.337 0.184 0.585 0.007 0.941c-0.011 0.022 -0.011 0.049 0 0.068 0.083 0.169 0.206 0.307 0.36 0.412l-0.225 0.229c-0.026 0.026 -0.03 0.068 -0.011 0.09l0.079 0.079c0.022 0.022 0.064 0.019 0.09 -0.011L1.808 0.3c0.03 -0.026 0.034 -0.068 0.011 -0.09zM0.563 0.975c0 -0.229 0.184 -0.412 0.412 -0.412 0.075 0 0.142 0.019 0.203 0.052l-0.112 0.112c-0.03 -0.007 -0.06 -0.015 -0.09 -0.015 -0.146 0 -0.263 0.116 -0.263 0.263 0 0.03 0.007 0.06 0.015 0.09l-0.112 0.112C0.581 1.117 0.563 1.05 0.563 0.975z" />
+                  </g>
+                </svg>
+              } 
+            />
           )}
           {!updatingCategoryName ? (
             isDeleting ? (
@@ -389,19 +399,8 @@ const CategoryCard = ({
             )
           ) : (
             <>
-              <button
-                className="flex justify-between gap-1 items-center w-full hover:text-yellow-500"
-                onClick={cancelUpdateCategory}
-              >
-                Cancel
-                <SVGCancel width="30px" height="30px" />
-
-              </button>
-              <button
-                className="flex justify-between gap-1 items-center w-full hover:text-[#4bc0d9]"
-                onClick={resetCollectionDetailsFunc}
-              >
-                Default
+              <ButtonSVG func={cancelUpdateCategory} text="Cancel" svg={<SVGCancel width="30px" height="30px" />} />
+              <ButtonSVG func={resetCollectionDetailsFunc} text="Default" svg={
                 <svg
                   id="Layer_1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -443,7 +442,8 @@ const CategoryCard = ({
                     d="M5.625 25.313L5.625 19.688L11.25 19.688"
                   />
                 </svg>
-              </button>
+                } 
+              />
             </>
           )}
         </div>
