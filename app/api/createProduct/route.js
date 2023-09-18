@@ -14,7 +14,6 @@ export async function POST(req) {
     name, slug, description, price, state, imgUrls, excerpt, categories, variants, collections, isOnSale, previousPrice, tags 
   } = body;
 
-
   let variantInput = {};
   if (variants.length > 0) {
     variantInput = {
@@ -92,6 +91,7 @@ export async function POST(req) {
       collection: collections.map((collection) => ({ id: collection })),
       variants: variantInput,
     });
+    
     return new Response(JSON.stringify(createdProduct.createProduct));
   } catch (error) {
     console.error("Error in POST:", error);

@@ -278,7 +278,7 @@ const ItemsDetailsPage = ({ product, user }) => {
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return ( 
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start lg:items-center justify-center px-2 max-lg:pb-10 bgColor  ">
-      <div className="max-sm:w-[428px] w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
+      <div className="max-sm:w-[428px] w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start max-sm:inline-flex">
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           {/* TODO: Make the image size based on the used images dimensions */}
           <ImagesCarouselModal product={product} setImageIndex={setCurrentImageIndex} />
@@ -453,19 +453,19 @@ const ItemsDetailsPage = ({ product, user }) => {
                 </p>
               )} */}
               {selectVariantError && (
-                <p className="text-[#4bc0d9] text-center ">
+                <p className="text-[#4bc0d9] text-center max-sm:pb-8 ">
                   Please Select Your Desired Variant
                 </p>
               )}
               {isItemAddedToCart && (
-                <p className="text-green-500 text-center ">
+                <p className="text-green-500 text-center max-sm:pb-8 ">
                   Item Added Successfuly
                 </p>
               )}
             </div>
           </div>
         </div>
-        {/* Similars from same Category */}
+        {/* Similars from same Category /TODO:Check if still working*/}
         {product.categories[0]?.products > 0 && (
           <h2 className="pl-4 ">Other Related Products</h2>
         )}

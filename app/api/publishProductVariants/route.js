@@ -8,7 +8,7 @@ export async function POST(req) {
     },
   });
 
-  try {//TODO: Make based on product id
+  try {
     const publishedProductVariants = await client.request(
       `
         mutation PublishManyProductVariants($productId: ID) {
@@ -17,8 +17,6 @@ export async function POST(req) {
           }
         }
       `,
-      // eg: { productVariantsIds: ['clldvjfspkab60buo4vanqkm1', 'clldvjfsrkab80buodl6ov0zf'] }
-      // { productVariantsIds: productVariantsIds.map((id) => (id.id)) }
       { productId }
     );
     return new Response(JSON.stringify(publishedProductVariants));

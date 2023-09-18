@@ -30,9 +30,6 @@ export async function POST(req) {
 
   } = body;
 
-  console.log("\npreviousTags: ", previousTags);
-  console.log("\ntags: ", tags);
-
   let variantInput = [];
   if (variants.length > 0) {
     variantInput = 
@@ -123,8 +120,6 @@ export async function POST(req) {
       }
     );
     
-    console.log("__________________________updatedProduct: \n", updatedProduct.updateProduct);
-
     return new Response(JSON.stringify(updatedProduct.updateProduct)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
