@@ -8,20 +8,18 @@ export async function POST(req) {
     },
   });
 
-  try {//TODO: Make based on product id
-    const publishedProductVariants = await client.request(
+  try {
+    const publishedTagsCount = await client.request(
       `
-        mutation PublishManyProductVariants($productId: ID) {
-          publishManyProductVariants(where: { product: { id: $productId } }) {
+        mutation PublishManyTags($productId: ID!) {
+          publishManyTags(where: {product: {id: $productId}}) {
             count
           }
         }
       `,
-      // eg: { productVariantsIds: ['clldvjfspkab60buo4vanqkm1', 'clldvjfsrkab80buodl6ov0zf'] }
-      // { productVariantsIds: productVariantsIds.map((id) => (id.id)) }
       { productId }
     );
-    return new Response(JSON.stringify(publishedProductVariants));
+    return new Response(JSON.stringify(publishedTagsCount)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({status:500, body: error.message});

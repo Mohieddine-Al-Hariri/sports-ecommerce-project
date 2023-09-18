@@ -11,8 +11,9 @@ export async function POST(req) {
   });
 
   const {
-    name, slug, description, price, state, imgUrls, excerpt, categories, variants, collections, isOnSale, previousPrice
+    name, slug, description, price, state, imgUrls, excerpt, categories, variants, collections, isOnSale, previousPrice, tags 
   } = body;
+
 
   let variantInput = {};
   if (variants.length > 0) {
@@ -23,40 +24,42 @@ export async function POST(req) {
           variantInput.name = variant.size;
         }
         if (variant.color) {
-          variantInput.name = `${variantInput.name}/${variant.color}`
+          variantInput.name = variantInput.name ? `${variantInput.name}/${variant.color}` : variant.color
         }
         if(variant.quantity) variantInput.quantity = variant.quantity;
         return variantInput;
       }),
     };
   }
-  console.log("variantInput: ", variantInput);//TODO:FIX
+
   const query = `
     mutation CreateProduct(
+      $slug: String!
+      $imageUrls: [ImageUrlCreateInput!]
       $name: String!
       $excerpt: String!
       $description: String!
       $price: Float!
-      $state: ProductStates!
-      $slug: String!
-      $imageUrls: [ImageUrlCreateInput!]
       $isOnSale: Boolean!
       $previousPrice: Float
+      $tags: TagCreateManyInlineInput
+      $state: ProductStates!
       $variants: ProductVariantCreateManyInlineInput
       $categories: [CategoryWhereUniqueInput!]
       $collection: [CollectionWhereUniqueInput!]
     ) {
       createProduct(
         data: {
+          slug: $slug
+          imageUrls: { create: $imageUrls }
           name: $name
           excerpt: $excerpt
           description: $description
           price: $price
-          state: $state
-          slug: $slug
-          imageUrls: { create: $imageUrls }
           isOnSale: $isOnSale
           previousPrice: $previousPrice
+          tags: $tags
+          state: $state
           productVariants: $variants
           categories: { connect: $categories }
           collections: { connect: $collection }
@@ -75,18 +78,19 @@ export async function POST(req) {
 
   try {
     const createdProduct = await client.request(query, {
+      slug,
       imageUrls: imgUrls.map((url) => ({ url })),
       name,
-      slug,
+      excerpt,
       description,
       price,
+      isOnSale, 
+      previousPrice,
+      tags: {create: tags.map((tag) => ({name: tag}))},
       state,
-      excerpt,
       categories: categories.map((category) => ({ id: category })),
       collection: collections.map((collection) => ({ id: collection })),
       variants: variantInput,
-      isOnSale, 
-      previousPrice
     });
     return new Response(JSON.stringify(createdProduct.createProduct));
   } catch (error) {

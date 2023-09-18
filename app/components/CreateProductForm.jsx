@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import {
   createProduct,
   publishImagesUrls,
+  publishManyTags,
   publishProduct,
   publishProductVariants,
 } from "@/lib";
@@ -12,26 +13,27 @@ import { useRouter } from "next/navigation";
 import { v4 } from "uuid";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
-import { CheckBox, SVGLoading } from ".";
+import { CheckBox, SVGLoading, SVGX } from ".";
 
 const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
 
   return (
-    <div className="flex flex-col items-center px-3 py-1 productCardBg rounded-full">
+    <div className="flex relative flex-col items-center px-3 pb-1 pt-4 productCardBg rounded-lg">
       {/*  */}
       <div>
         {size && size} {size && color && "/"} {color && color}
-        <button className="text-red-600 ml-2" onClick={(e) => {deleteItem(index); e.preventDefault()}}>
-          X
+        <button className="hover:text-red-600 transition absolute right-1 top-0" onClick={(e) => {deleteItem(index); e.preventDefault()}}>
+          <SVGX/>
         </button>
       </div>
       {/*  */}
       <div className="flex gap-2">
-        <button className="rounded-full bgColorGray aspect-square px-2 " onClick={(e) => decreaseQuantity(e, index)}>-</button>
-        <button onClick={(e) => infiniteQuantity(e, index)}>♾️</button>
-        <button className="rounded-full bgColorGray aspect-square px-2 " onClick={(e) => increaseQuantity(e, index)}>+</button>
+        <button className="rounded-full bgColorGray aspect-square px-2 hover:text-[#4bc0d9] " onClick={(e) => decreaseQuantity(e, index)}>-</button>
+        <button className="hover:scale-125" onClick={(e) => infiniteQuantity(e, index)}>♾️</button>
+        <button className="rounded-full bgColorGray aspect-square px-2 hover:text-[#4bc0d9] " onClick={(e) => increaseQuantity(e, index)}>+</button>
       </div>
-        {quantity !== null ? quantity : "⊠"}
+      <div className="underline">{quantity !== null ? quantity : "♾️"}</div>
+        
     </div>
   );
 };
@@ -129,14 +131,14 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
     setHasSubmitted(true);
   };
 
-
+  //TODO: Add submit button for each variant writen in the input
   return(
     <div className="relative mb-4 border-2 border-gray-300 rounded p-2 ">
       <label className="block text-lg font-semibold mb-2">
         Filter by Variants
       </label>
       {(showSizeInput || showColorInput) &&
-        <button className="absolute top-2 right-2" onClick={cancel}>X</button>
+        <button className="absolute top-2 right-2 hover:text-red-500 transition" onClick={cancel}><SVGX /></button>
       }
       <div className="flex space-x-4 mb-2 ">
         <div
@@ -198,7 +200,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
               >
                 {value}
                 <button
-                  className="text-red-600"
+                  className="border rounded-lg borderColor hover:text-red-500 transition"
                   onClick={(e) => {
                     e.preventDefault();
                     const updatedValues = sizeValues.filter(
@@ -207,7 +209,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
                     setSizeValues(updatedValues);
                   }}
                 >
-                  X
+                  <SVGX />
                 </button>
               </div>
             ))}
@@ -238,7 +240,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
               >
                 {value}
                 <button
-                  className="text-red-600"
+                  className="border rounded-lg borderColor hover:text-red-500 transition"
                   onClick={() => {
                     const updatedValues = colorValues.filter(
                       (_, i) => i !== index
@@ -246,7 +248,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
                     setColorValues(updatedValues);
                   }}
                 >
-                  X
+                  <SVGX/>
                 </button>
               </div>
             ))}
@@ -290,7 +292,6 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
 };
 
 const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
-  //TODO: ADD products Tags
 
   const [images, setImages] = useState([]);
   const [form, setForm] = useState({
@@ -300,11 +301,13 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     collections: [],
     state: "Available",
     categories: [],
+    tags: "",
   });
   const [price, setPrice] = useState(0); 
   const [prevPrice, setPrevPrice] = useState(0); 
   const [imageError, setImageError] = useState("");
   const [isOnSale, setIsOnSale] = useState(false);
+  const [tagList, setTagList] = useState([]);
 
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
@@ -352,6 +355,23 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     const selectedCollection = selectedOptions.map((option) => option.value);
     setForm((prevForm) => ({ ...prevForm, collections: selectedCollection }));
   };
+  const handleTagSubmit = (e) => {
+    e.preventDefault();
+    const newTag = form.tags.trim();
+
+    if(newTag === '') return
+    if (tagList.includes(newTag)) {
+      //TODO: Handle Similar Tags Error
+      return
+    }
+    setTagList([...tagList, newTag]);
+    setForm({ ...form, tags: '' });
+  };
+  const handleTagRemove = (tagToRemove, e) => {
+    e.preventDefault();
+    const updatedTagList = tagList.filter((tag) => tag !== tagToRemove);
+    setTagList(updatedTagList);
+  };
 
   async function uploadImage(image) {
     const storageRef = ref(
@@ -382,12 +402,16 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
       variants: selectedPills,
       isOnSale,
       previousPrice: isOnSale ? prevPrice : 0,
+      tags: tagList
     });
 
+    const publishedTagsPromise = publishManyTags(createdProduct.id);
     const publishProductPromise = publishProduct(createdProduct.id);
+    const publishProductVariantsPromise = publishProductVariants(createdProduct.id);
+    // const publishProductVariantsPromise = publishProductVariants(createdProduct.productVariants);
     const publishImagesUrlsPromise = publishImagesUrls(createdProduct.imageUrls);
-    const publishProductVariantsPromise = publishProductVariants(createdProduct.productVariants);
-    await Promise.all([publishProductPromise, publishImagesUrlsPromise, publishProductVariantsPromise]);
+    await Promise.all([publishedTagsPromise, publishProductPromise, publishProductVariantsPromise, publishImagesUrlsPromise]);
+    
     router.push(`/itemsDetails/${createdProduct.id}`);
     setIsCreating(false);
   };
@@ -543,6 +567,30 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
               </label>
             </>
           )}
+        </div>
+        
+        <div className="mb-4">
+          <label htmlFor="tags" className="block text-lg font-semibold mb-2">
+            Tags
+          </label>
+          <input
+            id="tags"
+            name="tags"
+            value={form.tags}
+            onChange={handleChange}
+            className="w-full py-2 px-4 mb-2 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+          />
+          <div className="flex flex-wrap gap-2">
+            <button className="hover:underline" onClick={(e) => handleTagSubmit(e)}>Add Tag</button>
+            <div className=" flex flex-wrap gap-2 ">
+              {tagList.map((tag, index) => (
+                <div key={`tag-${tag}-${index}`} className="rounded-full bgColorGray px-2 py-1 w-fit ">
+                  {tag}
+                  <button className="hover:text-red-600 ml-2 " onClick={(e) => handleTagRemove(tag, e)}>X</button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="mb-4">

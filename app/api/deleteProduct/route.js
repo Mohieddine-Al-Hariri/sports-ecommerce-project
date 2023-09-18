@@ -8,7 +8,7 @@ export async function POST(req) {
     },
   });
 
-  try {
+  try {//TODO: When delete product, delete its variants, tags, and imageUrls
     const deletedProduct = await client.request(
       `
         mutation DeleteProduct($productId: ID!) {

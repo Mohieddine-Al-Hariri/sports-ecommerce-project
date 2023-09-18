@@ -16,12 +16,22 @@ export async function POST(req) {
     excerpt,
     description,
     price,
+    isOnSale,
+    prevPrice,
+    tags,
+    previousTags,
     state,
     variants,
-    previousCategories,
     previousVariants,
     categories,
+    previousCategories,
+    collections,
+    previousCollections
+
   } = body;
+
+  console.log("\npreviousTags: ", previousTags);
+  console.log("\ntags: ", tags);
 
   let variantInput = [];
   if (variants.length > 0) {
@@ -32,13 +42,13 @@ export async function POST(req) {
           variantInput.name = variant.size;
         }
         if (variant.color) {
-          variantInput.name = variant.color;
+          variantInput.name = variantInput.name ? `${variantInput.name}/${variant.color}` : variant.color
         }
         if(variant.quantity !== null) variantInput.quantity = variant.quantity;
         return variantInput;
       });
   }
-
+  
   const query = `
     mutation updateProduct(
       $productId: ID!
@@ -48,11 +58,17 @@ export async function POST(req) {
       $excerpt: String!
       $description: String!
       $price: Float!
+      $isOnSale: Boolean!
+      $prevPrice: Float!
+      $previousTags: [TagWhereUniqueInput!]
+      $tags: [TagCreateInput!]
       $state: ProductStates!
       $previousVariants: [ProductVariantWhereUniqueInput!]
       $variants: [ProductVariantCreateInput!]
-      $previousCategories: [CategoryWhereUniqueInput!]
       $categories: [CategoryConnectInput!]
+      $previousCategories: [CategoryWhereUniqueInput!]
+      $collections: [CollectionConnectInput!]
+      $previousCollections: [CollectionWhereUniqueInput!]
     ) {
       updateProduct(
         where: {id: $productId}
@@ -62,9 +78,13 @@ export async function POST(req) {
           excerpt: $excerpt, 
           description: $description, 
           price: $price, 
+          isOnSale: $isOnSale,
+          previousPrice: $prevPrice,
+          tags: {delete: $previousTags, create: $tags}, 
           state: $state, 
           productVariants: {delete: $previousVariants, create: $variants}, 
           categories: {disconnect: $previousCategories, connect: $categories},
+          collections: {disconnect: $previousCollections, connect: $collections}
         }
       ) {
         id
@@ -79,7 +99,6 @@ export async function POST(req) {
   `;
 
   try {
-    //TODO: add collection for later...
     const updatedProduct = await client.request( 
       query,
       {
@@ -90,19 +109,23 @@ export async function POST(req) {
         excerpt,
         description,
         price,
+        isOnSale,
+        prevPrice,
+        tags,
+        previousTags,
         state,
         variants: variantInput,
         previousVariants,
-        previousCategories,
         categories: categories.map((category) => ({where: { id: category }})),
+        previousCategories,
+        collections: collections.map((collection) => ({where: { id: collection }})),
+        previousCollections
       }
     );
-    // $previousCollections: [ID!]!, 
-    // $collections: [CollectionWhereUniqueInput!]!
-    // collections: {disconnect: {id: $previousCollections}, connect: {where: {id: $collections}}}}
-    // console.log("__________________________updatedProduct: \n", updatedProduct);
+    
+    console.log("__________________________updatedProduct: \n", updatedProduct.updateProduct);
 
-    return new Response(JSON.stringify(updatedProduct)); // Should return the post's title
+    return new Response(JSON.stringify(updatedProduct.updateProduct)); // Should return the post's title
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({ status: 500, body: error.message });

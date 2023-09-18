@@ -4,6 +4,7 @@ import Select from "react-select";
 import ReactMarkdown from "react-markdown";
 import {
   publishImagesUrls,
+  publishManyTags,
   publishProduct,
   publishProductVariants,
   updateProduct,
@@ -11,24 +12,26 @@ import {
 import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
+import { CheckBox, SVGCheck, SVGX } from ".";
 
 const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
   return (
-    <div className="flex flex-col items-center px-3 py-1 productCardBg rounded-full">
+    <div className="flex relative flex-col items-center px-3 pb-1 pt-4 productCardBg rounded-lg">
       {/*  */}
       <div>
         {size && size} {size && color && "/"} {color && color}
-        <button className="text-red-600 ml-2" onClick={(e) => {deleteItem(index); e.preventDefault()}}>
-          X
+        <button className="hover:text-red-600 transition absolute right-1 top-0" onClick={(e) => {deleteItem(index); e.preventDefault()}}>
+          <SVGX/>
         </button>
       </div>
       {/*  */}
       <div className="flex gap-2">
-        <button className="rounded-full bgColorGray aspect-square px-2 " onClick={(e) => decreaseQuantity(e, index)}>-</button>
-        <button onClick={(e) => infiniteQuantity(e, index)}>♾️</button>
-        <button className="rounded-full bgColorGray aspect-square px-2 " onClick={(e) => increaseQuantity(e, index)}>+</button>
+        <button className="rounded-full bgColorGray aspect-square px-2 hover:text-[#4bc0d9] " onClick={(e) => decreaseQuantity(e, index)}>-</button>
+        <button className="hover:scale-125" onClick={(e) => infiniteQuantity(e, index)}>♾️</button>
+        <button className="rounded-full bgColorGray aspect-square px-2 hover:text-[#4bc0d9] " onClick={(e) => increaseQuantity(e, index)}>+</button>
       </div>
-        {quantity !== null ? quantity : "⊠"}
+      <div className="underline">{quantity !== null ? quantity : "♾️"}</div>
+        
     </div>
   );
 };
@@ -37,6 +40,8 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
 
   const [showSizeInput, setShowSizeInput] = useState(false);
   const [showColorInput, setShowColorInput] = useState(false);
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
   const [sizeValues, setSizeValues] = useState([]);
   const [colorValues, setColorValues] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(productData ? true : false);
@@ -121,11 +126,11 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
         Filter by Variants
       </label>
       {(showSizeInput || showColorInput) &&
-        <button className="absolute top-2 right-2" onClick={cancel}>X</button>
+        <button className="absolute top-2 right-2 hover:text-red-500 transition" onClick={cancel}><SVGX /></button>
       }
       <div className="flex space-x-4 mb-2 ">
         <div
-          className={`cursor-pointer p-2 border rounded ${
+          className={`cursor-pointer p-2 border rounded hover:text-white hover:bg-[#4bc0d9] ${
             showSizeInput ? "border-[#4bc0d9]" : "border-gray-300"
           }`}
           onClick={() => {
@@ -136,7 +141,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
           Size
         </div>
         <div
-          className={`cursor-pointer p-2 border rounded ${
+          className={`cursor-pointer p-2 border rounded hover:text-white hover:bg-[#4bc0d9] ${
             showColorInput ? "border-[#4bc0d9]" : "border-gray-300"
           }`}
           onClick={() => {
@@ -147,7 +152,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
           Color
         </div>
         <div
-          className={`cursor-pointer p-2 border rounded ${
+          className={`cursor-pointer p-2 border rounded hover:text-white hover:bg-[#4bc0d9] ${
             showSizeInput && showColorInput
               ? "border-[#4bc0d9]"
               : "border-gray-300"
@@ -162,19 +167,31 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
       </div>
       {showSizeInput && (
         <div className="mb-2">
-          <label className="block font-semibold mb-1">Size</label>
-          <input
-            type="text"
-            placeholder="Size"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value) {
-                e.preventDefault();
-                setSizeValues([...sizeValues, e.target.value]);
-                e.target.value = "";
-              }
-            }}
-          />
+          <label htmlFor="Size" className="block font-semibold mb-1">Size</label>
+          <div className="flex gap-1">
+            <input
+              id="Size"
+              type="text"
+              placeholder="Size"
+              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.target.value) {
+                  e.preventDefault();
+                  setSizeValues([...sizeValues, e.target.value]);
+                  setSize("");
+                }
+              }}
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+            />
+            <button className="border rounded-lg p-1" onClick={(e) => {
+              e.preventDefault();
+              setSizeValues([...sizeValues, size]);
+              setSize("");
+            }}>
+              <SVGCheck/>
+            </button>
+          </div>
           <div className="mt-2 flex flex-col gap-1">
             {sizeValues.map((value, index) => (
               <div
@@ -183,7 +200,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
               >
                 {value}
                 <button
-                  className="text-red-600"
+                  className="border rounded-lg borderColor hover:text-red-500 transition"
                   onClick={(e) => {
                     e.preventDefault();
                     const updatedValues = sizeValues.filter(
@@ -192,7 +209,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
                     setSizeValues(updatedValues);
                   }}
                 >
-                  X
+                  <SVGX />
                 </button>
               </div>
             ))}
@@ -202,19 +219,31 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
 
       {showColorInput && (
         <div className="mb-2">
-          <label className="block font-semibold mb-1">Color</label>
-          <input
-            type="text"
-            placeholder="Color"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value) {
-                e.preventDefault();
-                setColorValues([...colorValues, e.target.value]);
-                e.target.value = "";
-              }
-            }}
-          />
+          <label htmlFor="Color" className="block font-semibold mb-1">Color</label>
+          <div className="flex gap-1">
+            <input
+              id="Color"
+              type="text"
+              placeholder="Color"
+              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.target.value) {
+                  e.preventDefault();
+                  setColorValues([...colorValues, e.target.value]);
+                  setColor("");
+                }
+              }}
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+            />
+            <button className="border rounded-lg p-1" onClick={(e) => {
+              e.preventDefault();
+              setColorValues([...colorValues, color]);
+              setColor("");
+            }}>
+              <SVGCheck/>
+            </button>
+          </div>
           <div className="mt-2 flex flex-col gap-1">
             {colorValues.map((value, index) => (
               <div
@@ -223,7 +252,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
               >
                 {value}
                 <button
-                  className="text-red-600"
+                  className="border rounded-lg borderColor hover:text-red-500 transition"
                   onClick={() => {
                     const updatedValues = colorValues.filter(
                       (_, i) => i !== index
@@ -231,7 +260,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
                     setColorValues(updatedValues);
                   }}
                 >
-                  X
+                  <SVGX/>
                 </button>
               </div>
             ))}
@@ -240,7 +269,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
       )}
       {showSizeInput || showColorInput ? (
         <button
-          className="bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
+          className="hover:bg-[#3ca8d0] bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
           onClick={(e) => handleSubmitVariants(e)}
         >
           Check
@@ -271,37 +300,209 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
         </div>
       )}
     </div>
-  )
+  );
+  // return(
+  //   <div className="relative mb-4 border-2 border-gray-300 rounded p-2 ">
+  //     <label className="block text-lg font-semibold mb-2">
+  //       Filter by Variants
+  //     </label>
+  //     {(showSizeInput || showColorInput) &&
+  //       <button className="absolute top-2 right-2" onClick={cancel}>X</button>
+  //     }
+  //     <div className="flex space-x-4 mb-2 ">
+  //       <div
+  //         className={`cursor-pointer p-2 border rounded ${
+  //           showSizeInput ? "border-[#4bc0d9]" : "border-gray-300"
+  //         }`}
+  //         onClick={() => {
+  //           setShowSizeInput(!showSizeInput);
+  //           setShowColorInput(false);
+  //         }}
+  //       >
+  //         Size
+  //       </div>
+  //       <div
+  //         className={`cursor-pointer p-2 border rounded ${
+  //           showColorInput ? "border-[#4bc0d9]" : "border-gray-300"
+  //         }`}
+  //         onClick={() => {
+  //           setShowColorInput(!showColorInput);
+  //           setShowSizeInput(false);
+  //         }}
+  //       >
+  //         Color
+  //       </div>
+  //       <div
+  //         className={`cursor-pointer p-2 border rounded ${
+  //           showSizeInput && showColorInput
+  //             ? "border-[#4bc0d9]"
+  //             : "border-gray-300"
+  //         }`}
+  //         onClick={() => {
+  //           setShowSizeInput(true);
+  //           setShowColorInput(true);
+  //         }}
+  //       >
+  //         Size & Color
+  //       </div>
+  //     </div>
+  //     {showSizeInput && (
+  //       <div className="mb-2">
+  //         <label className="block font-semibold mb-1">Size</label>
+  //         <input
+  //           type="text"
+  //           placeholder="Size"
+  //           className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+  //           onKeyDown={(e) => {
+  //             if (e.key === "Enter" && e.target.value) {
+  //               e.preventDefault();
+  //               setSizeValues([...sizeValues, e.target.value]);
+  //               e.target.value = "";
+  //             }
+  //           }}
+  //         />
+  //         <div className="mt-2 flex flex-col gap-1">
+  //           {sizeValues.map((value, index) => (
+  //             <div
+  //               key={index}
+  //               className="flex justify-between items-center border rounded px-2 py-1 productCardBg"
+  //             >
+  //               {value}
+  //               <button
+  //                 className="text-red-600"
+  //                 onClick={(e) => {
+  //                   e.preventDefault();
+  //                   const updatedValues = sizeValues.filter(
+  //                     (_, i) => i !== index
+  //                   );
+  //                   setSizeValues(updatedValues);
+  //                 }}
+  //               >
+  //                 X
+  //               </button>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     )}
+
+  //     {showColorInput && (
+  //       <div className="mb-2">
+  //         <label className="block font-semibold mb-1">Color</label>
+  //         <input
+  //           type="text"
+  //           placeholder="Color"
+  //           className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+  //           onKeyDown={(e) => {
+  //             if (e.key === "Enter" && e.target.value) {
+  //               e.preventDefault();
+  //               setColorValues([...colorValues, e.target.value]);
+  //               e.target.value = "";
+  //             }
+  //           }}
+  //         />
+  //         <div className="mt-2 flex flex-col gap-1">
+  //           {colorValues.map((value, index) => (
+  //             <div
+  //               key={index}
+  //               className="flex justify-between items-center border rounded px-2 py-1 productCardBg"
+  //             >
+  //               {value}
+  //               <button
+  //                 className="text-red-600"
+  //                 onClick={() => {
+  //                   const updatedValues = colorValues.filter(
+  //                     (_, i) => i !== index
+  //                   );
+  //                   setColorValues(updatedValues);
+  //                 }}
+  //               >
+  //                 X
+  //               </button>
+  //             </div>
+  //           ))}
+  //         </div>
+  //       </div>
+  //     )}
+  //     {showSizeInput || showColorInput ? (
+  //       <button
+  //         className="bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
+  //         onClick={(e) => handleSubmitVariants(e)}
+  //       >
+  //         Check
+  //       </button>
+  //     ) : null}
+  //     {hasSubmitted && (
+  //       <div className="flex flex-wrap gap-2 mt-4">
+  //         {selectedPills.map((pill, index) => (
+  //           <PillVariant
+  //             key={
+  //               (pill.size && pill.color && `${pill.size}/${pill.color}`) ||
+  //               (pill.size && `${pill.size}`) ||
+  //               (pill.color && `${pill.color}`)
+  //             }
+  //             size={pill.size || null}
+  //             color={pill.color || null}
+  //             index={index}
+  //             deleteItem={deleteItem}
+  //             decreaseQuantity={decreaseQuantity}
+  //             increaseQuantity={increaseQuantity}
+  //             infiniteQuantity={infiniteQuantity}
+  //             quantity={pill.quantity}
+  //           />
+  //         ))}
+  //         {selectedPills.length > 0 && (
+  //           <button onClick={clearAll} >Clear All</button>
+  //         )}
+  //       </div>
+  //     )}
+  //   </div>
+  // )
 }
 
-const UpdateProductForm = ({ categoriesData, productData }) => {
+const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => {
   const productCategoriesIds = productData?.categories?.map(
     (category) => category.id
+  );
+  const productCollectionsIds = productData?.collections?.map(
+    (collection) => collection.id
+  );
+  const productTags = productData?.tags.map(
+    (tag) => tag.name
   );
   const productDataVariants = productData?.productVariants?.map((variant) => ({
     size: variant.name,
     quantity: variant.quantity,
   }));
   const productImages = productData?.imageUrls
-
+  
   const [prevImages, setPrevImages] = useState(productImages || []);
   const [images, setImages] = useState([]);
   const [removedImages, setRemovedImages] = useState([]);
   const [imageError, setImageError] = useState("");
+  
+  const [tagList, setTagList] = useState(productTags || []);
+  const [removedTags, setRemovedTags] = useState([]);
 
   const [form, setForm] = useState({
     name: productData?.name || "",
     excerpt: productData?.excerpt || "",
     description: productData?.description || "",
-    collection: productData?.collection || "",
     state: productData?.state || "Available",
+    collections: productCollectionsIds || [],
     categories: productCategoriesIds || [],
+    tag: "",
   });
+
   const [price, setPrice] = useState(productData?.price || 0);
+  const [isOnSale, setIsOnSale] = useState(false);
+  const [prevPrice, setPrevPrice] = useState(0); 
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   
   const [selectedPills, setSelectedPills] = useState(productDataVariants || []); // Variants State 
+
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
     if(isDarkModeLocal) document.body.classList.add('dark');
@@ -361,12 +562,55 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
   const categoryOptions = categoriesData.map((category) => {
     return { value: category.id, label: category.name };
   });
+  const collectionOptions = collectionsData.map(({node}) => {
+    return { value: node.id, label: node.name, className: "fontColor bgColor" };
+  });
 
   const handleCategoryChange = (selectedOptions) => {
     const selectedCategories = selectedOptions.map((option) => option.value);
     setForm((prevForm) => ({ ...prevForm, categories: selectedCategories }));
   };
+  const handleCollectionChange = (selectedOptions) => {
+    const selectedCollection = selectedOptions.map((option) => option.value);
+    setForm((prevForm) => ({ ...prevForm, collections: selectedCollection }));
+  };
 
+  const handleTagSubmit = (e) => {
+    //TODO: When tag is added, and was in removed, remove it from remove
+    e.preventDefault();
+    const newTag = form.tag.trim();
+
+    if(newTag === '') return
+    if (tagList.includes(newTag)) {
+      //TODO: Handle Similar Tags Error
+      return
+    }
+
+    //Remove added tag from removed tagsList
+    removedTags.includes(newTag) && setRemovedTags((prev) => prev.filter((tag) => tag !== newTag));
+    //Add the new tag to the tagsList
+    setTagList([...tagList, newTag]);
+    setForm({ ...form, tag: '' }); //Reset tag string in form
+  };
+  const handleTagRemove = (tagToRemove, e) => {
+    e.preventDefault();
+  
+    // Use the filter function to create an updated tag list
+    const updatedTagList = tagList.filter((tag) => tag !== tagToRemove);
+  
+    // Check if tagToRemove is in the productTags array
+    const isInPrev = productTags.includes(tagToRemove);
+
+    if(isInPrev){
+      //Get the id of the tagToRemove
+      const tagToRemoveId = productData.tags.find((tag) => tag.name === tagToRemove).id
+      setRemovedTags((prev) => [...prev, tagToRemoveId]);
+    }
+  
+    // Use functional updates for state setters
+    setTagList(updatedTagList);
+  };
+  
   async function uploadImage(image) {
     const storageRef = ref(
       storage,
@@ -393,28 +637,63 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
       {id: variant.id}
     ));
     const removedImagesIds = removedImages.map((image) => image.id).flat();
+    const previousCategories = productCategoriesIds
+      .filter((id) => !form.categories.some((categoryId) => categoryId === id))
+      .map((id) => ({ id }));
+    const previousCollections = productCollectionsIds
+      .filter((id) => !form.collections.some((collectionId) => collectionId === id))
+      .map((id) => ({ id }));
+    console.log("previousCollections: ", previousCollections);
     const updatedProduct = await updateProduct({
       productId: productData.id,
       ...form,
       price,
+      isOnSale,
+      prevPrice: prevPrice > 0 ? prevPrice : price + 1,
       variants: selectedPills,
       imageUrls,
       removedImagesIds,
-      previousCategories: productCategoriesIds.map((id) => ({ id })),
-      previousCollections: [],
+      previousCategories,
+      previousCollections,
       previousVariants,
-      
+      tags: tagList.filter((tag) => !productTags.includes(tag)).map((name) => ({ name })),
+      previousTags: removedTags.map((id) => ({ id })),
     });
-    await publishProduct(updatedProduct.updateProduct.id);
-    await publishImagesUrls(updatedProduct.updateProduct.imageUrls);
-    await publishProductVariants(updatedProduct.updateProduct.productVariants);
+
+    const publishProductPromise = publishProduct(updatedProduct.id);
+    const publishProductVariantsPromise = publishProductVariants(updatedProduct.id);
+    const publishedTagsPromise = publishManyTags(updatedProduct.id);
+    const publishImagesUrlsPromise = publishImagesUrls(updatedProduct.imageUrls);
+    await Promise.all([publishProductPromise, publishImagesUrlsPromise, publishProductVariantsPromise, publishedTagsPromise]);
+    
     setIsSubmitting(false);
-    router.push(`/itemsDetails/${updatedProduct.updateProduct.id}`);
+    router.refresh();
+    router.push(`/itemsDetails/${updatedProduct.id}`);
   };
   
+  const reactSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: "bgColor", // Adjust the background color
+      borderColor: "borderColor", // Adjust the border color
+      color: "fontColor", // Adjust the text color
+      '&:hover': {
+        borderColor: "#00FFFF", // Adjust the hover border color
+      },
+    }),
+    option: (provided, { isFocused, isSelected }) => ({
+      ...provided,
+      backgroundColor: isFocused || isSelected ? "#4bc0d9" : "white", // Adjust the background color for selected options
+      color: isFocused || isSelected ? "white" : "black", // Adjust the text color
+      '&:hover': {
+        backgroundColor: "#4bc0d9", // Adjust the hover background color
+      },
+    }),
+    // Other style overrides as needed...
+  };
 
   return (
-    <div className="max-w-2xl h-screen mx-auto p-6 bgColor colorScheme rounded-lg fontColor overflow-y-scroll pb-16">
+    <div className="w-full h-screen mx-auto p-6 bgColor colorScheme rounded-lg fontColor overflow-y-scroll pb-16">
       <h2 className="text-3xl font-semibold mb-6">Update Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="mb-4">
@@ -524,26 +803,73 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             {form.description}
           </ReactMarkdown>
         </div>
-        <div className="mb-4">
-          <label htmlFor="price" className="block text-lg font-semibold mb-2">
+
+        <CheckBox label="Is Product On Sale?" isChecked={isOnSale} setIsChecked={setIsOnSale}/>
+        
+        <div className="mb-4 flex gap-2 " >
+          <label htmlFor="price" className="block text-lg font-semibold mb-2 w-full">
             Price
+            <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
+              <span className="fontColorGray px-3">$</span>
+              <input
+                type="number"
+                id="price"
+                required
+                name="price"
+                value={price}
+                onChange={(e) => setPrice(parseFloat(e.target.value))}
+                className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+              />
+            </div>
           </label>
-          <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
-            <span className="text-gray-600 px-3">$</span>
-            <input
-              type="number"
-              id="price"
-              required
-              name="price"
-              value={price}
-              onChange={(e) => setPrice(parseFloat(e.target.value))}
-              className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-            />
-          </div>
           {/* {isNaN(parseFloat(form.price)) && form.price.trim() !== '' && (
             <p className="text-red-500 text-sm mt-1">Please enter a valid price.</p>
           )} */}
+          {isOnSale && (
+            <>
+              <label htmlFor="previousPrice" className="block text-lg font-semibold mb-2 w-full">
+                Previous Price
+                <div className="flex items-center border rounded focus-within:border-[#4bc0d9]">
+                  <span className="fontColorGray px-3">$</span>
+                  <input
+                    type="number"
+                    id="previousPrice"
+                    required
+                    name="previousPrice"
+                    value={prevPrice}
+                    onChange={(e) => setPrevPrice(parseFloat(e.target.value))}
+                    className="w-full py-2 px-2 rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+                  />
+                </div>
+              </label>
+            </>
+          )}
         </div>
+
+        <div className="mb-4">
+          <label htmlFor="tags" className="block text-lg font-semibold mb-2">
+            Tags
+          </label>
+          <input
+            id="tag"
+            name="tag"
+            value={form.tag}
+            onChange={handleChange}
+            className="w-full py-2 px-4 mb-2 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+          />
+          <div className="flex flex-wrap gap-2">
+            <button className="hover:underline" onClick={(e) => handleTagSubmit(e)}>Add Tag</button>
+            <div className=" flex flex-wrap gap-2 ">
+              {tagList.map((tag, index) => (
+                <div key={`tag-${tag}-${index}`} className="rounded-full bgColorGray px-2 py-1 w-fit ">
+                  {tag}
+                  <button className="hover:text-red-600 ml-2 " onClick={(e) => handleTagRemove(tag, e)}>X</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="mb-4">
           <label
             htmlFor="categories"
@@ -559,13 +885,35 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             value={categoryOptions.filter((option) =>
               form.categories.includes(option.value)
             )}
+            styles={reactSelectStyles}
             onChange={handleCategoryChange}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+            className="py-2 px-4 border rounded focus:outline-none text-black  focus:ring focus:border-[#4bc0d9]"
           />
         </div>
         <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} productData={productData} />
-
+        {/* TODO: Style Variants like in createProductForm */}
         <div className="mb-4">
+          <label
+            htmlFor="collections"
+            className="block text-lg font-semibold mb-2"
+          >
+            Collection
+          </label>
+          <Select
+            id="collections"
+            name="collections"
+            isMulti
+            options={collectionOptions}
+            value={collectionOptions.filter((option) =>
+              form.collections.includes(option.value)
+            )}
+            styles={reactSelectStyles}
+            onChange={handleCollectionChange}
+            className="py-2 px-4 border rounded text-black focus:outline-none focus:ring focus:border-[#4bc0d9] "
+          />
+        </div>
+
+        {/* <div className="mb-4">
           <label
             htmlFor="collection"
             className="block text-lg font-semibold mb-2"
@@ -580,9 +928,9 @@ const UpdateProductForm = ({ categoriesData, productData }) => {
             className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           >
             <option value="">Select a Collection</option>
-            {/* Add collection options here */}
           </select>
-        </div>
+        </div> */}
+
         <div className="mb-4">
           <label htmlFor="state" className="block text-lg font-semibold mb-2">
             State

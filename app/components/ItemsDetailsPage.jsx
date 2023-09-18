@@ -298,15 +298,15 @@ const ItemsDetailsPage = ({ product, user }) => {
                   {product.description &&
                     product.description.split(" ").length >
                       maxDescriptionWords && (
-                      <span
-                        className="cursor-pointer text-blue-500"
+                      <div
+                        className="cursor-pointer text-blue-500 w-full"
                         onClick={() =>
                           setShowFullDescription(!showFullDescription)
                         }
                       >
                         {" "}
                         {showMoreLessLabel}
-                      </span>
+                      </div>
                     )}
                 </div>
               </div>
