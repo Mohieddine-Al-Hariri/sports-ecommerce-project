@@ -131,7 +131,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
     setHasSubmitted(true);
   };
 
-  //TODO: Add submit button for each variant writen in the input
+    //TODO: Prevent Similar Variants
   return(
     <div className="relative mb-4 border-2 border-gray-300 rounded p-2 ">
       <label className="block text-lg font-semibold mb-2">
@@ -437,13 +437,13 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
     // Other style overrides as needed...
   };
   
-  
   return (
     <div className="max-w-2xl mx-auto p-6 bgColor colorScheme fontColor shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
       <h2 className="text-3xl font-semibold mb-6">Create a Product</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
 
         <div className="mb-4">
+          {/* TODO: FIX styling & in update form... */}
           <label htmlFor="images" className="block text-lg font-semibold mb-2">
             Images
           </label>

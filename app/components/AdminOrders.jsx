@@ -5,11 +5,12 @@ import SearchBar from "./SearchBar";
 import { deleteOrder, getAdminOrders } from "@/lib";
 import { useIsVisible } from "./UseVisible";
 import { useRouter } from "next/navigation";
-import { FilterSelect } from ".";
+import { FilterSelect, ScrollButton } from ".";
 // import Link from "next/link";
 
 const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   const [ordersState, setOrdersState] = useState([]);
+
   //Pagination
   const [lastOrderCursor, setLastOrderCursor] = useState(orders[orders.length - 1]?.cursor);
   const [doesHaveNextPage, setDoesHaveNextPage] = useState(hasNextPage);
@@ -19,6 +20,10 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedState, setSelectedState] = useState(filteredState || "All");
   const [resetSearchText, setResetSearchText] = useState(false);
+  
+  const topRef = useRef(null);
+  const isTopButtonVisible = useIsVisible(topRef);
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -90,11 +95,11 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
 
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
-  //TODO: Add Scroll Button
+
   return (
     <div className='flex flex-col items-center justify-between p-4 pb-20 h-screen w-screen bgColor overflow-y-scroll overflow-x-hidden fontColor ' >
       
-      <div className="mb-4 fontColor ">
+      <div ref={topRef} className="mb-4 fontColor ">
         <SearchBar resetSearchText={resetSearchText} />
         <FilterSelect 
           options={allState.map((item) => ({name: item}))}
@@ -116,11 +121,14 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
             </div>
           </div>
         ))}
+
       {/* Pagination controls */}
       {isLoading && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">Loading...</div> }
       {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }
       {/* Add an invisible element to act as the previousPostCardRef */}
       <div ref={lastOrderCardRef} style={{ visibility: "hidden" }} />
+
+      <ScrollButton rotationDegree={0} refe={topRef} isObservedElementVisible={isTopButtonVisible} bgColor="bg-[#4bc0d9]" textColor="text-white" />
       
     </div>
   )

@@ -270,10 +270,6 @@ const ItemsDetailsPage = ({ product, user }) => {
     setQuantity((quantity) => quantity + 1);
   };
 
-  const scrollToBottom = () => {
-    detailsRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
-  console.log(product)
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return ( 
@@ -489,7 +485,7 @@ const ItemsDetailsPage = ({ product, user }) => {
           <ReviewCard key={review.id} review={review} />
         ))}
       </div>
-      <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} handleClick={scrollToBottom} />
+      <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} refe={detailsRef} />
     </div>
   );
 };

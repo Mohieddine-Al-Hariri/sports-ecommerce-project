@@ -1,10 +1,15 @@
 "use client"
 
-const ScrollButton = ({ rotationDegree, isObservedElementVisible, handleClick, bgColor, textColor }) => {
+const ScrollButton = ({ rotationDegree, isObservedElementVisible, bgColor, textColor, refe }) => {
+
+  const scrollTo = () => {
+    refe.current.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <button
       disabled={isObservedElementVisible}
-      onClick={handleClick}
+      onClick={scrollTo}
       className={`fixed bottom-4 scrollButton right-4 max-sm:right-3 max-sm:bottom-10 rounded-full  
         ${`${bgColor} ${textColor}` || "staticBgColor fontColor"} p-2 ${
         isObservedElementVisible ? "hide-button" : "show-button"

@@ -32,7 +32,7 @@ const Order = ({ order }) => {
   return (
     <div className="flex flex-col fontColor gap-2 p-2 h-[100px] border-2 borderColor border-solid rounded-lg">
       <div className="flex gap-2 justify-between items-center h-full">
-        {item.collection ?
+        {item?.collection ?
           item.collection.imageUrl ?
           <div className="relative h-full w-[70px]">
             <Image className="rounded-md h-full object-cover " src={item.collection.imageUrl} fill alt={item.collection.products[0].name}/>
@@ -51,7 +51,7 @@ const Order = ({ order }) => {
             </div>
         :
           <div className="relative h-full w-[70px] flex items-start justify-start">
-            <Image className="rounded-md object-cover " src={item.product.imageUrls[0].url} fill alt={item.product.name}/>
+            <Image className="rounded-md object-cover " src={item.product.imageUrls[0]?.url} fill alt={item.product.name}/>
           </div>
         }
         {/* <Image src={order.orderItems[0].product.imageUrl} /> */}

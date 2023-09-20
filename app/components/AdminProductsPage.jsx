@@ -2,10 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useIsVisible } from "./UseVisible";
 import CreateProductForm from "./CreateProductForm";
-import { AdminProductCard, FilterSelect } from ".";
+import { AdminProductCard, FilterSelect, ScrollButton } from ".";
 import SearchBar from "./SearchBar";
 import { useRouter } from "next/navigation";
 import { deleteProduct, getProducts } from "@/lib";
+import { deleteObject, ref } from "firebase/storage";
+import { storage } from "@/lib/firebaseConfig";
 
 const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, searchedCategory, collectionsData, searchedCollection }) => {
 
@@ -25,6 +27,9 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   const [deletedProductId, setDeletedProductId] = useState(null);
 
   const router = useRouter();
+  
+  const topRef = useRef(null);
+  const isTopButtonVisible = useIsVisible(topRef);
 
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
@@ -71,17 +76,36 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
       return updatedProducts;
     });
     setDoesHaveNextPage(hasNextPage);
-  },[products, hasNextPage])
+  },[products, hasNextPage]);
 
-  const deleteProductFromDb = async (productId) => {
-    const deletedProduct = await deleteProduct(productId);
+  const deleteProductImages = async (imageUrls) => {
+    // Delete images from firebase
+    try {
+      // Create an array of promises for deleting each image
+      const deletePromises = imageUrls.map((imageUrl) => {
+        const imageRef = ref(storage, imageUrl);
+        return deleteObject(imageRef);
+      });
+  
+      // Use Promise.all() to delete all images concurrently
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.log("Error deleting product images:", error.message);
+    }
+  };
+
+  const deleteProductFromDb = async (productId, imageUrls, orderItemsIds, reviewsIds, ordersIds) => {
+    // imageUrls && await deleteProductImages(imageUrls);
+    const deletedProduct = await deleteProduct({
+      productId, imageUrls, orderItemsIds, reviewsIds, ordersIds: ordersIds.map(order => ({id: order.id})) 
+    });
     router.refresh();
     setDeletedProductId(deletedProduct.id);
   }
-  //TODO: Add Scroll Button
+
   return (
     <div className="overflow-y-scroll h-full bgColor fontColor lg:pb-4 max-sm:pb-10 ">
-      <div className="p-2 ">
+      <div ref={topRef} className="p-2 ">
         <button onClick={() => setIsCreating(!isCreating)} className="border-2 borderColor rounded-lg p-2 fontColor w-full hover:border-[#4bc0d9] hover:bg-[#4bc0d9] hover:text-white ">{isCreating ? "Products" : "Create"}</button>
       </div>
       {isCreating?
@@ -107,9 +131,9 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
             </div>
           </div>
           <div className="flex lg:flex-wrap max-lg:flex-col gap-2 bgColor ">
-            {productsState.map(({node}) => (
+            {productsState.map(({node}, index) => (
               <AdminProductCard
-                key={node.id}
+                key={`${node.id}-${index}`}
                 product= {node}
                 hasNextPage = {hasNextPage}
                 deleteProductFromDb={deleteProductFromDb}
@@ -123,6 +147,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
           {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }
         </div>
       }
+      <ScrollButton rotationDegree={0} refe={topRef} isObservedElementVisible={isTopButtonVisible} bgColor="bg-[#4bc0d9]" textColor="text-white" />
       <div ref={lastProductCardRef} style={{ visibility: "hidden" }} />
       <div className="max-sm:h-10 "></div>
     </div>

@@ -19,7 +19,7 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   if(item?.collection) {
     if(item.collection.imageUrl) source = item.collection.imageUrl;
     else source = item.collection.products;
-  }else if(item?.product?.imageUrls) source = item.product.imageUrls[0].url;
+  }else if(item?.product?.imageUrls) source = item.product.imageUrls[0]?.url;
 
   return (
     <div className={`border border-gray-300 ${
@@ -52,12 +52,12 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
           {openMenu ? 
             <div>
               <OrderStateMenu handleDeleteOrder={handleDeleteOrder} isOpen={openMenu} setIsOpen={setOpenMenu} orderState={orderState} setOrderState={setOrderState} orderId={order.id}/>
-              <button onClick={() => setOpenMenu(true)} className=" border-2 border-gray-500 rounded-full px-3 py-1 ">
+              <button onClick={() => setOpenMenu(true)} className="border-2 border-gray-500 rounded-full px-3 py-1 ">
                 <h1 className={`${stateColor} font-bold`}>{orderState}</h1> 
               </button>
             </div>
             :
-            <button onClick={() => setOpenMenu(true)} className=" hover:border-[#4bc0d9] border-2 border-gray-500 rounded-full px-3 py-1 ">
+            <button onClick={() => setOpenMenu(true)} className="hover:border-[#4bc0d9] border-2 border-gray-500 rounded-full px-3 py-1 ">
               <h1 className={`${stateColor} font-bold`}>{orderState}</h1>
             </button>
           }

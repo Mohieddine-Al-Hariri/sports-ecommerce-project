@@ -19,6 +19,7 @@ export const OrderButton = ({
   itemsIds,
   cartId,
   setIsOrderSubmitted,
+  isSubmitting,
   setSubmitting,
   setSelectedItemsIds,
 }) => {
@@ -53,14 +54,14 @@ export const OrderButton = ({
   return (
     <div className="pb-20 " >
       <button
-        disabled={!itemsIds.length}
+        disabled={!itemsIds.length || isSubmitting}
         onClick={orderItems}
         className={`w-[343px] h-[50px] px-4 py-2  ${
           itemsIds.length  ? "bg-[#4bc0d9] text-white hover:bg-[#3ca8d0]" : "bg-gray-300"
         }  rounded-lg border-black justify-around items-center gap-[3px] flex`}
       >
         <div className=" text-center text-[23px] font-semibold flex items-center gap-4">
-          <h2>Order</h2>
+          <h2>{isSubmitting ? "Submitting" : "Order"}</h2>
           <svg
             width="24px"
             height="24px"
@@ -115,6 +116,8 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   const [items, setItems] = useState([]);
   const router = useRouter();
 
+  //TODO: FIX Styling when summitting === true
+
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
     if(isDarkModeLocal) document.body.classList.add('dark');
@@ -148,7 +151,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     else setSelectedItemsIds([]);
     setSelectAll(!selectAll);
   };
-
+console.log(submitting)
   return (
     <div className="flex flex-col items-center justify-between p-4 pb-10 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-screen fontColor pb-5 ">
@@ -159,12 +162,15 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
             <h2>You can track it in your profile</h2>
           </div>
         )}
-        {submitting ? (
-          <h1 className="text-3xl w-full h-full flex flex-col justify-center items-center text-green-500">
+        
+        <div className={`w-full transition-transform ${submitting ? 'h-[200px]' : 'h-0'}`}>
+          <h1 className={`text-3xl w-full h-[200px] transition duration-200 ${submitting ? 'scale-100' : 'scale-0'} flex flex-col justify-center items-center text-[#4bc0d9]`}>
             Submitting...
             <SVGLoading/>
           </h1>
-        ) : (
+        </div>
+
+        {!submitting && (
           <React.Fragment >
             <h3 className="p-4 pb-2 text-2xl font-semibold fontColorGray border-b border-gray-300">
               {items?.length} Items
@@ -219,6 +225,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
       {error && <p>Something went wrong... plz try again later</p>}
       {cartItems?.length > 0 ? (
         <OrderButton
+          isSubmitting={submitting}
           setSubmitting={setSubmitting}
           setIsOrderSubmitted={setIsOrderSubmitted}
           cartId={user?.cartId}

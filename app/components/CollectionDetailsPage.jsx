@@ -221,10 +221,6 @@ export const AddItemForm = ({
     });
   };
 
-  const scrollToBottom = () => {
-    detailsRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <>
       <div className="flex flex-col w-full px-4 ">
@@ -342,7 +338,7 @@ export const AddItemForm = ({
           <p className="text-green-500 text-center ">Item Added Successfuly</p>
         )}
       </div>
-      <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} handleClick={scrollToBottom} />
+      <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} refe={detailsRef} />
     </>
   );
 };

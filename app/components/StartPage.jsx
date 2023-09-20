@@ -39,10 +39,6 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const isCategoryFilterVisible = useIsVisible(topRef);
   const router = useRouter();
 
-  const scrollToTop = () => {
-    topRef.current.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const addItemsToCart = async (localCart) => { 
   //Add items to cart in DB from localStorage since user logged in
     const cartId = user.cartId;
@@ -217,7 +213,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
                   id={node.id} 
                   name={node.name} 
                   excerpt={node.excerpt} 
-                  imageUrl={node.imageUrl ? node.imageUrl : node.imageUrls[0].url} 
+                  imageUrl={node.imageUrl ? node.imageUrl : node.imageUrls[0]?.url} 
                   reviews={node.reviews} 
                   isOnSale={node.isOnSale}
                   isCollection={node.isCollection}
@@ -264,7 +260,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             {/* Add an invisible element to act as the previousProductCardRef */}
             <div className="w-full h-[60px]" ref={lastProductCardRef} style={{ visibility: "hidden" }} />
           </div>
-        <ScrollButton rotationDegree={0} isObservedElementVisible={isCategoryFilterVisible} handleClick={scrollToTop} bgColor="bg-[#4bc0d9]" textColor="text-white" />
+        <ScrollButton rotationDegree={0} isObservedElementVisible={isCategoryFilterVisible} refe={topRef} bgColor="bg-[#4bc0d9]" textColor="text-white" />
 
       </div>
       
