@@ -1,61 +1,26 @@
 import { createCategory, publishCategory } from '@/lib';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 } from 'uuid';
-import { SVGLoading } from '.';
+import { SVGLoading, SelectionProductCard } from '.';
 
-export const ProductCard = ({ product, included, include }) => { //TODO: put in seperate component
-  return (
-    <div className="flex flex-col items-center gap-2 w-[70px] group">
-      <label
-        className={`relative cursor-pointer ${
-          included
-            ? "border-[#4bc0d9]"
-            : "border-gray-300 group-hover:border-[#3ca8d0]"
-        } border-2 rounded-[10px] transition duration-300`}
-        htmlFor={`includeItem ${product.id}`}
-      >
-        <input
-          className="hidden"
-          type="checkbox"
-          id={`includeItem ${product.id}`}
-          name="includeItem"
-          onChange={() => include(included, {id: product.id, imageUrls: product.imageUrls, name: product.name} )}
-          checked={included}
-        />
-        <Image
-          width={60}
-          height={87}
-          className="w-[60px] h-[87px] rounded-[10px] transition duration-300"
-          src={product.imageUrls[0].url}
-          alt={product.name}
-        />
-        <div
-          className={`absolute -top-4 left-4 ${
-            included ? "bg-[#4bc0d9] group-hover:bg-[#3ca8d0] text-gray-100 " : "bg-white text-gray-600"
-          }  p-1 rounded-full shadow text-sm`}
-        >
-          {included ? "Included" : "Include"}
-        </div>
-      </label>
-      <p className="text-center text-xs">{product.name}</p>
-    </div>
-  );
-};
 
 const CreateCategoryForm = ({ products, hasNextPage, hasPreviousPage, getOtherProducts, productsPageNumber, isFetching }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [show, setShow] = useState(true);
-  
-  const [includedProducts, setIncludedProducts] = useState([]);
-  const [creatingCategory, setCreatingCategory] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isError, setIsError] = useState(false)
+  // State variables
+  const [name, setName] = useState(''); // Name input field state
+  const [description, setDescription] = useState(''); // Description input field state
+  const [show, setShow] = useState(true); // Show checkbox state
 
-  const router = useRouter();
+  const [includedProducts, setIncludedProducts] = useState([]); // Array to store included products
+  const [creatingCategory, setCreatingCategory] = useState(false); // State for category creation process
+  const [isCreating, setIsCreating] = useState(false); // State for category creation status
+  const [isCreated, setIsCreated] = useState(false); // State for category creation status
+  const [isError, setIsError] = useState(false); // State for error status
 
+
+  const router = useRouter(); // Access the router for navigation
+
+  // Event handlers for input field changes
   const handleNameChange = (event) => {
     setName(event.target.value);
   };
@@ -68,32 +33,86 @@ const CreateCategoryForm = ({ products, hasNextPage, hasPreviousPage, getOtherPr
     setShow(event.target.checked);
   };
 
+  // Function to include/exclude products
   const include = (isIncluded, product) => {
     if (!isIncluded)
       setIncludedProducts((prevIncluded) => [
         ...prevIncluded,
         product,
-      ]); //when toggled to true
+      ]); // Include the product when toggled to true
     else
       setIncludedProducts((prevIncluded) =>
         prevIncluded.filter((item) => item.id !== product.id)
-      ); //when toggled false
+      ); // Exclude the product when toggled to false
   };
 
-  const handleSubmit = async (event) => { //TODO: Fix category not showing after create
+  // Form submission handler
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setCreatingCategory(true);
+
+    //Remove error message if it exists from previous submission
+    setIsError(false);
+  
+    // Create a unique slug for the category using UUID
     const slug = v4();
+  
+    // Prepare the category details object
     const categoryDetails = {
-      name, slug, show, description, products: includedProducts.map((product) => ({id: product.id})) 
+      name,
+      slug,
+      show,
+      description,
+      products: includedProducts.map((product) => ({ id: product.id })),
     };
-    const createdCategory = await createCategory(categoryDetails);
-    await publishCategory(createdCategory.createCategory.id);
-    setCreatingCategory(false);
-    router.refresh();
-    setName('');
-    setDescription('');
+  
+    try {
+      // Set category creation in progress
+      setCreatingCategory(true);
+  
+      // Call functions to create and publish the category
+      const createdCategory = await createCategory(categoryDetails);
+      await publishCategory(createdCategory.createCategory.id);
+  
+      // Clear the form fields and set category creation as completed
+      setName('');
+      setDescription('');
+      setCreatingCategory(false);
+
+      setIsCreated(true); //To show success message
+      setTimeout(() => {
+        setIsCreated(false);
+      }, 4000);
+  
+      // Refresh the router
+      router.refresh();
+    } catch (error) {
+      // Handle any errors that occur during category creation
+      console.error('Category creation failed:', error);
+      setIsError(true); // Set an error flag if needed
+      setCreatingCategory(false); // Set category creation as completed in case of an error
+    }
   };
+  
+  
+  // const handleSubmit = async (event) => { 
+  //   event.preventDefault();
+  //   setCreatingCategory(true); // Set category creation in progress
+  //   const slug = v4();
+  //   const categoryDetails = {
+  //     name,
+  //     slug,
+  //     show,
+  //     description,
+  //     products: includedProducts.map((product) => ({ id: product.id })),
+  //   };
+  //   // Call functions to create and publish the category
+  //   const createdCategory = await createCategory(categoryDetails);
+  //   await publishCategory(createdCategory.createCategory.id);
+  //   setCreatingCategory(false); // Set category creation as completed
+  //   router.refresh(); // Refresh the router
+  //   setName(''); // Clear the name input field
+  //   setDescription(''); // Clear the description input field
+  // };
 
   return (
     <div className="max-w-md mx-auto bgColor fontColor rounded-lg shadow-lg p-6 mb-5 border-2 borderColor">
@@ -142,11 +161,12 @@ const CreateCategoryForm = ({ products, hasNextPage, hasPreviousPage, getOtherPr
             <div className="flex flex-wrap gap-2 ">
               {includedProducts.map((product) => {
                   return(
-                    <ProductCard
+                    <SelectionProductCard
                       key={`create Collection Form (included): ${product.id}`}
                       product={product}
                       include={include}
                       included={true}
+                      inputId={`includeItem ${product.id}`}
                     />
                   )
                 })}
@@ -158,11 +178,12 @@ const CreateCategoryForm = ({ products, hasNextPage, hasPreviousPage, getOtherPr
               includedProducts.map(includedProduct => {if(includedProduct.id === product.node.id) isIncluded = true})
               if(includedProducts.length === 0 || !isIncluded){
                 return(
-                  <ProductCard
+                  <SelectionProductCard
                     key={`create Collection Form (not included): ${product.node.id}`}
                     product={product.node}
                     include={include}
                     included={false}
+                    inputId={`includeItem ${product.node.id}`}
                   />
                 )
               }
@@ -204,6 +225,8 @@ const CreateCategoryForm = ({ products, hasNextPage, hasPreviousPage, getOtherPr
             </div>
         : "Create Category"}
         </button>
+        {isError && <p className="text-red-500">An error occurred while creating the category, please try again.</p>}
+        {isCreated && <div className="text-green-500 pt-2 "><h2 className='font-semibold '> Category Created Successfully!</h2>  If it doesn't appear, you can refresh the page to view it</div>}
       </form>
     </div>
   );

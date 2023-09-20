@@ -376,12 +376,13 @@ const CollectionDetailsPage = ({ collection, user }) => {
       outOfStock = true;
     return outOfStock;
   }
-  console.log(collection.products)
+
   useEffect(() => {
     setIsOutOfStock(checkOutOfStock());
-    if (user) setisLoggedin(true); //TODO: Put in useEffect?
   }, [currentImageIndex]);
+
   useEffect(() => {
+    if (user) setisLoggedin(true);
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
     if (isDarkModeLocal) {
       document.body.classList.add("dark");

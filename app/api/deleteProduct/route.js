@@ -159,7 +159,7 @@ export async function POST(req) {
 //   console.log("orderItemsIds: ", orderItemsIds);
 //   const disconnectOrderQueries = orderItemsIds.map(orderItem => `updateOrderItem(data: {order: {disconnect: true}}, where: {id: "${orderItem.id}"} ){id}`).join("\n");
 //   console.log("disconnectOrderQueries: ", disconnectOrderQueries);
-//   //TODO: Optimize
+//   //to do: Optimize
 //   try {
 //     // Combine deletion of related entities into a single GraphQL request
 //     const deletedEntities = await client.request(
@@ -271,7 +271,7 @@ export async function POST(req) {
 //     },
 //   });
 
-//   try {//TODO: When delete product, delete its variants, tags, and imageUrls
+//   try {//TO DO: When delete product, delete its variants, tags, and imageUrls
 //     const deletedProduct = await client.request(
 //       `
 //         mutation DeleteProduct($productId: ID!) {

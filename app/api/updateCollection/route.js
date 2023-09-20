@@ -29,7 +29,7 @@ export async function POST(req) {
           $price: Float!, 
           $products: [ProductConnectInput!],
           $prevProducts: [ProductWhereUniqueInput!]!
-          $imageUrl: String
+          ${imageUrl ? "$imageUrl: String" : ""}
         ) {
           updateCollection(
             where: {id: $id},
@@ -39,7 +39,7 @@ export async function POST(req) {
               description: $description, 
               price: $price, 
               products: {connect: $products, disconnect: $prevProducts}
-              imageUrl: $imageUrl
+              ${imageUrl ? "imageUrl: $imageUrl" : ""}
             }) {
             id
           }
@@ -56,6 +56,7 @@ export async function POST(req) {
         prevProducts,
       }
     );
+    
     //eg of products format: {where: [{id: 1}, {id: 2}]}
     return new Response(JSON.stringify(updatedCollection));
 

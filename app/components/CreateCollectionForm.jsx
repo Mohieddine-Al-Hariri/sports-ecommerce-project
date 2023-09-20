@@ -1,49 +1,9 @@
 import { createCollection, publishCollection } from "@/lib";
-import { storage } from "@/lib/firebaseConfig";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { v4 } from "uuid";
-
-export const ProductCard = ({ product, included, include }) => {
-  return (
-    <div className="flex flex-col items-center gap-2 w-[70px] group">
-      <label
-        className={`relative cursor-pointer ${
-          included
-            ? "border-[#4bc0d9]"
-            : "border-gray-300 group-hover:border-[#3ca8d0]"
-        } border-2 rounded-[10px] transition duration-300`}
-        htmlFor={`includeItem ${product.id}`}
-      >
-        <input
-          className="hidden"
-          type="checkbox"
-          id={`includeItem ${product.id}`}
-          name="includeItem"
-          onChange={() => include(included, {id: product.id, imageUrls: product.imageUrls, name: product.name} )}
-          checked={included}
-        />
-        <Image
-          width={60}
-          height={87}
-          className="w-[60px] h-[87px] rounded-[10px] transition duration-300"
-          src={product.imageUrls[0].url}
-          alt={product.name}
-        />
-        <div
-          className={`absolute -top-4 left-4 ${
-            included ? "bg-[#4bc0d9] group-hover:bg-[#3ca8d0] text-gray-100 " : "bg-white text-gray-600"
-          }  p-1 rounded-full shadow text-sm`}
-        >
-          {included ? "Included" : "Include"}
-        </div>
-      </label>
-      <p className="text-center text-xs">{product.name}</p>
-    </div>
-  );
-}; //TODO: put in seperate component
+import { SelectionProductCard } from ".";
 
 const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, isFetching, hasNextPage, hasPreviousPage, uploadImage }) => {
 
@@ -56,7 +16,6 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
     imageUrl: ""
   })
   const [numericPrice, setNumericPrice] = useState(null);
-  // const [imageError, setImageError] = useState(false); //TODO: remove OR use it instead of the alert
   const [imageUpload, setImageUpload] = useState(null);
   const [includedProducts, setIncludedProducts] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -71,23 +30,6 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
     setNumericPrice(isNaN(parsedValue) ? null : parsedValue);
   };
   
-
-  // const uploadImage = async (imagePath) => { //TODO: Get func from Parent, Fix if didnt work
-  //   //To add the new profile image to the database
-  //   if (imagePath == null || !imagePath) {
-  //     return imageUrl;
-  //   }
-  //   const imageRef = ref(storage, `profileImages/${imagePath.name + v4()}`);
-  //   const imageUrl = await uploadBytes(imageRef, imagePath).then(
-  //     async (snapshot) => {
-  //       const downloadUrl = await getDownloadURL(snapshot.ref).then((url) => {
-  //         return url;
-  //       });
-  //       return downloadUrl;
-  //     }
-  //   );
-  //   return imageUrl;
-  // };
   const handleChangeImage = (e) => {
     e.preventDefault();
 
@@ -220,11 +162,12 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
             <div className="flex flex-wrap gap-2 ">
               {includedProducts.map((product) => {
                   return(
-                    <ProductCard
+                    <SelectionProductCard
                       key={`create Collection Form (included): ${product.id}`}
                       product={product}
                       include={include}
                       included={true}
+                      inputId={`includeItem ${product.id}`}
                     />
                   )
                 })}
@@ -236,11 +179,12 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
               includedProducts.map(includedProduct => {if(includedProduct.id === product.node.id) isIncluded = true})
               if(includedProducts.length === 0 || !isIncluded){
                 return(
-                  <ProductCard
+                  <SelectionProductCard
                     key={`create Collection Form (not included): ${product.node.id}`}
                     product={product.node}
                     include={include}
                     included={false}
+                    inputId={`includeItem ${product.node.id}`}
                   />
                 )
               }

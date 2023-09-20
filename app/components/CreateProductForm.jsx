@@ -13,7 +13,8 @@ import { useRouter } from "next/navigation";
 import { v4 } from "uuid";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
-import { CheckBox, SVGLoading, SVGX } from ".";
+import { CheckBox, SVGCheck, SVGLoading, SVGX } from ".";
+import Image from "next/image";
 
 const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
 
@@ -42,6 +43,8 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
 
   const [showSizeInput, setShowSizeInput] = useState(false);
   const [showColorInput, setShowColorInput] = useState(false);
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
   const [sizeValues, setSizeValues] = useState([]);
   const [colorValues, setColorValues] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -131,7 +134,6 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
     setHasSubmitted(true);
   };
 
-    //TODO: Prevent Similar Variants
   return(
     <div className="relative mb-4 border-2 border-gray-300 rounded p-2 ">
       <label className="block text-lg font-semibold mb-2">
@@ -179,19 +181,33 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
       </div>
       {showSizeInput && (
         <div className="mb-2">
-          <label className="block font-semibold mb-1">Size</label>
-          <input
-            type="text"
-            placeholder="Size"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value) {
-                e.preventDefault();
-                setSizeValues([...sizeValues, e.target.value]);
-                e.target.value = "";
-              }
-            }}
-          />
+          <label htmlFor="Size" className="block font-semibold mb-1">Size</label>
+          <div className="flex gap-1">
+            <input
+              id="Size"
+              type="text"
+              placeholder="Size"
+              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.target.value) {
+                  e.preventDefault();
+                  if(sizeValues.includes(e.target.value)) return
+                  setSizeValues([...sizeValues, e.target.value]);
+                  setSize("");
+                }
+              }}
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+            />
+            <button className="border rounded-lg p-1" onClick={(e) => {
+              e.preventDefault();
+              if(sizeValues.includes(size)) return
+              setSizeValues([...sizeValues, size]);
+              setSize("");
+            }}>
+              <SVGCheck/>
+            </button>
+          </div>
           <div className="mt-2 flex flex-col gap-1">
             {sizeValues.map((value, index) => (
               <div
@@ -219,19 +235,33 @@ export const VariantsForm = ({ selectedPills, setSelectedPills }) => {
 
       {showColorInput && (
         <div className="mb-2">
-          <label className="block font-semibold mb-1">Color</label>
-          <input
-            type="text"
-            placeholder="Color"
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value) {
-                e.preventDefault();
-                setColorValues([...colorValues, e.target.value]);
-                e.target.value = "";
-              }
-            }}
-          />
+          <label htmlFor="Color" className="block font-semibold mb-1">Color</label>
+          <div className="flex gap-1">
+            <input
+              id="Color"
+              type="text"
+              placeholder="Color"
+              className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && e.target.value) {
+                  e.preventDefault();
+                  if(colorValues.includes(e.target.value)) return
+                  setColorValues([...colorValues, e.target.value]);
+                  setColor("");
+                }
+              }}
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+            />
+            <button className="border rounded-lg p-1" onClick={(e) => {
+              e.preventDefault();
+              if(colorValues.includes(color)) return
+              setColorValues([...colorValues, color]);
+              setColor("");
+            }}>
+              <SVGCheck/>
+            </button>
+          </div>
           <div className="mt-2 flex flex-col gap-1">
             {colorValues.map((value, index) => (
               <div
@@ -438,12 +468,11 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
   };
   
   return (
-    <div className="max-w-2xl mx-auto p-6 bgColor colorScheme fontColor shadow-md rounded-lg fontColor overflow-y-scroll pb-16">
+    <div className="lg:max-w-2xl w-full mx-auto p-6 bgColor colorScheme fontColor shadow-md rounded-lg fontColor max-lg:overflow-y-scroll pb-16">
       <h2 className="text-3xl font-semibold mb-6">Create a Product</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 w-full">
 
-        <div className="mb-4">
-          {/* TODO: FIX styling & in update form... */}
+        <div className="mb-4 w-full">
           <label htmlFor="images" className="block text-lg font-semibold mb-2">
             Images
           </label>
@@ -454,27 +483,31 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
             required
             multiple
             onChange={handleImageUpload}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+            className="py-2 px-4 w-full border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
 
           {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
 
-          <div className="flex space-x-4">
-            {images.map((image, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt={`Product ${index}`}
-                  className="w-32 h-32 object-cover rounded"
-                />
-                <span
-                  className="absolute top-0 right-0 text-white bg-red-500 rounded-full p-1 cursor-pointer"
-                  onClick={() => handleRemoveImage(index)}
-                >
-                  X
-                </span>
-              </div>
-            ))}
+          <div className="overflow-x-auto ">
+            <div className="inline-flex gap-2 mt-2 rounded w-full ">
+              {images.map((image, index) => (
+                <div key={index} className="relative w-32 h-32 shrink-0">
+                  <Image
+                    src={URL.createObjectURL(image)}
+                    alt={`Product ${index}`}
+                    className="w-32 h-32 object-cover rounded"
+                    width={32}
+                    height={32}
+                  />
+                  <span
+                    className="absolute top-0 right-0 text-white hover:text-red-500 border transition-colors rounded-full p-1 cursor-pointer"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    <SVGX/>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

@@ -9,8 +9,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateCategoryForm from "./CreateCategoryForm";
-import Image from "next/image";
-import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash } from ".";
+import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash, SelectionProductCard } from ".";
 
 export const ButtonSVG = ({ func, text, svg, hoverColor }) => (
   <button
@@ -22,54 +21,6 @@ export const ButtonSVG = ({ func, text, svg, hoverColor }) => (
   </button>
 )
 
-export const ProductCard = ({ product, included, include, inputId }) => {
-  //TODO: Remove this from here and collections, out in seperate component
-  return (
-    <div className="flex flex-col items-center gap-2 w-[70px] group">
-      <label
-        className={`relative cursor-pointer ${
-          included
-            ? "border-[#4bc0d9]"
-            : "border-gray-300 group-hover:border-[#3ca8d0]"
-        } border-2 rounded-[10px] transition duration-300`}
-        htmlFor={inputId}
-      >
-        <input
-          className="hidden"
-          type="checkbox"
-          id={inputId}
-          name="includeItem"
-          onChange={() =>
-            include(included, {
-              id: product.id,
-              imageUrls: product.imageUrls,
-              name: product.name,
-            })
-          }
-          checked={included}
-        />
-        <Image
-          width={60}
-          height={87}
-          className="w-[60px] h-[87px] rounded-[10px] transition duration-300"
-          src={product.imageUrls[0].url}
-          alt={product.name}
-        />
-        <div
-          className={`absolute -top-4 left-4 ${
-            included
-              ? "bg-[#4bc0d9] group-hover:bg-[#3ca8d0] text-gray-100 "
-              : "bg-white text-gray-600 "
-          }  p-1 rounded-full shadow`}
-        >
-          {included ? "Included" : "Include"}
-        </div>
-      </label>
-      <p className="text-center text-xs">{product.name}</p>
-    </div>
-  );
-};
-
 const CategoryCard = ({
   category,
   products,
@@ -78,6 +29,7 @@ const CategoryCard = ({
   productsPageNumber,
   isFetching,
   getOtherProducts,
+  deleteTheCategory,
 }) => {
   const [show, setShow] = useState(category.show);
   const [isUpdatingShow, setIsUpdatingShow] = useState(false);
@@ -116,13 +68,12 @@ const CategoryCard = ({
   }, [category]);
 
   const include = (isIncluded, product) => {
-    console.log("product.id: ", product.id);
     // Check if the product should be included
     if (isIncluded) {
       // Remove from the includedProducts category
       setIncludedProducts((prevIncluded) =>
         prevIncluded.filter((item) => item.id !== product.id)
-      ); // TODO: Consider handling errors if setIncludedProducts fails
+      );
 
       // Check if the product was previously in the category
       const isInPrev = category.products.some((item) => item.id === product.id);
@@ -195,7 +146,6 @@ const CategoryCard = ({
   }, [products]);
 
   const updateCategoryDetails = async () => {
-    //TODO: After submission, refresh the information as neccessary
     if (!categoryName) {
       setIsError(true);
       setTimeout(function () {
@@ -243,7 +193,6 @@ const CategoryCard = ({
     setIsUpdating(false);
   };
   const updateCategoryShowState = async () => {
-    //TODO: After update, refresh the information as neccessary
     setIsUpdatingShow(true);
     const showState = !show;
     const updatedCategory = await updateCategoryState({
@@ -264,8 +213,7 @@ const CategoryCard = ({
 
   const deleteCategoryFunc = async () => {
     setIsDeleting(true);
-    await deleteCategory(category.id);
-    router.refresh();
+    await deleteTheCategory(category.id);
     setIsDeleting(false);
   };
   const resetCollectionDetailsFunc = async () => {
@@ -282,8 +230,6 @@ const CategoryCard = ({
     setPrevIncludedProducts([]);
     updateDisplayedProducts();
   };
-
-  //TODO: Make buttons with svgs a component with props...?
 
   return (
     <div
@@ -454,7 +400,7 @@ const CategoryCard = ({
           <div className="flex flex-wrap gap-4">
             {includedProducts.map((product, productIndex) => {
               return (
-                <ProductCard
+                <SelectionProductCard
                   key={`Update Catgeory (Included Products): ${product.id} ${category.id}`}
                   product={product}
                   categoryId={category.id}
@@ -474,7 +420,7 @@ const CategoryCard = ({
               <h2 className="w-full">Removed</h2>
               {prevIncludedProducts.map((product, productIndex) => {
                 return (
-                  <ProductCard
+                  <SelectionProductCard
                     key={`Update Category (Previous Included Products): ${product.id} ${category.id}`}
                     product={product}
                     categoryId={category.id}
@@ -497,7 +443,7 @@ const CategoryCard = ({
               </h1>
             ) : (
               displayedProducts.map((product, productIndex) => (
-                <ProductCard
+                <SelectionProductCard
                   key={`Update Category (Displayed Products): ${product.node.id} ${category.id}`}
                   product={product.node}
                   include={include}
@@ -598,6 +544,11 @@ const AdminCategoriesPage = ({
     }, 1000);
   };
 
+  const deleteTheCategory = async (categoryId) => {
+    await deleteCategory(categoryId);
+    router.refresh();
+  }
+
   return (
     <div className="h-screen bgColor fontColor p-4 gap-6 flex flex-col overflow-y-scroll overflow-x-hidden pb-14 ">
       <div className=" flex gap-4 flex-col ">
@@ -611,6 +562,7 @@ const AdminCategoriesPage = ({
             getOtherProducts={getOtherProducts}
             productsPageNumber={productsPageNumber}
             isFetching={isFetching}
+            deleteTheCategory={deleteTheCategory}
           />
         ))}
       </div>

@@ -116,8 +116,6 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   const [items, setItems] = useState([]);
   const router = useRouter();
 
-  //TODO: FIX Styling when summitting === true
-
   useEffect(() => {
     const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
     if(isDarkModeLocal) document.body.classList.add('dark');
@@ -133,17 +131,33 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   }, [selectedItemsIds])
 
   const deleteItem = async (itemId) => {
-    if(!user){
-      const localCart = JSON.parse(localStorage.getItem("cart"));
-      const updatedCart = localCart.filter((item) => item.id !== itemId);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      setItems(updatedCart);
-      return
+    setError(false);
+    try {
+      // Check if a user is authenticated
+      if (!user) {
+        // If not authenticated, update the local cart (if it exists)
+        const localCart = JSON.parse(localStorage.getItem("cart"));
+        if (localCart) {
+          const updatedCart = localCart.filter((item) => item.id !== itemId);
+          localStorage.setItem("cart", JSON.stringify(updatedCart));
+          setItems(updatedCart);
+        }
+      } else {
+        // If authenticated, remove the item from the user's cart
+        await removeItemfromCart(itemId);
+        // Publish the updated cart
+        await publishCart(user.cartId);
+        // Refresh the router to reflect changes
+        router.refresh();
+        // Update the state with the latest cart items (assuming "cartItems" is updated elsewhere)
+        setItems(cartItems);
+      }
+    } catch (error) {
+      // Handle errors that may occur during item deletion (e.g., network errors)
+      console.error('Error deleting item:', error);
+      // Set an error flag or perform error handling as needed
+      setError(true);
     }
-    await removeItemfromCart(itemId);
-    await publishCart(user.cartId);
-    router.refresh();
-    setItems(cartItems);
   };
 
   const selectAllItems = async () => {
@@ -151,11 +165,11 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     else setSelectedItemsIds([]);
     setSelectAll(!selectAll);
   };
-console.log(submitting)
+
   return (
     <div className="flex flex-col items-center justify-between p-4 pb-10 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-screen fontColor pb-5 ">
-        <h1 className=" text-xl font-bold text-center py-10 ">Cart</h1>
+        <h1 className=" text-2xl font-bold text-center py-8 ">Cart</h1>
         {isOrderSubmitted && (
           <div className="text-3xl w-full h-full flex flex-col justify-center items-center text-center">
             <h1 className="text-green-500">Order Submitted</h1>
@@ -176,8 +190,8 @@ console.log(submitting)
               {items?.length} Items
             </h3>
             {items?.length > 0 && (
-              <div className="flex items-center gap-4 pl-4 py-2 bg-gray-100 rounded-md shadow-md mt-4">
-                <label className="flex items-center gap-2 text-gray-600" htmlFor="selectAll">
+              <div className="flex items-center gap-4 pl-4 py-2 bg-gray-100 rounded-md shadow-md mt-4 mb-2">
+                <label className="flex items-center gap-2 text-gray-600 cursor-pointer" htmlFor="selectAll">
                   <input
                     type="checkbox"
                     id="selectAll"
@@ -222,7 +236,7 @@ console.log(submitting)
         )}
       </div>
       {/* keep btn & "Cart" fixed while scrolling between items? */}
-      {error && <p>Something went wrong... plz try again later</p>}
+      {error && <p className="text-red-500">Something went wrong... plz try again later</p>}
       {cartItems?.length > 0 ? (
         <OrderButton
           isSubmitting={submitting}

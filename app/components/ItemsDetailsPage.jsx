@@ -269,7 +269,7 @@ const ItemsDetailsPage = ({ product, user }) => {
     }
     setQuantity((quantity) => quantity + 1);
   };
-
+console.log(product.categories[0])
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return ( 
@@ -461,11 +461,11 @@ const ItemsDetailsPage = ({ product, user }) => {
             </div>
           </div>
         </div>
-        {/* Similars from same Category /TODO:Check if still working*/}
-        {product.categories[0]?.products > 0 && (
+        {/* Similars from same Category /TODO: Fix styling*/}
+        {product.categories[0]?.products?.length > 0 && (
           <h2 className="pl-4 ">Other Related Products</h2>
         )}
-        {product.categories[0]?.products > 0 && (
+        {product.categories[0]?.products?.length > 0 && (
           <div className=" flex gap-3 items-center justify-start mb-10 pb-2 px-4 relative overflow-x-scroll  ">
             {product.categories[0]?.products?.map((product) => (
               <ProductCard

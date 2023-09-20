@@ -9,44 +9,7 @@ import CreateCollectionForm from "./CreateCollectionForm";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 import { v4 } from "uuid";
-import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash, SVGX } from ".";
-
-export const ProductCard = ({ product, included, include, inputId }) => {
-  return (
-    <div className="flex flex-col items-center gap-2 w-[70px] group">
-      <label
-        className={`relative cursor-pointer ${
-          included ? "border-[#4bc0d9]" : "border-gray-300 group-hover:border-[#3ca8d0]"
-        } border-2 rounded-[10px] transition duration-300`}
-        htmlFor={inputId}
-      >
-        <input
-          className="hidden"
-          type="checkbox"
-          id={inputId}
-          name="includeItem"
-          onChange={() => include(included, {id: product.id, imageUrls: product.imageUrls, name: product.name} )}
-          checked={included}
-        />
-        <Image
-          width={60}
-          height={87}
-          className="w-[60px] h-[87px] rounded-[10px] transition duration-300"
-          src={product.imageUrls[0].url}
-          alt={product.name}
-        />
-        <div
-          className={`absolute -top-4 left-4 ${
-            included ? "bg-[#4bc0d9] group-hover:bg-[#3ca8d0] text-gray-100 " : "bg-white text-gray-600 "
-          }  p-1 rounded-full shadow`}
-        >
-          {included ? "Included" : "Include"}
-        </div>
-      </label>
-      <p className="text-center text-xs">{product.name}</p>
-    </div>
-  );
-};
+import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash, SVGX, SelectionProductCard } from ".";
 
 export const CollectionStateMenu = ({
   collectionState,
@@ -151,10 +114,14 @@ const CollectionCard = ({
   const [numericPrice, setNumericPrice] = useState(collection.price || null);
   const [price, setPrice] = useState(collection.price);
   const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [isError, setIsError] = useState(false);
+
   let stateTxtClr = "text-green-500";
   if (collection.state === "Removed") stateTxtClr = "text-red-500";
   else if (collection.state === "Out_of_Stock") stateTxtClr = "text-yellow-500";
+
   const router = useRouter();
+
   useEffect(() => {
     setIncludedProducts(
       collection.products.map((product) => (
@@ -201,13 +168,12 @@ const CollectionCard = ({
   }, [products]);
 
   const include = (isIncluded, product) => {
-    console.log("product.id: ", product.id);
     // Check if the product should be included
     if (isIncluded) {
       // Remove from the includedProducts collection
       setIncludedProducts((prevIncluded) =>
         prevIncluded.filter((item) => item.id !== product.id)
-      ); // TODO: Consider handling errors if setIncludedProducts fails
+      );
       
       // Check if the product was previously in the collection
       const isInPrev = collection.products.some((item) => item.id === product.id);
@@ -246,37 +212,76 @@ const CollectionCard = ({
     setNumericPrice(isNaN(parsedValue) ? null : parsedValue);
   };
 
-  //TODO: put both funcs in parent?
   const updateCollectionDetails = async () => {
-    //TODO: Finish... (add error handling)⬇️
-    if(!numericPrice || !collectionName) return;
+    // Check if required data is available; if not, return and do nothing
+    if (!numericPrice || !collectionName) return;
+  
+    // Set the updating flag to indicate that the update is in progress
     setIsUpdating(true);
-    if(imageUpload && collection.imageUrl) await deletePrevImage(collection.imageUrl);
-    const uploadedImageUrl = await uploadImage(imageUpload, imageUrl, collection.name);
-
-    // const productsToInclude = includedProducts.map((product) => ({id: product.id})).filter((id) => !collection.products.map((product) => product.id).includes(id.id));
+    setIsError(false);
+  
+    // If an image is being uploaded and the collection has an existing image, delete the previous image
+    if (imageUpload && collection.imageUrl) {
+      try {
+        await deletePrevImage(collection.imageUrl);
+      } catch (error) {
+        // Handle errors related to image deletion (e.g., display an error message)
+        console.error('Error deleting previous image:', error);
+        // You can set an error flag or show an error message to the user as needed
+      }
+    }
+  
+    let uploadedImageUrl = imageUrl; // Initialize with the existing image URL
+  
+    // If a new image is being uploaded, update the image URL
+    if (imageUpload) {
+      try {
+        uploadedImageUrl = await uploadImage(imageUpload, imageUrl, collection.name);
+      } catch (error) {
+        // Handle errors related to image uploading (e.g., display an error message)
+        console.error('Error uploading image:', error);
+        // You can set an error flag or show an error message to the user as needed
+      }
+    }
+  
+    // Calculate the list of products to include in the collection update
     const productIdsInCollection = new Set(collection.products.map((product) => product.id));
     const productsToInclude = includedProducts
       .filter((product) => !productIdsInCollection.has(product.id))
-      .map((product) => ({where: { id: product.id } }));
-
-    const updatedCollection = await updateCollection({
-      id: collection.id,
-      name: collectionName,
-      state: collectionState,
-      description,
-      products: productsToInclude,
-      prevProducts: prevIncludedProducts.map((product) => ({id: product.id})),
-      imageUrl: uploadedImageUrl,
-      price: numericPrice,
-    });
-    await publishCollection(collection.id);
-
-    setIncludedProducts([]);
-    setPrevIncludedProducts([]);
-    router.refresh();
-    setUpdatingCollectionName(false);
-    setIsUpdating(false);
+      .map((product) => ({ where: { id: product.id } }));
+  
+    try {
+      // Perform the collection update
+      const updatedCollection = await updateCollection({
+        id: collection.id,
+        name: collectionName,
+        state: collectionState,
+        description,
+        products: productsToInclude,
+        prevProducts: prevIncludedProducts.map((product) => ({ id: product.id })),
+        imageUrl: uploadedImageUrl,
+        price: numericPrice,
+      });
+  
+      // Publish the updated collection
+      await publishCollection(collection.id);
+  
+      // Clear included and previous products, and refresh the router
+      setIncludedProducts([]);
+      setPrevIncludedProducts([]);
+      router.refresh();
+  
+      // Reset the updating flag
+      setUpdatingCollectionName(false);
+    } catch (error) {
+      // Handle errors that occur during collection update or publication (e.g., display an error message)
+      setIsError(true);
+      console.error('Collection update failed:', error);
+      // You can set an error flag or show an error message to the user as needed
+    } finally {
+      // Reset the updating flag
+      setIsUpdating(false);
+    }
   };
 
   const handleChangeImage = (e) => {
@@ -418,6 +423,7 @@ const CollectionCard = ({
                   className="border rounded-lg py-2 px-3"
                 />
               </div>
+              {isError && <p className="text-red-500 mt-2">Something went wrong, please try again </p>}
             </div>
           ) : (
             <div>
@@ -439,8 +445,8 @@ const CollectionCard = ({
               className="flex w-full justify-center sm:justify-between hover:text-[#4bc0d9] max-sm:flex-col items-center sm:gap-2"
               onClick={updateCollectionDetails}
             >
-              <span className="text-md">Submit</span>
-              <SVGCheck/>
+              <span className="text-md">{isUpdating ? "Submitting..." : "Submit"}</span>
+              {isUpdating ? <SVGLoading/> : <SVGCheck/>}
             </button>
           ) : (
             <button className="hover:text-[#4bc0d9]" onClick={() => setUpdatingCollectionName(true)}>
@@ -553,7 +559,7 @@ const CollectionCard = ({
           <div className="flex flex-wrap gap-4">
             {includedProducts.map((product, productIndex) => {
               return (
-                <ProductCard
+                <SelectionProductCard
                   key={`Update Collection (Included Products): ${product.id} ${index} ${collection.id}`}
                   product={product}
                   collectionId={collection.id}
@@ -569,7 +575,7 @@ const CollectionCard = ({
             <h2 className="w-full">Removed</h2>
             {prevIncludedProducts.map((product, productIndex) => {
               return (
-                <ProductCard
+                <SelectionProductCard
                   key={`Update Collection (Previous Included Products): ${product.id} ${index} ${collection.id}`}
                   product={product}
                   collectionId={collection.id}
@@ -587,7 +593,7 @@ const CollectionCard = ({
                 <h1 className="w-full text-center fontColor">All products in this page are used <br /> Move to the next/previous page</h1>
               :
                 displayedProducts.map((product, productIndex) => (
-                  <ProductCard
+                  <SelectionProductCard
                     key={`Update Collection (Displayed Products): ${product.node.id} ${index} ${collection.id}`}
                     product={product.node}
                     include={include}

@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 import { CheckBox, SVGCheck, SVGX } from ".";
+import Image from "next/image";
 
 const PillVariant = ({ size, color, index, deleteItem, quantity, decreaseQuantity, increaseQuantity, infiniteQuantity }) => {
   return (
@@ -177,6 +178,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
               onKeyDown={(e) => {
                 if (e.key === "Enter" && e.target.value) {
                   e.preventDefault();
+                  if(sizeValues.includes(e.target.value)) return
                   setSizeValues([...sizeValues, e.target.value]);
                   setSize("");
                 }
@@ -186,6 +188,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
             />
             <button className="border rounded-lg p-1" onClick={(e) => {
               e.preventDefault();
+              if(sizeValues.includes(size)) return
               setSizeValues([...sizeValues, size]);
               setSize("");
             }}>
@@ -229,6 +232,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
               onKeyDown={(e) => {
                 if (e.key === "Enter" && e.target.value) {
                   e.preventDefault();
+                  if(colorValues.includes(e.target.value)) return
                   setColorValues([...colorValues, e.target.value]);
                   setColor("");
                 }
@@ -238,6 +242,7 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
             />
             <button className="border rounded-lg p-1" onClick={(e) => {
               e.preventDefault();
+              if(colorValues.includes(color)) return
               setColorValues([...colorValues, color]);
               setColor("");
             }}>
@@ -693,9 +698,9 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
   };
 
   return (
-    <div className="w-full h-screen mx-auto p-6 bgColor colorScheme rounded-lg fontColor overflow-y-scroll pb-16">
+    <div className="flex flex-col items-center w-full h-screen mx-auto p-6 bgColor colorScheme rounded-lg fontColor overflow-y-scroll pb-16">
       <h2 className="text-3xl font-semibold mb-6">Update Product</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 w-full lg:max-w-2xl">
         <div className="mb-4">
           <label htmlFor="images" className="block text-lg font-semibold mb-2">
             Images
@@ -706,55 +711,64 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
             required={images.length === 0 && prevImages.length === 0}
             multiple
             onChange={handleImageUpload}
-            className="py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
+            className="py-2 px-4 w-full border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
           />
+
           {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
-          <div className="flex space-x-4">
-            {images.map((image, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={ URL.createObjectURL(image) }
-                  alt={`Product ${index}`}
-                  className="w-32 h-32 object-cover rounded"
-                />
-                <span
-                  className="absolute top-0 right-0 text-white bg-red-500 rounded-full p-1 cursor-pointer"
-                  onClick={() => handleRemoveImage(index)}
-                >
-                  X
-                </span>
-              </div>
-            ))}
-            {prevImages.map((image, index) => (
-              <div key={image.url} className="relative ">
-                <img
-                  src={ image.url }
-                  alt={`Product ${index}`}
-                  className="w-32 h-32 object-cover rounded "
-                />
-                <span
-                  className="absolute top-0 right-0 text-white bg-red-500 rounded-full p-1 cursor-pointer"
-                  onClick={() => handleRemovePrevImage(index)}
-                >
-                  X
-                </span>
-              </div>
-            ))}
-            {removedImages.map((image, index) => (
-              <div key={image.url} className="relative">
-                <img
-                  src={ image.url }
-                  alt={`Product ${index}`}
-                  className="w-32 h-32 object-cover rounded brightness-50"
-                />
-                <span
-                  className="absolute top-0 right-0 text-white bg-[#4bc0d9] rounded-full p-1 cursor-pointer"
-                  onClick={() => handleAddPrevImage(index)}
-                >
-                  +
-                </span>
-              </div>
-            ))}
+          <div className="overflow-x-auto w-full ">
+            <div className="inline-flex gap-2 mt-2 rounded w-full ">
+              {images.map((image, index) => (
+                <div key={index} className="relative w-32 h-32 shrink-0">
+                  <Image
+                    src={ URL.createObjectURL(image) }
+                    alt={`Product ${index}`}
+                    className="w-32 h-32 object-cover rounded"
+                    width={32}
+                    height={32}
+                  />
+                  <span
+                    className="absolute top-0 right-0 text-white bg-red-500 rounded-full p-1 cursor-pointer"
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    X
+                  </span>
+                </div>
+              ))}
+              {prevImages.map((image, index) => (
+                <div key={image.url} className="relative w-32 h-32 shrink-0 ">
+                  <Image
+                    src={ image.url }
+                    alt={`Product ${index}`}
+                    className="w-32 h-32 object-cover rounded "
+                    width={32}
+                    height={32}
+                  />
+                  <span
+                    className="absolute top-0 right-0 text-white bg-red-500 rounded-full p-1 cursor-pointer"
+                    onClick={() => handleRemovePrevImage(index)}
+                  >
+                    X
+                  </span>
+                </div>
+              ))}
+              {removedImages.map((image, index) => (
+                <div key={image.url} className="relative w-32 h-32 shrink-0">
+                  <Image
+                    src={ image.url }
+                    alt={`Product ${index}`}
+                    className="w-32 h-32 object-cover rounded brightness-50"
+                    width={32}
+                    height={32}
+                  />
+                  <span
+                    className="absolute top-0 right-0 text-white bg-[#4bc0d9] rounded-full p-1 cursor-pointer"
+                    onClick={() => handleAddPrevImage(index)}
+                  >
+                    +
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="mb-4">
