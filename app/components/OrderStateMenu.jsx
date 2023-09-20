@@ -2,6 +2,7 @@
 import { publishOrder, updateOrderState } from '@/lib';
 import { useEffect, useRef } from 'react';
 import { SVGCancel, SVGTrash, SVGX } from '.';
+import { useRouter } from 'next/navigation';
 
 export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, orderState }) => {
   return(
@@ -22,6 +23,7 @@ export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, orderState }
 const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId, handleDeleteOrder }) => {
   // Ref for the card menu container
   const cardMenuRef = useRef(null);
+  const router = useRouter();
 
   // Handle click outside the card menu
   const handleClickOutside = (event) => {
@@ -41,8 +43,8 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
   const changeOrderState = async (state) => {
     const updatedOrder = await updateOrderState({orderId, state});
     await publishOrder(orderId);
-    //publishOrderItem && publishTheUser??
     setOrderState(updatedOrder.updateOrder.state);
+    router.refresh();
   }
 
   const states = [

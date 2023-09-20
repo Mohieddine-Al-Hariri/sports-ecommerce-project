@@ -113,7 +113,7 @@ export const AddItemForm = ({
     // }
     if (collection.state !== "Available") return;
     setIsAdding(true);
-    const totalPrice = quantity * collection.price; //TODO: Add delivery cost to the Total??
+    const totalPrice = quantity * collection.price; //TO DO: Add delivery cost to the Total??
     let chosenProductsVariants = [];
     let isStop = false;
     collection.products.map((product, index) => {
@@ -425,30 +425,9 @@ const CollectionDetailsPage = ({ collection, user }) => {
       <div className="max-sm:w-[428px] w-full relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
-          {/* <div className="relative max-sm:w-full w-[428px] inline-block bg-[#4bc0d9]">
-            <Carousel
-              showArrows={true}
-              selectedItem={currentImageIndex}
-              onChange={(index) => setCurrentImageIndex(index)}
-              showThumbs={false}
-            >
-              {collection.products.map((product, index) => (
-                <div
-                  key={index}
-                  className="relative flex justify-center w-full"
-                >
-                  <Image
-                    className="max-sm:max-h-[500px] object-cover"
-                    width={428}
-                    height={428}
-                    src={product.imageUrls[0].url}
-                    alt={`Image ${index + 1}`}
-                  />
-                </div>
-              ))}
-            </Carousel>
-          </div> */}
+          
           <ImagesCarouselModal setImageIndex={setCurrentImageIndex} product={{imageUrls: collection.products.map(product => product.imageUrls[0])}} />
+          
           <div className="flex flex-col justify-between gap-10 sm:h-screen">
             <div className="max-sm:w-full w-[440px] relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
               <div>

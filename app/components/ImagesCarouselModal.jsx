@@ -77,7 +77,7 @@ const ImagesCarouselModal = ({ product, setImageIndex }) => {
         >
           {product.imageUrls.map((image, index) => (
             <div
-              key={index}
+              key={`Carousel Image: ${index}`}
               className="relative flex justify-center w-full"
               onClick={() => openModal(currentImageIndex)}
             >
@@ -118,7 +118,7 @@ const ImagesCarouselModal = ({ product, setImageIndex }) => {
           >
             {product.imageUrls.map((image, index) => (
               <div
-                key={index}
+                key={`Full Carousel Image: ${index}`}
                 className="relative flex justify-center w-full"
               >
                 <Image

@@ -26,7 +26,7 @@ export async function POST(req) {
             data: {orderItems: {create: {quantity: $quantity, total: $totalPrice, orderItemVariants: $variants, ${isCollection? "collection" : "product"}: {connect: {id: $itemId}}, theUser: {connect: {slug: $userSlug}}}}}
           ) {
             id
-            orderItems {
+            orderItems(first: 1, orderBy: createdAt_DESC) {
               id
             }
           }

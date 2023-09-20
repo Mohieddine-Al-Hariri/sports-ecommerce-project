@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReactStars from 'react-rating-star-with-type';
-import { Carousel } from "react-responsive-carousel";
+import { SVGLoading } from ".";
 
 
 const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstRender, isLastItem }) => {
@@ -15,8 +15,8 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  console.log("collection: ", collection);
-  console.log("product: ", product);
+  
+  
   useEffect(() => {
     if(isFirstRender) {
       const isDarkModeLocal = JSON.parse(localStorage.getItem("isDarkMode"));
@@ -58,7 +58,7 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
   }
 
   const images = collection?.products.map(product => product.imageUrls[0].url);
-  console.log(isLoading)
+
   return (
     <div className="bgColorGray rounded-md pb-2 w-full lg:flex ">
       {/* <div className="lg:w-full lg:flex md:justify-center ">  */}
@@ -111,6 +111,7 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
           />
           {star}
         </div>
+
         <label className="flex flex-col " htmlFor="headline">
           Headline
           <input onChange={(e) => setHeadline(e.target.value)} value={headline} type="text" id="headline" className="rounded-lg px-2 py-1 " />
@@ -119,8 +120,12 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
           Comment
           <textarea onChange={(e) => setContent(e.target.value)} value={content} type="text" id="comment" className="rounded-lg px-2 py-1 " />
         </label>
-        {/* TODO: Show user isLoading */}
-        <button disabled={isLoading} onClick={submitProductReview} className="bgColor rounded-lg py-1 px-2 hover:bg-[#4bc0d9] ">{isError ? "Please Rate before submiting" : "Submit"}</button>
+
+        {isLoading ?
+          <button disabled={true} className="bgColor rounded-lg py-1 px-2 hover:bg-[#4bc0d9] flex justify-center items-center"><SVGLoading/></button>
+        :
+          <button disabled={isLoading} onClick={submitProductReview} className="bgColor rounded-lg py-1 px-2 hover:bg-[#4bc0d9] ">{isError ? "Please Rate before submiting" : "Submit"}</button>
+        }
       </div>
       
     </div>

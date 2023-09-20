@@ -58,6 +58,7 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   },[orders, hasNextPage])
 
   const allState = ["Ordered", "Delivering", "Recieved", "Cancelled", "Deleted"];
+  //TO DO: Remove Deleted?
   let orderedState = [], 
   deliveringState = [], 
   recievedState = [], 

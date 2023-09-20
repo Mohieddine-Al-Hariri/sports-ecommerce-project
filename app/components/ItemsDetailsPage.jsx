@@ -245,9 +245,9 @@ const ItemsDetailsPage = ({ product, user }) => {
     });
     const publishCartPromise = publishCart(cartId); //Needs publish after being updated
     const publishItemPromise = publishItemAddedToCart(
-      isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id
+      isAdded.updateCart.orderItems[0].id
     );
-    const publishVariantsPromise = publishManyVariants(isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id);
+    const publishVariantsPromise = publishManyVariants(isAdded.updateCart.orderItems[0].id);
     await Promise.all([publishCartPromise, publishItemPromise, publishVariantsPromise])
     setIsAdding(false);
     setIsAddedToCart(true);
@@ -274,7 +274,7 @@ console.log(product.categories[0])
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return ( 
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start lg:items-center justify-center px-2 max-lg:pb-10 bgColor  ">
-      <div className="max-sm:w-[428px] w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start max-sm:inline-flex">
+      <div className=" w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start max-sm:inline-flex">
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           {/* TODO: Make the image size based on the used images dimensions */}
           <ImagesCarouselModal product={product} setImageIndex={setCurrentImageIndex} />
@@ -315,10 +315,10 @@ console.log(product.categories[0])
                 <div className="max-sm:w-screen h-fit left-[30px] top-[122px] flex flex-wrap gap-2">
                   {product.productVariants.map((variant, index) => {
                     let isChosen = chosenProductVariantName === variant.name;
-                    return ( //TODO: FIX
+                    return (
                       <Variants
+                        key={`Variant: ${index}`}
                         variant={variant}
-                        key={index}
                         setChosenProductVariantName={
                           setChosenProductVariantName
                         }
@@ -419,11 +419,11 @@ console.log(product.categories[0])
                   ref={detailsRef} 
                   disabled={isOutOfStock}
                   onClick={itemToCart}
-                  className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${
+                  className={`h-[60px] w-[263px] ${
                     product.state !== "Available" ? "bg-gray-300" : "opBgColor"
-                  } rounded-full justify-center items-start gap-[15px] inline-flex`}
+                  } rounded-full justify-center items-center gap-[15px] inline-flex`}
                 >
-                  <div className="opTxtColor text-xl font-bold leading-normal">
+                  <div className="opTxtColor text-xl font-bold ">
                     {isAdding ? (
                       <SVGLoading/>
                     ) : (
@@ -461,28 +461,33 @@ console.log(product.categories[0])
             </div>
           </div>
         </div>
-        {/* Similars from same Category /TODO: Fix styling*/}
+        {/* Similars from same Category */}
         {product.categories[0]?.products?.length > 0 && (
           <h2 className="pl-4 ">Other Related Products</h2>
         )}
-        {product.categories[0]?.products?.length > 0 && (
-          <div className=" flex gap-3 items-center justify-start mb-10 pb-2 px-4 relative overflow-x-scroll  ">
-            {product.categories[0]?.products?.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                excerpt={product.excerpt}
-                imageUrl={product.imageUrls[0].url}
-              />
-            ))}
-          </div>
-        )}
+        <div className="w-full overflow-x-auto px-2 pb-2">
+          {product.categories[0]?.products?.length > 0 && (
+              <div key={product.categories[0].id} className=" flex gap-3 items-center sm:justify-evenly mb-10 relative w-full pb-2">
+                {product.categories[0]?.products?.map((product, index) => (
+                  <div className="max-w-[300px] min-w-[200px]">
+                    <ProductCard
+                      key={`Similar Product: ${product.id}-${index}`}
+                      id={product.id}
+                      name={product.name}
+                      excerpt={product.excerpt}
+                      imageUrl={product.imageUrls[0].url}
+                    />
+                  </div>
+                  ))
+                }
+            </div>
+          )}
+        </div>
         {product.reviews.length > 0 && (
           <div className="w-full h-1 bgColorGray "></div>
         )}
         {product.reviews.map((review) => (
-          <ReviewCard key={review.id} review={review} />
+          <ReviewCard key={`review card: ${review.id}`} review={review} />
         ))}
       </div>
       <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} refe={detailsRef} />
