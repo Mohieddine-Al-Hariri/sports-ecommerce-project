@@ -27,11 +27,15 @@ const CredentialsForm = ({ isModal }) => {
 	const [formData, setFromData] = useState({firstName: "", lastName: "", password: "", })
 	const router = useRouter();
 
+  console.log(RecaptchaVerifier);
+  console.log("auth: ", auth);
 	function onCaptchVerify() { //TODO: Fix Phone Auth
     // Turn off phone auth app verification.
     // auth.settings.appVerificationDisabledForTesting = false; //didnt work
 		if (!window.recaptchaVerifier) {
-			window.recaptchaVerifier = new RecaptchaVerifier(
+      console.log("window.recaptchaVerifier:", window.recaptchaVerifier);
+      console.log("window: ", window);
+      window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container",
         {
           size: "invisible",
@@ -41,6 +45,7 @@ const CredentialsForm = ({ isModal }) => {
           "expired-callback": () => {},
         },
         auth
+        // {settings: {appVerificationDisabledForTesting: false}}
 			);
 		}
 	}
@@ -105,72 +110,73 @@ const CredentialsForm = ({ isModal }) => {
 			<Toaster toastOptions={{ duration: 4000 }} />
       <div id="recaptcha-container"></div>
       {showOTP ? (
-          <div className=" h-screen flex flex-col justify-center">
-            <div className="bg-white text-blue-500 w-fit h-fit mx-auto p-4 rounded-full">
-              <BsFillShieldLockFill size={30} />
-            </div>
-            <label
-              htmlFor="otp"
-              className="font-bold text-xl text-black text-center"
-            >
-              Enter your Code
-            </label>
-            <OtpInput
-              value={otp}
-              onChange={setOtp}
-              OTPLength={6}
-              otpType="number"
-              disabled={false}
-              autoFocus
-              className="opt-container text-blue-500 bg-blue-500 border-blue-500 border-2 pl-2 py-2 mb-4"
-            ></OtpInput>
-            <button
-              onClick={onOTPVerify}
-              className="bg-blue-600 hover:bg-blue-700 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
-            >
-              {loading && (
-                <CgSpinner size={20} className="mt-1 animate-spin" />
-              )}
-              <span>Verify OTP</span>
-            </button>
+        <div className=" h-screen flex flex-col justify-center">
+          <div className="bg-white text-blue-500 w-fit h-fit mx-auto p-4 rounded-full">
+            <BsFillShieldLockFill size={30} />
           </div>
-        ):(
-			<div className="flex flex-col gap-8 max-sm:gap-4 w-full max-w-lg p-10 max-sm:p-4 bg-gray-200 rounded-lg border border-gray-200 shadow-md">
-				<GoogleSignInButton />
-				<FacebookSignInButton/>
-				<h1 className="text-black text-center">OR</h1>
-				<form onSubmit={onSignup} className="flex flex-col gap-8 max-sm:gap-4 w-full max-w-lg ">
-					{/* <h1 className=" text-xl w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500">+{ph}</h1> */}
-					<>
-						<div className="bg-white text-blue-500 w-fit mx-auto p-4 rounded-full">
-						<BsTelephoneFill size={30} />
-						</div>
-						<PhoneInput className="text-black" country={"lb"} value={ph} onChange={setPh} />
-						{/* <button
-							onClick={onSignup}
-							className="bg-emerald-600 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
-						>
-							{loading && (
-								<CgSpinner size={20} className="mt-1 animate-spin" />
-							)}
-							<span>Send code via SMS</span>
-						</button> */}
-					</>
-					{
-						!isLogIn && 
-						<div className="flex flex-col gap-8 max-sm:gap-4">
-							<input value={formData.firstName} onChange={(e) => setFromData(prev => ({...prev, firstName: e.target.value}))} type="text" name="firstName" placeholder="First Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
-							<input value={formData.lastName} onChange={(e) => setFromData(prev => ({...prev, lastName: e.target.value}))} type="text" name="lastName" placeholder="Last Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
-						</div>
-					}
-					{/* <input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/> */}
-					<input value={formData.password} onChange={(e) => setFromData(prev => ({...prev, password: e.target.value}))} type="password" name="password" placeholder="Password" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
-					<button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Sign In with Phone Number</button>
-					{error && <p className="text-red-500">{error}</p>}
-				</form>
-				<button onClick={() => setIsLogIn(!isLogIn)} ><h1 className="text-center text-blue-400 underline -m-2">{isLogIn ? "Don't have an account? Sign-Up here" : "Already have an account? Login here"}</h1></button>
-				<button onClick={() => history.back()} ><h1 className="text-center text-blue-400 underline -m-2">Cancel</h1></button>
-			</div>)}
+          <label
+            htmlFor="otp"
+            className="font-bold text-xl text-black text-center"
+          >
+            Enter your Code
+          </label>
+          <OtpInput
+            value={otp}
+            onChange={setOtp}
+            OTPLength={6}
+            otpType="number"
+            disabled={false}
+            autoFocus
+            className="opt-container text-blue-500 bg-blue-500 border-blue-500 border-2 pl-2 py-2 mb-4"
+          ></OtpInput>
+          <button
+            onClick={onOTPVerify}
+            className="bg-blue-600 hover:bg-blue-700 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
+          >
+            {loading && (
+              <CgSpinner size={20} className="mt-1 animate-spin" />
+            )}
+            <span>Verify OTP</span>
+          </button>
+        </div>
+      ):(
+        <div className="flex flex-col gap-8 max-sm:gap-4 w-full max-w-lg p-10 max-sm:p-4 bg-gray-200 rounded-lg border border-gray-200 shadow-md">
+          <GoogleSignInButton />
+          <FacebookSignInButton/>
+          <h1 className="text-black text-center">OR</h1>
+          <form onSubmit={onSignup} className="flex flex-col gap-8 max-sm:gap-4 w-full max-w-lg ">
+            {/* <h1 className=" text-xl w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500">+{ph}</h1> */}
+            <>
+              <div className="bg-white text-blue-500 w-fit mx-auto p-4 rounded-full">
+              <BsTelephoneFill size={30} />
+              </div>
+              <PhoneInput className="text-black" country={"lb"} value={ph} onChange={setPh} />
+              {/* <button
+                onClick={onSignup}
+                className="bg-emerald-600 w-full flex gap-1 items-center justify-center py-2.5 text-white rounded"
+              >
+                {loading && (
+                  <CgSpinner size={20} className="mt-1 animate-spin" />
+                )}
+                <span>Send code via SMS</span>
+              </button> */}
+            </>
+            {
+              !isLogIn && 
+              <div className="flex flex-col gap-8 max-sm:gap-4">
+                <input value={formData.firstName} onChange={(e) => setFromData(prev => ({...prev, firstName: e.target.value}))} type="text" name="firstName" placeholder="First Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
+                <input value={formData.lastName} onChange={(e) => setFromData(prev => ({...prev, lastName: e.target.value}))} type="text" name="lastName" placeholder="Last Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
+              </div>
+            }
+            {/* <input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/> */}
+            <input value={formData.password} onChange={(e) => setFromData(prev => ({...prev, password: e.target.value}))} type="password" name="password" placeholder="Password" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
+            <button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Sign In with Phone Number</button>
+            {error && <p className="text-red-500">{error}</p>}
+          </form>
+          <button onClick={() => setIsLogIn(!isLogIn)} ><h1 className="text-center text-blue-400 underline -m-2">{isLogIn ? "Don't have an account? Sign-Up here" : "Already have an account? Login here"}</h1></button>
+          <button onClick={() => history.back()} ><h1 className="text-center text-blue-400 underline -m-2">Cancel</h1></button>
+        </div>
+      )}
 		</div>
 	)
 }

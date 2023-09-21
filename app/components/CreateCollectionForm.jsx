@@ -255,6 +255,7 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
         >
           {isSaving ? "Saving..." : "Submit"}
         </button>
+        <div className="sm:hidden h-[40px] w-full"></div>
       </form>
     </div>
 

@@ -256,6 +256,7 @@ const ProfilePage = ({ user, orders }) => {
             <h2>{location}</h2>
           ) : ( */}
             <LocationInput
+              location={user.location}
               selectedLocation={selectedLocation}
               setSelectedLocation={setSelectedLocation}
             />
@@ -348,7 +349,7 @@ const ProfilePage = ({ user, orders }) => {
         {orders?.map((order) => (
           <Order key={order.node.id} order={order.node} />
         ))}
-        <div className="h-[80px] w-full "></div>
+        <div className="h-[80px] max-sm:h-[100px] w-full "></div>
       </div>
     </div>
   );

@@ -27,18 +27,17 @@ const Order = ({ order }) => {
     await publishOrder(order.id);
     router.refresh();
   }
-  //TODO: Add Order Detais Link
   const item = order.orderItems[0];
   return (
     <div className="flex flex-col fontColor gap-2 p-2 h-[100px] border-2 borderColor border-solid rounded-lg">
       <div className="flex gap-2 justify-between items-center h-full">
         {item?.collection ?
           item.collection.imageUrl ?
-          <div className="relative h-full w-[70px]">
+          <Link href={`/orderDetails/${order.id}`} className="relative h-full w-[70px]">
             <Image className="rounded-md h-full object-cover " src={item.collection.imageUrl} fill alt={item.collection.products[0].name}/>
-          </div>
+          </Link>
           :
-            <div className="relative rounded-lg aspect-square w-[70px] h-full overflow-hidden flex">
+            <Link href={`/orderDetails/${order.id}`} className="relative rounded-lg aspect-square w-[70px] h-full overflow-hidden flex">
               <div className="w-1/3 h-full overflow-hidden relative">
                 <Image src={item.collection.products[0].imageUrls[0].url} className="object-cover " fill alt={item.collection.products[0].name}/>
               </div>
@@ -48,11 +47,11 @@ const Order = ({ order }) => {
               <div className="w-1/3 h-full overflow-hidden relative">
                 <Image src={item.collection.products[2].imageUrls[0].url} className="object-cover " fill alt={item.collection.products[2].name}/>
               </div>
-            </div>
+            </Link>
         :
-          <div className="relative h-full w-[70px] flex items-start justify-start">
+          <Link href={`/orderDetails/${order.id}`} className="relative h-full w-[70px] flex items-start justify-start">
             <Image className="rounded-md object-cover " src={item.product.imageUrls[0]?.url} fill alt={item.product.name}/>
-          </div>
+          </Link>
         }
         {/* <Image src={order.orderItems[0].product.imageUrl} /> */}
         <h1 className={`${stateColor} font-bold`}>{order.state}</h1>

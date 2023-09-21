@@ -11,7 +11,7 @@ import ReactStars from "react-rating-star-with-type";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import { useIsVisible } from "./UseVisible";
-import { ImagesCarouselModal, SVGLoading, ScrollButton } from ".";
+import { ImagesCarouselModal, ProductCard, SVGLoading, ScrollButton } from ".";
 
 export function Variants({
   variant,
@@ -298,11 +298,11 @@ export const AddItemForm = ({
             ref={detailsRef}
             disabled={collection.state !== "Available"}
             onClick={itemToCart}
-            className={`h-[60px] pl-[86px] pr-[89px] pt-[18px] pb-[17px] ${
+            className={`h-[60px] w-[263px] ${
               collection.state !== "Available"
                 ? "bg-gray-300"
                 : "opBgColor"
-            } rounded-full justify-center items-start gap-[15px] inline-flex`}
+            } rounded-full justify-center items-center gap-[15px] inline-flex`}
           >
             <div className="opTxtColor text-xl font-bold leading-normal">
               {isAdding ? (
@@ -415,6 +415,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
       }
     };
   }, []);
+  console.log(collection)
 
   const rates = collection.products[currentImageIndex].reviews?.map(
     (review) => review.rating
@@ -422,7 +423,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
   return (
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start justify-center pb-10 bgColor  ">
-      <div className="max-sm:w-[428px] w-full relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
+      <div className="w-full relative bgColor fontColor max-sm:flex-col gap-6 justify-start flex-wrap items-start max-sm:inline-flex">
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           
@@ -670,23 +671,28 @@ const CollectionDetailsPage = ({ collection, user }) => {
             </div> */}
           </div>
         </div>
-        {/* Similars from same Category TODO:Move to a separate component, put in server parent*/}
-        {/* {product.categories[0]?.products > 0 && (
+        {/* Similars from same Category */}
+        {collection.products[0].categories[0]?.products.length > 0 && (
           <h2 className="pl-4 ">Other Related Products</h2>
         )}
-        {product.categories[0]?.products > 0 && (
-          <div className=" flex gap-3 items-center justify-start mb-10 pb-2 px-4 relative overflow-x-scroll  ">
-            {product.categories[0]?.products?.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                excerpt={product.excerpt}
-                imageUrl={product.imageUrls[0].url}
-              />
-            ))}
-          </div>
-        )} */}
+        <div className="w-full overflow-x-auto px-2 pb-2">
+          {collection.products[0].categories[0]?.products.length > 0 && (
+            <div className=" flex gap-3 items-center sm:justify-evenly mb-10 relative w-full pb-2 ">
+              {collection.products[0].categories[0]?.products?.map((product, index) => (
+                <div key={`Similar Product div: ${product.id}-${index}`} className="max-w-[300px] min-w-[200px]">
+                  <ProductCard
+                    key={`Similar Product: ${product.id}-${index}`}
+                    id={product.id}
+                    name={product.name}
+                    excerpt={product.excerpt}
+                    imageUrl={product.imageUrls[0].url}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {collection.products[currentImageIndex].reviews.length > 0 && (
           <div className="w-full h-1 bgColorGray "></div>
         )}

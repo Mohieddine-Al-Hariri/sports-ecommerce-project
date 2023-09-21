@@ -306,163 +306,6 @@ export const VariantsForm = ({ selectedPills, setSelectedPills, productData }) =
       )}
     </div>
   );
-  // return(
-  //   <div className="relative mb-4 border-2 border-gray-300 rounded p-2 ">
-  //     <label className="block text-lg font-semibold mb-2">
-  //       Filter by Variants
-  //     </label>
-  //     {(showSizeInput || showColorInput) &&
-  //       <button className="absolute top-2 right-2" onClick={cancel}>X</button>
-  //     }
-  //     <div className="flex space-x-4 mb-2 ">
-  //       <div
-  //         className={`cursor-pointer p-2 border rounded ${
-  //           showSizeInput ? "border-[#4bc0d9]" : "border-gray-300"
-  //         }`}
-  //         onClick={() => {
-  //           setShowSizeInput(!showSizeInput);
-  //           setShowColorInput(false);
-  //         }}
-  //       >
-  //         Size
-  //       </div>
-  //       <div
-  //         className={`cursor-pointer p-2 border rounded ${
-  //           showColorInput ? "border-[#4bc0d9]" : "border-gray-300"
-  //         }`}
-  //         onClick={() => {
-  //           setShowColorInput(!showColorInput);
-  //           setShowSizeInput(false);
-  //         }}
-  //       >
-  //         Color
-  //       </div>
-  //       <div
-  //         className={`cursor-pointer p-2 border rounded ${
-  //           showSizeInput && showColorInput
-  //             ? "border-[#4bc0d9]"
-  //             : "border-gray-300"
-  //         }`}
-  //         onClick={() => {
-  //           setShowSizeInput(true);
-  //           setShowColorInput(true);
-  //         }}
-  //       >
-  //         Size & Color
-  //       </div>
-  //     </div>
-  //     {showSizeInput && (
-  //       <div className="mb-2">
-  //         <label className="block font-semibold mb-1">Size</label>
-  //         <input
-  //           type="text"
-  //           placeholder="Size"
-  //           className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-  //           onKeyDown={(e) => {
-  //             if (e.key === "Enter" && e.target.value) {
-  //               e.preventDefault();
-  //               setSizeValues([...sizeValues, e.target.value]);
-  //               e.target.value = "";
-  //             }
-  //           }}
-  //         />
-  //         <div className="mt-2 flex flex-col gap-1">
-  //           {sizeValues.map((value, index) => (
-  //             <div
-  //               key={index}
-  //               className="flex justify-between items-center border rounded px-2 py-1 productCardBg"
-  //             >
-  //               {value}
-  //               <button
-  //                 className="text-red-600"
-  //                 onClick={(e) => {
-  //                   e.preventDefault();
-  //                   const updatedValues = sizeValues.filter(
-  //                     (_, i) => i !== index
-  //                   );
-  //                   setSizeValues(updatedValues);
-  //                 }}
-  //               >
-  //                 X
-  //               </button>
-  //             </div>
-  //           ))}
-  //         </div>
-  //       </div>
-  //     )}
-
-  //     {showColorInput && (
-  //       <div className="mb-2">
-  //         <label className="block font-semibold mb-1">Color</label>
-  //         <input
-  //           type="text"
-  //           placeholder="Color"
-  //           className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-  //           onKeyDown={(e) => {
-  //             if (e.key === "Enter" && e.target.value) {
-  //               e.preventDefault();
-  //               setColorValues([...colorValues, e.target.value]);
-  //               e.target.value = "";
-  //             }
-  //           }}
-  //         />
-  //         <div className="mt-2 flex flex-col gap-1">
-  //           {colorValues.map((value, index) => (
-  //             <div
-  //               key={index}
-  //               className="flex justify-between items-center border rounded px-2 py-1 productCardBg"
-  //             >
-  //               {value}
-  //               <button
-  //                 className="text-red-600"
-  //                 onClick={() => {
-  //                   const updatedValues = colorValues.filter(
-  //                     (_, i) => i !== index
-  //                   );
-  //                   setColorValues(updatedValues);
-  //                 }}
-  //               >
-  //                 X
-  //               </button>
-  //             </div>
-  //           ))}
-  //         </div>
-  //       </div>
-  //     )}
-  //     {showSizeInput || showColorInput ? (
-  //       <button
-  //         className="bg-[#4bc0d9] text-white py-2 px-4 rounded cursor-pointer"
-  //         onClick={(e) => handleSubmitVariants(e)}
-  //       >
-  //         Check
-  //       </button>
-  //     ) : null}
-  //     {hasSubmitted && (
-  //       <div className="flex flex-wrap gap-2 mt-4">
-  //         {selectedPills.map((pill, index) => (
-  //           <PillVariant
-  //             key={
-  //               (pill.size && pill.color && `${pill.size}/${pill.color}`) ||
-  //               (pill.size && `${pill.size}`) ||
-  //               (pill.color && `${pill.color}`)
-  //             }
-  //             size={pill.size || null}
-  //             color={pill.color || null}
-  //             index={index}
-  //             deleteItem={deleteItem}
-  //             decreaseQuantity={decreaseQuantity}
-  //             increaseQuantity={increaseQuantity}
-  //             infiniteQuantity={infiniteQuantity}
-  //             quantity={pill.quantity}
-  //           />
-  //         ))}
-  //         {selectedPills.length > 0 && (
-  //           <button onClick={clearAll} >Clear All</button>
-  //         )}
-  //       </div>
-  //     )}
-  //   </div>
-  // )
 }
 
 const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => {
@@ -579,17 +422,13 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
     const selectedCollection = selectedOptions.map((option) => option.value);
     setForm((prevForm) => ({ ...prevForm, collections: selectedCollection }));
   };
-
+console.log(removedTags);
   const handleTagSubmit = (e) => {
-    //TODO: When tag is added, and was in removed, remove it from remove
     e.preventDefault();
     const newTag = form.tag.trim();
 
-    if(newTag === '') return
-    if (tagList.includes(newTag)) {
-      //TODO: Handle Similar Tags Error
-      return
-    }
+    if(newTag === '') return; //Prevent empty strings
+    if (tagList.includes(newTag)) return; //Prevent Similar Tags
 
     //Remove added tag from removed tagsList
     removedTags.includes(newTag) && setRemovedTags((prev) => prev.filter((tag) => tag !== newTag));
@@ -904,8 +743,9 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
             className="py-2 px-4 border rounded focus:outline-none text-black  focus:ring focus:border-[#4bc0d9]"
           />
         </div>
+        
         <VariantsForm selectedPills={selectedPills} setSelectedPills={setSelectedPills} productData={productData} />
-        {/* TODO: Style Variants like in createProductForm */}
+
         <div className="mb-4">
           <label
             htmlFor="collections"
@@ -926,24 +766,6 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
             className="py-2 px-4 border rounded text-black focus:outline-none focus:ring focus:border-[#4bc0d9] "
           />
         </div>
-
-        {/* <div className="mb-4">
-          <label
-            htmlFor="collection"
-            className="block text-lg font-semibold mb-2"
-          >
-            Collection
-          </label>
-          <select
-            id="collection"
-            name="collection"
-            value={form.collection}
-            onChange={handleChange}
-            className="w-full py-2 px-4 border rounded focus:outline-none focus:ring focus:border-[#4bc0d9]"
-          >
-            <option value="">Select a Collection</option>
-          </select>
-        </div> */}
 
         <div className="mb-4">
           <label htmlFor="state" className="block text-lg font-semibold mb-2">
@@ -967,6 +789,7 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
         >
           {isSubmitting ? "Updating..." : "Update Product"}
         </button>
+        <div className="sm:hidden h-[40px] w-full"></div>
       </form>
     </div>
   );

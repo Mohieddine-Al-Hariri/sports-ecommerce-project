@@ -467,19 +467,20 @@ console.log(product.categories[0])
         )}
         <div className="w-full overflow-x-auto px-2 pb-2">
           {product.categories[0]?.products?.length > 0 && (
-              <div key={product.categories[0].id} className=" flex gap-3 items-center sm:justify-evenly mb-10 relative w-full pb-2">
-                {product.categories[0]?.products?.map((product, index) => (
-                  <div className="max-w-[300px] min-w-[200px]">
-                    <ProductCard
-                      key={`Similar Product: ${product.id}-${index}`}
-                      id={product.id}
-                      name={product.name}
-                      excerpt={product.excerpt}
-                      imageUrl={product.imageUrls[0].url}
-                    />
-                  </div>
-                  ))
-                }
+            <div key={product.categories[0].id} 
+              className="flex gap-3 items-center sm:justify-evenly mb-10 relative w-full pb-2"
+            >
+              {product.categories[0]?.products?.map((product, index) => (
+                <div key={`Similar Product div: ${product.id}-${index}`} className="max-w-[300px] min-w-[200px]">
+                  <ProductCard
+                    key={`Similar Product: ${product.id}-${index}`}
+                    id={product.id}
+                    name={product.name}
+                    excerpt={product.excerpt}
+                    imageUrl={product.imageUrls[0].url}
+                  />
+                </div>
+                ))}
             </div>
           )}
         </div>

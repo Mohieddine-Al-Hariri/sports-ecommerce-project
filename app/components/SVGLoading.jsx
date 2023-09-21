@@ -1,4 +1,3 @@
-//TODO: Change Fill Color??
 const SVGLoading = (props) => (
   <div role="status">
     <svg

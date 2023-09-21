@@ -115,7 +115,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
           <div className="lg:flex lg:justify-center lg:items-end lg:mb-4 gap-2">
             
             <SearchBar resetSearchText={resetSearchText} />
-            <div className="flex gap-2 justify-center">
+            <div className="flex gap-2 justify-center items-end">
               <FilterSelect 
                 options={categoriesData} 
                 searchedSelection={searchedCategory}

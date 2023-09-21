@@ -1,7 +1,7 @@
 
 const SVGTrash = (props) => (
   <svg
-    width="24px" //TODO: use it in needed components
+    width="24px"
     height="24px"
     viewBox="0 0 0.563 0.563"
     fill="none"

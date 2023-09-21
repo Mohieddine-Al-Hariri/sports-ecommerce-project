@@ -32,70 +32,72 @@ const OrderDetails = ({ order, user }) => {
   return (
     <div className="flex flex-col items-center justify-start gap-10 p-4 pb-16 pt-8 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-full justify-between flex items-center">
-        {user.userRole === "Admin" && ( //TODO: Add one for user too... (maybe to profile page)
-          <Link href="/Admin/orders">
-            <svg
-              width="30px"
-              height="30px"
-              viewBox="0 0 0.9 0.9"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
+        <button onClick={() => router.back()}>
+          <svg
+            width="30px"
+            height="30px"
+            viewBox="0 0 0.9 0.9"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
+            <title>Go Back</title>
+            <g
+              id="\u9875\u9762-1"
+              stroke="none"
+              strokeWidth={1}
+              fill="none"
+              fillRule="evenodd"
             >
-              <title>Go Back</title>
-              <g
-                id="\u9875\u9762-1"
-                stroke="none"
-                strokeWidth={1}
-                fill="none"
-                fillRule="evenodd"
-              >
-                <g id="Arrow" transform="translate(-240)">
-                  <g id="back_line" transform="translate(240)">
-                    <path
-                      d="M0.9 0v0.9H0V0h0.9ZM0.472 0.872l0 0 -0.003 0.001 -0.001 0 -0.001 0 -0.003 -0.001c0 0 -0.001 0 -0.001 0l0 0 -0.001 0.016 0 0.001 0 0 0.004 0.003 0.001 0 0 0 0.004 -0.003 0 -0.001 0 -0.001 -0.001 -0.016c0 0 0 -0.001 -0.001 -0.001Zm0.01 -0.004 0 0 -0.007 0.003 0 0 0 0 0.001 0.016 0 0 0 0 0.008 0.003c0 0 0.001 0 0.001 0l0 -0.001 -0.001 -0.023c0 0 0 -0.001 -0.001 -0.001Zm-0.027 0a0.001 0.001 0 0 0 -0.001 0l0 0.001 -0.001 0.023c0 0 0 0.001 0.001 0.001l0.001 0 0.008 -0.003 0 0 0 0 0.001 -0.016 0 0 0 0 -0.007 -0.003Z"
-                      id="MingCute"
-                      fillRule="nonzero"
-                    />
-                    <path
-                      d="M0.115 0.211A0.037 0.037 0 0 1 0.15 0.188h0.375a0.263 0.263 0 1 1 0 0.525H0.188a0.037 0.037 0 1 1 0 -0.075h0.337a0.188 0.188 0 1 0 0 -0.375H0.241l0.067 0.067a0.037 0.037 0 0 1 -0.053 0.053l-0.131 -0.131a0.037 0.037 0 0 1 -0.008 -0.041Z"
-                      id="\u8DEF\u5F84"
-                      fill="currentColor"
-                    />
-                  </g>
+              <g id="Arrow" transform="translate(-240)">
+                <g id="back_line" transform="translate(240)">
+                  <path
+                    d="M0.9 0v0.9H0V0h0.9ZM0.472 0.872l0 0 -0.003 0.001 -0.001 0 -0.001 0 -0.003 -0.001c0 0 -0.001 0 -0.001 0l0 0 -0.001 0.016 0 0.001 0 0 0.004 0.003 0.001 0 0 0 0.004 -0.003 0 -0.001 0 -0.001 -0.001 -0.016c0 0 0 -0.001 -0.001 -0.001Zm0.01 -0.004 0 0 -0.007 0.003 0 0 0 0 0.001 0.016 0 0 0 0 0.008 0.003c0 0 0.001 0 0.001 0l0 -0.001 -0.001 -0.023c0 0 0 -0.001 -0.001 -0.001Zm-0.027 0a0.001 0.001 0 0 0 -0.001 0l0 0.001 -0.001 0.023c0 0 0 0.001 0.001 0.001l0.001 0 0.008 -0.003 0 0 0 0 0.001 -0.016 0 0 0 0 -0.007 -0.003Z"
+                    id="MingCute"
+                    fillRule="nonzero"
+                  />
+                  <path
+                    d="M0.115 0.211A0.037 0.037 0 0 1 0.15 0.188h0.375a0.263 0.263 0 1 1 0 0.525H0.188a0.037 0.037 0 1 1 0 -0.075h0.337a0.188 0.188 0 1 0 0 -0.375H0.241l0.067 0.067a0.037 0.037 0 0 1 -0.053 0.053l-0.131 -0.131a0.037 0.037 0 0 1 -0.008 -0.041Z"
+                    id="\u8DEF\u5F84"
+                    fill="currentColor"
+                  />
                 </g>
               </g>
-            </svg>
-          </Link>
-        )}
+            </g>
+          </svg>
+        </button>
         
         <h1 className="text-xl font-bold mb-2 border-b-2 border-gray-500">
           ${order.total}
         </h1>
         <div className="fontColor flex justify-center items-start relative ">
-          {openMenu ? (
-            <div>
-              <OrderStateMenu
-                handleDeleteOrder={handleDeleteOrder}
-                isOpen={openMenu}
-                setIsOpen={setOpenMenu}
-                orderState={orderState}
-                setOrderState={setOrderState}
-                orderId={order.id}
-              />
+          {user.userRole === "Admin" ? 
+            openMenu ? (
+              <div>
+                <OrderStateMenu
+                  handleDeleteOrder={handleDeleteOrder}
+                  isOpen={openMenu}
+                  setIsOpen={setOpenMenu}
+                  orderState={orderState}
+                  setOrderState={setOrderState}
+                  orderId={order.id}
+                />
+                <button
+                  onClick={() => setOpenMenu(true)}
+                  className="border-2 border-gray-500 rounded-full px-3 py-1 "
+                >
+                  <h1 className={`${stateColor} font-bold`}>{orderState}</h1>
+                </button>
+              </div>
+            ) : (
               <button
                 onClick={() => setOpenMenu(true)}
                 className="border-2 border-gray-500 rounded-full px-3 py-1 "
               >
                 <h1 className={`${stateColor} font-bold`}>{orderState}</h1>
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setOpenMenu(true)}
-              className="border-2 border-gray-500 rounded-full px-3 py-1 "
-            >
-              <h1 className={`${stateColor} font-bold`}>{orderState}</h1>
-            </button>
+            )
+          : (
+            <p className={`border-2 border-gray-500 rounded-full px-3 py-1 ${stateColor} font-bold`}>{orderState}</p>
           )}
         </div>
       </div>
