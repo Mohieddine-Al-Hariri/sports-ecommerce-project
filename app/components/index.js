@@ -21,5 +21,6 @@ export {default as SVGX} from './SVGX';
 export {default as FilterSelect} from './FilterSelect';
 export {default as SelectionProductCard} from './SelectionProductCard';
 export {default as SVGDefault} from './SVGDefault';
+export {default as SearchBar} from './SearchBar';
 
 

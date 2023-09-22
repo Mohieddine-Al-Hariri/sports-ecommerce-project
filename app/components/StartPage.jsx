@@ -201,7 +201,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             filterBy="Category"
             setResetSearchText={setResetSearchText}
           />
-          <SearchBar/>
+          <SearchBar searched={searchText}/>
         </div>
 
         <div className=" text-neutral-700 fontColorGray text-xl font-bold leading-normal ml-5">Items</div>
@@ -209,7 +209,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             <Fade triggerOnce={true} className="overflow-hidden rounded-lg h-[200px] max-w-[356px] w-full grow hover:scale-[1.1] hover:z-10 relative duration-200  ">
               {productsState?.map(({node}) => (
                 <ProductCard 
-                  key={node.id} 
+                  key={`Product Card: ${node.id}`} 
                   id={node.id} 
                   name={node.name} 
                   excerpt={node.excerpt} 
@@ -225,7 +225,6 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
             {/* Pagination controls */}
             {isLoading && 
               <>
-              
                 <LoadingCard/>
                 <LoadingCard/>
                 <LoadingCard/>

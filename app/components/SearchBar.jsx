@@ -1,14 +1,26 @@
 "use client";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 
 const SearchBar = ({ resetSearchText }) => {
+
   const [searchText, setSearchText] = useState('');
   const [isSearchBarFocused, setIsSearchBarFocused] = useState(false);
   const router = useRouter();
+  
+  // To sustain search state between reloads if needed
+  const searchParams = useSearchParams()
+  const [isFirstRedner, setIsFirstRender] = useState(true);
+  useEffect(() => {
+    const search = searchParams.get('searchText')
+    if (search) {
+      setSearchText(search);
+    }
+  }, []);
 
   useEffect(() => {
-    setSearchText('');
+    if(!isFirstRedner) setSearchText(''); //Resets search text when triggered
+    setIsFirstRender(false);
   }, [resetSearchText]);
   
   const handleSearchChange = (e) => {
@@ -18,6 +30,7 @@ const SearchBar = ({ resetSearchText }) => {
       handleSearch(true);
     }
   };
+
   const handleSearch = (isEmpty) => {
     const currentParams = new URLSearchParams(window.location.search);
     // currentParams.delete("category");

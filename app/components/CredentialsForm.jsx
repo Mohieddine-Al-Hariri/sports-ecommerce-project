@@ -3,7 +3,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { FacebookSignInButton, GoogleSignInButton } from "./authButton";
-import { RecaptchaVerifier, signInWithPhoneNumber, settings } from "firebase/auth";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
 import OtpInput from "otp-input-react";
@@ -85,8 +85,8 @@ const CredentialsForm = ({ isModal }) => {
         toast.success("OTP sended successfully!");
 		  })
 		  .catch((error) => {
-			console.log(error);
-			setLoading(false);
+        console.log(error);
+        setLoading(false);
 		  });
 	  }
 	  function onOTPVerify() {
