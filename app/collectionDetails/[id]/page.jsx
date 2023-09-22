@@ -16,9 +16,7 @@ const itemDetails = async ({ params }) => {
   const sessionData = await getServerSession(authOptions);
   const collectionDetails = await getCollectionDetailsData(params.id); 
 
-  console.log("_______________collectionDetails: _______________\n\n\n", collectionDetails);
   return <CollectionDetailsPage collection={collectionDetails} user={sessionData?.user} />
-
   
 }
 

@@ -5,7 +5,7 @@ function CheckBox({ isChecked, setIsChecked, label }) {
   const toggleCheckbox = () => {
     setIsChecked(!isChecked);
   };
-  console.log(isChecked)
+
   return (
     <label className="inline-flex items-center space-x-2 cursor-pointer">
       {label}

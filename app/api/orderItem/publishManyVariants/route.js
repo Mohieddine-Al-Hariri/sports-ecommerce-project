@@ -7,7 +7,7 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
-  console.log("\n\norderItemId: \n", orderItemId);
+
   try {
     const publishedVariants = await client.request(
       `
@@ -19,7 +19,9 @@ export async function POST(req) {
       `,
       { orderItemId }
     );
+
     return new Response(JSON.stringify(publishedVariants));
+    
   } catch (error) {
     console.error("Error in POST:", error);
     return new Response({status:500, body: error.message});

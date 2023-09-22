@@ -422,7 +422,7 @@ const UpdateProductForm = ({ categoriesData, productData, collectionsData }) => 
     const selectedCollection = selectedOptions.map((option) => option.value);
     setForm((prevForm) => ({ ...prevForm, collections: selectedCollection }));
   };
-console.log(removedTags);
+
   const handleTagSubmit = (e) => {
     e.preventDefault();
     const newTag = form.tag.trim();
@@ -487,8 +487,8 @@ console.log(removedTags);
     const previousCollections = productCollectionsIds
       .filter((id) => !form.collections.some((collectionId) => collectionId === id))
       .map((id) => ({ id }));
-    console.log("previousCollections: ", previousCollections);
-    const updatedProduct = await updateProduct({
+
+      const updatedProduct = await updateProduct({
       productId: productData.id,
       ...form,
       price,

@@ -7,7 +7,9 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
+
   const { userId, collectionId, headline, rating, content } = body;
+  
   try {
     const reviewCollection = await client.request(
       `
@@ -26,7 +28,7 @@ export async function POST(req) {
       `,
       { userId, collectionId, headline, rating, content }
     );
-    console.log("________reviewCollection : ________\n\n\n", reviewCollection);
+
     return new Response(JSON.stringify(reviewCollection)); // Should return the id
   } catch (error) {
     console.error("Error in POST:", error);

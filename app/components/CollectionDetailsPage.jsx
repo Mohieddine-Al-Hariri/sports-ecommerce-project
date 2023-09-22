@@ -415,7 +415,6 @@ const CollectionDetailsPage = ({ collection, user }) => {
       }
     };
   }, []);
-  console.log(collection)
 
   const rates = collection.products[currentImageIndex].reviews?.map(
     (review) => review.rating

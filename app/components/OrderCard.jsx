@@ -9,7 +9,6 @@ const OrderCard = ({ order, handleDeleteOrder }) => {
   const [orderState, setOrderState] = useState(order.state);
   const [isImageHovered, setIsImageHovered] = useState(false);
 
-  console.log("fix color not changing immediately");
   let stateColor = "text-green-500";
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
   else if(order.state === "Delivering") stateColor = "text-[#4bc0d9]";

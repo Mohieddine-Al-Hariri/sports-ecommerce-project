@@ -15,7 +15,6 @@ export async function getProductsData(searchText, cursor) {
 const page = async ({ searchParams: { cursor, searchText, productsCursor, beforeOrAfter } }) => {
   const collectionsData = await getCollectionsData(cursor, searchText);
   const productsData = await getProductsData(searchText, {cursor: productsCursor, beforeOrAfter});
-  console.log("productsCursor: ", productsCursor);
   return (
     <AdminCollectionsPage
       collectionsData={collectionsData.collections}

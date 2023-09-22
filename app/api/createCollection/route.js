@@ -7,8 +7,9 @@ export async function POST(req) {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
     },
   });
+
   const { name, slug, description, price, state, imageUrl, products } = body;
-  console.log("\n\nproducts in api: \n\n", products);
+
   try {
     const createdCollection = await client.request(
       `
@@ -38,7 +39,7 @@ export async function POST(req) {
       { name, slug, description, price, state, imageUrl, products }
     );
     // eg of products: [{id: 1}, {id: 2}, ...]
-    console.log("createdCollection: ", createdCollection)
+
     return new Response(JSON.stringify(createdCollection)); // Should return the id
   } catch (error) {
     console.error("Error in POST:", error);

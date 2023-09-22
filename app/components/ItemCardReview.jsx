@@ -71,7 +71,7 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
             :
               <div className="flex flex-wrap justify-center items-center grow ">
                 {images.map((image, index) => (
-                  <div key={index} className="relative flex justify-center rounded-lg overflow-hidden" onClick={() => console.log(0)}>
+                  <div key={index} className="relative flex justify-center rounded-lg overflow-hidden" >
                     <Image
                       className="h-full w-1/8 object-cover pointer-events-none"
                       width={100}

@@ -269,9 +269,10 @@ const ItemsDetailsPage = ({ product, user }) => {
     }
     setQuantity((quantity) => quantity + 1);
   };
-console.log(product.categories[0])
+
   const rates = product.reviews?.map((review) => review.rating);
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
+
   return ( 
     <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start lg:items-center justify-center px-2 max-lg:pb-10 bgColor  ">
       <div className=" w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start max-sm:inline-flex">
