@@ -311,6 +311,12 @@ const CollectionCard = ({
   };
 
   const deleteCollectionFunc = async () => { 
+    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
+  
+    // User clicked "Cancel", so return and do nothing
+    if (!userConfirmed) return; 
+    
+    // Else, user clicked "Yes", so continue to delete the chosen category
     setIsDeleting(true);
     if(collection.imageUrl) await deletePrevImage(collection.imageUrl);
     await deleteACollection(collection.id);
