@@ -90,6 +90,12 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   },[selectedState])
 
   const handleDeleteOrder = async (id) => {
+    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
+  
+    // User clicked "Cancel", so return and do nothing
+    if (!userConfirmed) return; 
+    
+    // Else, user clicked "Yes", continue
     await deleteOrder(id);
     router.refresh();
   }

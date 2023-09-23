@@ -274,9 +274,9 @@ const ItemsDetailsPage = ({ product, user }) => {
   const rate = rates?.reduce((a, b) => a + b, 0) / rates?.length;
 
   return ( 
-    <div className=" overflow-y-scroll h-screen overflow-x-hidden flex items-start lg:items-center justify-center px-2 max-lg:pb-10 bgColor  ">
-      <div className=" w-full max-sm:pb-8 relative bgColor fontColor max-sm:flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start max-sm:inline-flex">
-        <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
+    <div className=" overflow-hidden h-full flex items-start lg:items-center justify-center px-2 bgColor  ">
+      <div className=" overflow-y-scroll overflow-x-hidden w-full h-full max-sm:pb-8 relative bgColor fontColor flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start">
+        <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full h-fit">
           {/* TODO: Make the image size based on the used images dimensions */}
           <ImagesCarouselModal product={product} setImageIndex={setCurrentImageIndex} />
           <div className="flex flex-col gap-10 sm:h-full">
@@ -466,7 +466,7 @@ const ItemsDetailsPage = ({ product, user }) => {
         {product.categories[0]?.products?.length > 0 && (
           <h2 className="pl-4 ">Other Related Products</h2>
         )}
-        <div className="w-full overflow-x-auto px-2 pb-2">
+        <div className="w-full overflow-x-auto h-fit px-2 pb-2">
           {product.categories[0]?.products?.length > 0 && (
             <div key={product.categories[0].id} 
               className="flex gap-3 items-center sm:justify-evenly mb-10 relative w-full pb-2"
@@ -491,6 +491,7 @@ const ItemsDetailsPage = ({ product, user }) => {
         {product.reviews.map((review) => (
           <ReviewCard key={`review card: ${review.id}`} review={review} />
         ))}
+        <div className=" h-20 w-full"></div>
       </div>
       <ScrollButton rotationDegree={180} isObservedElementVisible={isLastOrderCardVisible} refe={detailsRef} />
     </div>

@@ -9,8 +9,8 @@ export const StateBtn = ({ changeOrderState, state, setIsOpen, svg, orderState }
     <button 
       disabled={state === orderState} 
       onClick={() => {changeOrderState(state); setIsOpen(false)}}  
-      className={`px-4 py-2 rounded-md hover:bg-[#2482c8] hover:text-white ${
-        state === orderState ? "text-white bg-[#2482c8]" : " fontColor "
+      className={`px-4 py-2 rounded-md  hover:text-white ${
+        state === orderState ? "text-white bg-[#3ca8d0]" : " fontColor hover:bg-[#4bc0d9]"
       }
         flex w-full justify-between `}
     >
@@ -132,12 +132,12 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
   return (
     <div 
       ref={cardMenuRef}
-      className="absolute w-48 h-10 bgColorGray fontColor rounded-t-md right-2 -top-2 pt-1 pr-1 "
+      className="absolute w-48 h-10 bgColorGray fontColor rounded-t-md right-2 -top-20 mb-10 pt-1 pr-1 "
     >
-      <div>
+      <div className=''>
         <div className='w-full flex justify-end'>
           <button
-            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#2482c8] rounded-full focus:outline-none"
+            className="p-1 fontColorGray hover:text-gray-100 hover:bg-[#4bc0d9] rounded-full focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
             <SVGX />

@@ -47,11 +47,26 @@ export const ProductStateMenu = ({
     router.refresh();
   };
 
+  // const deleteTheProduct = async () => {
+  //   const response = alert("Are you sure you want to delete this product?");
+  //   setIsDeleting(true);
+  //   await deleteProductFromDb(productId, imageUrls, orderItemsIds, reviewsIds, ordersIds);
+  //   setIsDeleting(false);
+  // };
   const deleteTheProduct = async () => {
+    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
+  
+    // User clicked "Cancel", so return and do nothing
+    if (!userConfirmed) return; 
+  
+    // Else, user clicked "Yes", continue
     setIsDeleting(true);
+  
     await deleteProductFromDb(productId, imageUrls, orderItemsIds, reviewsIds, ordersIds);
+  
     setIsDeleting(false);
   };
+  
 
   return (
     <div

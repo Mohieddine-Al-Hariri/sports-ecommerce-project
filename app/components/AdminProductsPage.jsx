@@ -9,6 +9,20 @@ import { deleteProduct, getProducts } from "@/lib";
 import { deleteObject, ref } from "firebase/storage";
 import { storage } from "@/lib/firebaseConfig";
 
+export const LoadingCard = () => {
+  return (
+    <div 
+      className="flex relative w-full lg:w-1/3 grow justify-between items-center rounded-md shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] productCardBg fontColor p-2 duration-200 bg-gray-200 animate-pulse"
+    >
+      <div className="rounded-t-md bg-white w-[102px] h-[109.03px] "></div>
+      <div className='absolute bottom-0 left-0 px-4 py-2 w-full'>
+        <h1 className=" bg-white rounded-full w-1/2 h-4 mb-2"></h1>
+        <h1 className=" bg-white rounded-full w-3/4 h-4"></h1>
+      </div>
+    </div>
+  )
+}
+
 const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, searchedCategory, collectionsData, searchedCollection }) => {
 
   const [productsState, setProductsState] = useState([]);
@@ -95,7 +109,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
   };
 
   const deleteProductFromDb = async (productId, imageUrls, orderItemsIds, reviewsIds, ordersIds) => {
-    // imageUrls && await deleteProductImages(imageUrls);
+    imageUrls?.length > 0 && await deleteProductImages(imageUrls);
     const deletedProduct = await deleteProduct({
       productId, imageUrls, orderItemsIds, reviewsIds, ordersIds: ordersIds.map(order => ({id: order.id})) 
     });
@@ -142,7 +156,7 @@ const AdminProductsPage = ({ products, hasNextPage, searchText, categoriesData, 
             ))}
           </div>
           {/* Pagination controls */}
-          {isLoading && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">Loading...</div> }
+          {isLoading && <LoadingCard/> }
           {/* An invisible element to act as the previousPostCardRef */}
           {!doesHaveNextPage && <div className="flex relative h-40 w-full backGround fontColor text-2xl justify-center items-center rounded-lg ">All Done! </div> }
         </div>

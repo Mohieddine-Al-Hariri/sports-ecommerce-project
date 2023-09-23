@@ -545,6 +545,12 @@ const AdminCategoriesPage = ({
   };
 
   const deleteTheCategory = async (categoryId) => {
+    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
+  
+    // User clicked "Cancel", so return and do nothing
+    if (!userConfirmed) return; 
+    
+    // Else, user clicked "Yes", so continue to delete the chosen category
     await deleteCategory(categoryId);
     router.refresh();
   }
