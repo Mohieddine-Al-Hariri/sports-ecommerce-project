@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateCategoryForm from "./CreateCategoryForm";
 import { SVGCancel, SVGCheck, SVGLoading, SVGPencil, SVGTrash, SelectionProductCard } from ".";
+import Swal from "sweetalert2";
 
 export const ButtonSVG = ({ func, text, svg, hoverColor }) => (
   <button
@@ -545,14 +546,40 @@ const AdminCategoriesPage = ({
   };
 
   const deleteTheCategory = async (categoryId) => {
-    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
-  
-    // User clicked "Cancel", so return and do nothing
-    if (!userConfirmed) return; 
-    
-    // Else, user clicked "Yes", so continue to delete the chosen category
-    await deleteCategory(categoryId);
-    router.refresh();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      iconColor: "#4bc0d9",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: "staticBgColor fontColorGray"      
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteCategory(categoryId);
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Your file has been deleted.',
+            customClass: "staticBgColor fontColorGray",
+            iconColor: "#4bc0d9",
+            confirmButtonColor: '#4bc0d9',
+          })
+          router.refresh();
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: '<p>Please try again</p>'
+          })
+        }
+      }
+    })
   }
 
   return (

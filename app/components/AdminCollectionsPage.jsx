@@ -10,6 +10,7 @@ import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage
 import { storage } from "@/lib/firebaseConfig";
 import { v4 } from "uuid";
 import { SVGCancel, SVGCheck, SVGDefault, SVGLoading, SVGPencil, SVGTrash, SVGX, SelectionProductCard } from ".";
+import Swal from "sweetalert2";
 
 export const CollectionStateMenu = ({
   collectionState,
@@ -311,17 +312,45 @@ const CollectionCard = ({
   };
 
   const deleteCollectionFunc = async () => { 
-    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
-  
-    // User clicked "Cancel", so return and do nothing
-    if (!userConfirmed) return; 
-    
-    // Else, user clicked "Yes", so continue to delete the chosen category
-    setIsDeleting(true);
-    if(collection.imageUrl) await deletePrevImage(collection.imageUrl);
-    await deleteACollection(collection.id);
-    setIsDeleting(false);
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      iconColor: "#4bc0d9",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: "staticBgColor fontColorGray"      
+    }).then( async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setIsDeleting(true);
+          if(collection.imageUrl) await deletePrevImage(collection.imageUrl);
+          await deleteACollection(collection.id);
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Your file has been deleted.',
+            customClass: "staticBgColor fontColorGray",
+            iconColor: "#4bc0d9",
+            confirmButtonColor: '#4bc0d9',
+          })
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: '<p >Please try again</p>'
+          })
+          setIsDeleting(false);  
+        }
+      }
+    })
   };
+
   const resetCollectionDetailsFunc = () => {
     updateDisplayedProducts();
     setCollectionName(collection.name);

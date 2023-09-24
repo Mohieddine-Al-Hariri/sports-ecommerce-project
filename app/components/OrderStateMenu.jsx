@@ -147,7 +147,7 @@ const OrderStateMenu = ({ isOpen, setIsOpen, orderState, setOrderState, orderId,
         <div className="absolute bgColorGray right-0 w-48 fontColor bgColor rounded-md shadow-lg z-10">
           <ul>
             {statesBtns}
-            <button onClick={() => handleDeleteOrder(orderId)}  className={`px-4 py-2 rounded-md hover:bg-[#4bc0d9] hover:text-white fontColor flex w-full justify-between `}>
+            <button onClick={() => handleDeleteOrder(orderId)}  className={`px-4 py-2 rounded-md hover:bg-red-500 text-red-500 hover:text-white flex w-full justify-between `}>
               Delete
               <SVGTrash width="30px" height="30px" />
             </button>

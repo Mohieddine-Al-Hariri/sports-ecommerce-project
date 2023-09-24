@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SVGComponent } from "./ProductCard";
 import { SVGLoading, SVGPencil, SVGTrash, SVGX } from ".";
+import Swal from 'sweetalert2'
 
 export const ProductStateMenu = ({
   productState,
@@ -47,24 +48,43 @@ export const ProductStateMenu = ({
     router.refresh();
   };
 
-  // const deleteTheProduct = async () => {
-  //   const response = alert("Are you sure you want to delete this product?");
-  //   setIsDeleting(true);
-  //   await deleteProductFromDb(productId, imageUrls, orderItemsIds, reviewsIds, ordersIds);
-  //   setIsDeleting(false);
-  // };
   const deleteTheProduct = async () => {
-    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      iconColor: "#4bc0d9",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: "staticBgColor fontColorGray"      
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        try {
+          setIsDeleting(true);
+          await deleteProductFromDb(productId, imageUrls, orderItemsIds, reviewsIds, ordersIds);
   
-    // User clicked "Cancel", so return and do nothing
-    if (!userConfirmed) return; 
-  
-    // Else, user clicked "Yes", continue
-    setIsDeleting(true);
-  
-    await deleteProductFromDb(productId, imageUrls, orderItemsIds, reviewsIds, ordersIds);
-  
-    setIsDeleting(false);
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Your file has been deleted.',
+            customClass: "staticBgColor fontColorGray",
+            iconColor: "#4bc0d9",
+            confirmButtonColor: '#4bc0d9',
+          })
+          
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: '<p >Please try again</p>'
+          })
+        }
+        setIsDeleting(false);
+      }
+    })
   };
   
 

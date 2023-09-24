@@ -6,7 +6,7 @@ import { FacebookSignInButton, GoogleSignInButton } from "./authButton";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
 import { BsFillShieldLockFill, BsTelephoneFill } from "react-icons/bs";
-import OtpInput from "otp-input-react";
+import OtpInput from "react-otp-input";
 import PhoneInput from "react-phone-input-2";
 import { toast, Toaster } from "react-hot-toast";
 import "react-phone-input-2/lib/style.css";
@@ -27,6 +27,7 @@ const CredentialsForm = ({ isModal }) => {
 	const [formData, setFromData] = useState({firstName: "", lastName: "", password: "", })
 	const router = useRouter();
 
+  console.log(OtpInput);
   console.log(RecaptchaVerifier);
   console.log("auth: ", auth);
 	function onCaptchVerify() { //TODO: Fix Phone Auth
@@ -127,7 +128,10 @@ const CredentialsForm = ({ isModal }) => {
             otpType="number"
             disabled={false}
             autoFocus
-            className="opt-container text-blue-500 bg-blue-500 border-blue-500 border-2 pl-2 py-2 mb-4"
+            renderSeparator={<span> </span>}
+            containerStyle = "opt-container rounded-md w-[250px] h-[60px] flex justify-around text-[#4bc0d9] bg-[#4bc0d9] border-[#4bc0d9] border-2 p-2 mb-4"
+            inputStyle="rounded w-[18px] h-[28px]"
+            renderInput={(props) => <input {...props} />}
           ></OtpInput>
           <button
             onClick={onOTPVerify}

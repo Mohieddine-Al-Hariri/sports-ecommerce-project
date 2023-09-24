@@ -6,6 +6,7 @@ import { deleteOrder, getAdminOrders } from "@/lib";
 import { useIsVisible } from "./UseVisible";
 import { useRouter } from "next/navigation";
 import { FilterSelect, ScrollButton } from ".";
+import Swal from "sweetalert2";
 // import Link from "next/link";
 
 const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
@@ -90,15 +91,51 @@ const AdminOrders = ({ orders, hasNextPage, searchText, filteredState }) => {
   },[selectedState])
 
   const handleDeleteOrder = async (id) => {
-    const userConfirmed = window.confirm("Are you sure you want to delete this product?");
-  
-    // User clicked "Cancel", so return and do nothing
-    if (!userConfirmed) return; 
-    
-    // Else, user clicked "Yes", continue
-    await deleteOrder(id);
-    router.refresh();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      iconColor: "#4bc0d9",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: "staticBgColor fontColorGray"      
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteOrder(id);
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Your file has been deleted.',
+            customClass: "staticBgColor fontColorGray",
+            iconColor: "#4bc0d9",
+            confirmButtonColor: '#4bc0d9',
+          })
+          router.refresh();
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong!',
+            footer: '<p>Please try again</p>',
+            customClass: "staticBgColor fontColorGray"      
+          })
+        }
+
+      }
+    })
   }
+  //   const userConfirmed = window.confirm("Are you sure you want to delete this product?");
+  
+  //   // User clicked "Cancel", so return and do nothing
+  //   if (!userConfirmed) return; 
+    
+  //   // Else, user clicked "Yes", continue
+  //   await deleteOrder(id);
+  //   router.refresh();
+  // }
 
   let array = [orderedState, deliveringState, recievedState, cancelledState, deletedState];
   array = array.filter((item) => item.length > 0);
