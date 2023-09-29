@@ -27,32 +27,27 @@ const CredentialsForm = ({ isModal }) => {
 	const [formData, setFromData] = useState({firstName: "", lastName: "", password: "", })
 	const router = useRouter();
 
-  console.log(OtpInput);
-  console.log(RecaptchaVerifier);
-  console.log("auth: ", auth);
 	function onCaptchVerify() { //TODO: Fix Phone Auth
-    // Turn off phone auth app verification.
-    // auth.settings.appVerificationDisabledForTesting = false; //didnt work
-		if (!window.recaptchaVerifier) {
-      console.log("window.recaptchaVerifier:", window.recaptchaVerifier);
-      console.log("window: ", window);
+    if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
         "recaptcha-container",
         {
           size: "invisible",
           callback: (response) => {
-            onSignup();
+            // onSignup();
           },
           "expired-callback": () => {},
         },
-        auth
         // {settings: {appVerificationDisabledForTesting: false}}
 			);
 		}
 	}
 
-	const handleSubmit = async () => {
-		const {firstName, lastName, password} = formData
+	const handleSubmit = async () => { 
+    //TODO: add error, make sure fields are filled up
+		//TODO: add birthdate...
+    const {firstName, lastName, password} = formData
 		const signInResponse = await signIn("credentials", {
 			redirect: false,
 			callbackUrl: "/",
@@ -61,8 +56,9 @@ const CredentialsForm = ({ isModal }) => {
 			firstName: firstName,
 			lastName: lastName,
 			isLogIn: isLogIn,
-			// birthDate: dateState
+			birthDate: dateState
 		});
+    console.log(signInResponse)
 		if (signInResponse && !signInResponse.error) {
 			router.push("/");
 		}else{
@@ -124,7 +120,7 @@ const CredentialsForm = ({ isModal }) => {
           <OtpInput
             value={otp}
             onChange={setOtp}
-            OTPLength={6}
+            numInputs={6}
             otpType="number"
             disabled={false}
             autoFocus
@@ -148,7 +144,7 @@ const CredentialsForm = ({ isModal }) => {
           <GoogleSignInButton />
           <FacebookSignInButton/>
           <h1 className="text-black text-center">OR</h1>
-          <form onSubmit={onSignup} className="flex flex-col gap-8 max-sm:gap-4 w-full max-w-lg ">
+          <form onSubmit={(e) => onSignup(e)} className="flex flex-col gap-8 max-sm:gap-4 w-full max-w-lg ">
             {/* <h1 className=" text-xl w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500">+{ph}</h1> */}
             <>
               <div className="bg-white text-blue-500 w-fit mx-auto p-4 rounded-full">
@@ -172,7 +168,7 @@ const CredentialsForm = ({ isModal }) => {
                 <input value={formData.lastName} onChange={(e) => setFromData(prev => ({...prev, lastName: e.target.value}))} type="text" name="lastName" placeholder="Last Name" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
               </div>
             }
-            {/* <input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/> */}
+            <input className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" type="date" max={new Date().toISOString().split('T')[0]}  value={dateState} onChange={(e) => setDateState(e.target.value)} placeholder="19.08.23"/>
             <input value={formData.password} onChange={(e) => setFromData(prev => ({...prev, password: e.target.value}))} type="password" name="password" placeholder="Password" required className=" w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500" />
             <button type="submit" className="w-full px-4 py-2 text-white bg-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Sign In with Phone Number</button>
             {error && <p className="text-red-500">{error}</p>}
