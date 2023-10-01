@@ -76,9 +76,9 @@ const CredentialsForm = ({ isModal }) => {
   function onSignup(e) {
     e.preventDefault();
     if(loading) return
-    if(ph.length < 4) {toast.error("Please enter your phone number"); return}
-    if(formData.password.length < 4) {toast.error("To ensure your account is secure, please enter a longer password"); return}
-    if(!isLogIn && (!formData.firstName || !formData.lastName || !dateState)) {toast.error("Please fill all the fields"); return}
+    if(ph.length < 4) {toast.error("Please enter your phone number", {icon:"!"}); return} //TODO: Change toast icon //https://react-hot-toast.com/docs/toast
+    if(formData.password.length < 4) {toast.error("To ensure your account is secure, please enter a longer password", {icon:"❕"}); return}
+    if(!isLogIn && (!formData.firstName || !formData.lastName || !dateState)) {toast.error("Please fill all the fields", {icon:"❗"}); return}
       
     setLoading(true);
     onCaptchVerify();

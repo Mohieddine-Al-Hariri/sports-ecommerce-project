@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 
 export async function POST(req) {
-  const orderItemId = await req.json();
+  const userId = await req.json();
   const client = new GraphQLClient(process.env.GRAPHYL_ENDPOINT, {
     headers: {
       authorization: `Bearer ${process.env.HYGRAPH_MUTATION_TOKEN}`,
@@ -11,13 +11,13 @@ export async function POST(req) {
   try {
     const publishedItems = await client.request(
       `
-        mutation PublishManyOrderItems($orderItemId: [ID]) {
-          publishManyOrderItems(where: {orderItem: {id: ""}}) {
+        mutation PublishManyOrderItems($userId: ID!) {
+          publishManyOrderItems(where: {theUser: {id: $userId}}) {
             count
           }
         }
       `,
-      { orderItemId }
+      { userId }
     );
     return new Response(JSON.stringify(publishedItems));
   } catch (error) {

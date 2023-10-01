@@ -5,6 +5,8 @@ import SignInBtn from "./SignInBtn";
 import {
   disconnectItemfromCart,
   publishCart,
+  publishItemAddedToCart,
+  publishManyItemsAddedToCart,
   publishOrder,
   removeItemfromCart,
   submitOrder,
@@ -12,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { SVGLoading } from ".";
+import toast, { Toaster } from "react-hot-toast";
 
 export const OrderButton = ({
   userId,
@@ -32,16 +35,22 @@ export const OrderButton = ({
     //   (item) => item.id
     // );
     if (submittedOrder.createOrder) {
-      await publishOrder(submittedOrder.createOrder.id);
-      await disconnectItemfromCart({ itemsIds, cartId });
-      await publishCart(cartId);
+      const promises = [
+        publishOrder(submittedOrder.createOrder.id),
+        disconnectItemfromCart({ itemsIds, cartId }),
+        publishCart(cartId),
+        publishManyItemsAddedToCart(userId),
+      ];
+      await Promise.all(promises);
+      
       router.refresh();
       setSubmitting(false);
-      setIsOrderSubmitted(true);
+      toast.success(`Item added to cart. You can track it in your profile.`);
+      // setIsOrderSubmitted(true);
       setSelectedItemsIds([]);
-      setTimeout(function () {
-        setIsOrderSubmitted(false);
-      }, 3000);
+      // setTimeout(function () {
+      //   setIsOrderSubmitted(false);
+      // }, 3000);
     } else {
       setError(true);
       setTimeout(function () {
@@ -169,6 +178,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
   return (
     <div className="flex flex-col items-center justify-between p-4 pb-10 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-screen fontColor pb-5 ">
+        <Toaster/>
         <h1 className=" text-2xl font-bold text-center py-8 ">Cart</h1>
         {isOrderSubmitted && (
           <div className="text-3xl w-full h-full flex flex-col justify-center items-center text-center">

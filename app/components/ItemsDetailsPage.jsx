@@ -233,6 +233,7 @@ const ItemsDetailsPage = ({ product, user }) => {
       }, 2000);
       return
     }
+
     //if user logged in, do this⬇️⬇️ 
     const cartId = user.cartId;
     const isAdded = await addItemToCart({

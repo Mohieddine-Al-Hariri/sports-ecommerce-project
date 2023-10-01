@@ -46,8 +46,8 @@ const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, sel
               width={86}
               height={108}
               className="w-[86px] h-[108px] rounded-[20px] border-2 border-gray-300 hover:border-[#4bc0d9] transition duration-300"
-              src={product.imageUrls[0]?.url}
-              alt={product.name}
+              src={product?.imageUrls[0]?.url}
+              alt={product?.name}
             /> :
             collection.imageUrl ?
               <Image

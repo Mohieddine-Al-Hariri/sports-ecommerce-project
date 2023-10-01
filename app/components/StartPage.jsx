@@ -52,9 +52,9 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
         }
       }
     }));
-    const res = await addManyItemsToCart({cartId, items});
+    await addManyItemsToCart({cartId, items});
     await publishCart(cartId);
-    await publishManyItemsAddedToCart(res.updateCart.orderItems);
+    await publishManyItemsAddedToCart(user.id);
     localStorage.removeItem("cart");
   }
 
