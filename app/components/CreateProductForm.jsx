@@ -391,7 +391,6 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
 
     if(newTag === '') return
     if (tagList.includes(newTag)) {
-      //TODO: Handle Similar Tags Error
       return
     }
     setTagList([...tagList, newTag]);

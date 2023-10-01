@@ -9,7 +9,7 @@ const signIn = async () => {
     redirect("/")
   }
   return (
-    <div className=' flex overflow-y-scroll max-lg:items-start justify-center items-start max-sm:fixed h-full m-0 w-full text-white gap-2 bg-white pb-10 max-lg:pt-0 max-sm:py-10'>
+    <div className=' flex overflow-y-hidden max-lg:items-start justify-center items-start max-sm:fixed h-full m-0 w-full text-white gap-2 bg-white pb-10 max-lg:pt-0 max-sm:py-10'>
       <CredentialsForm />
     </div>
   )
