@@ -87,7 +87,6 @@ body.dark{
   --bgColor: linear-gradient(to top, #000, #131313, #161616);
   --staticBgColor: #161616;
   --bgColorGray: #343434;
-  background: var(--bgColor);
   --opBgColor: #f3f3f3 ;
   --opTxtColor: black;
   --opBorderColor: white;
@@ -106,6 +105,7 @@ body.dark{
   /* --scrollbar-track-bg: #666; */
   --scrollbar-thumb-color: rgb(111, 111, 111);
   --scrollbar-thumb-color-hover: #484848;
+  background: var(--bgColor);
 }
 
 /* input,
