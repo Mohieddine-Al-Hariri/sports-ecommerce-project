@@ -73,7 +73,7 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
       const orderItemsPublished = await publishManyItemsAddedToCart(res.orderItems);
     });
 
-    // localStorage.removeItem("cart");
+    localStorage.removeItem("cart");
   }
 
   useEffect(() => {

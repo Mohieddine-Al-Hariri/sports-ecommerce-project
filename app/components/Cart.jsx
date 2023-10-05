@@ -131,7 +131,6 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     if(!user) setItems(localCart)
     else setItems(cartItems)
   }, [cartItems])
-// console.log(items) //TODO: Add Delete Selected Items
 
   useEffect(() => {
     if(selectedItemsIds.length === items?.length && items?.length > 0) setSelectAll(true);
