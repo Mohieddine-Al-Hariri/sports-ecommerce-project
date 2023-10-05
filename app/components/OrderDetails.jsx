@@ -24,7 +24,7 @@ const OrderDetails = ({ order, user }) => {
   else if (order.state === "Ordered") stateColor = "text-yellow-500";
 
   const handleDeleteOrder = async () => {
-    await deleteOrder(order.id);
+    await deleteOrder(order.id); //TODO: delete its orderItems too?
     router.refresh();
     router.push("/Admin/orders");
   };

@@ -433,14 +433,9 @@ const CreateProductForm = ({ categoriesData, isDarkMode, collectionsData }) => {
       previousPrice: isOnSale ? prevPrice : 0,
       tags: tagList
     });
-
-    const publishedTagsPromise = publishManyTags(createdProduct.id);
-    const publishProductPromise = publishProduct(createdProduct.id);
-    const publishProductVariantsPromise = publishProductVariants(createdProduct.id);
-    // const publishProductVariantsPromise = publishProductVariants(createdProduct.productVariants);
-    const publishImagesUrlsPromise = publishImagesUrls(createdProduct.imageUrls);
-    await Promise.all([publishedTagsPromise, publishProductPromise, publishProductVariantsPromise, publishImagesUrlsPromise]);
     
+    await publishProduct(createdProduct.id);
+
     router.push(`/itemsDetails/${createdProduct.id}`);
     setIsCreating(false);
   };

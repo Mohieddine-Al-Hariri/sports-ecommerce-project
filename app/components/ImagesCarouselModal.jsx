@@ -5,7 +5,7 @@ import 'react-multi-carousel/lib/styles.css';
 import { Carousel } from 'react-responsive-carousel';
 import { useEffect } from 'react';
 
-const ImagesCarouselModal = ({ product, setImageIndex }) => {
+const ImagesCarouselModal = ({ product, imageIndex, setImageIndex }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [bgHeight, setBgHeight] = useState("h-0");
@@ -63,13 +63,14 @@ const ImagesCarouselModal = ({ product, setImageIndex }) => {
       items: 2,
     },
   };
+  console.log(imageIndex)
 
   return (
     <div className="relative max-sm:w-full px-3 w-[428px] inline-block ">
       <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
         <Carousel
           showArrows={true}
-          selectedItem={currentImageIndex}
+          selectedItem={imageIndex}
           onChange={(index) => {setCurrentImageIndex(index); setImageIndex(index)}}
           showThumbs={false}
           infiniteLoop={true}

@@ -3,17 +3,14 @@ import CartItem from "./CartItem";
 import Link from "next/link";
 import SignInBtn from "./SignInBtn";
 import {
-  disconnectItemfromCart,
-  publishCart,
-  publishItemAddedToCart,
-  publishManyItemsAddedToCart,
+  deleteManyItems,
   publishOrder,
   removeItemfromCart,
   submitOrder,
 } from "@/lib";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { SVGLoading } from ".";
+import { SVGLoading, SVGTrash } from ".";
 import toast, { Toaster } from "react-hot-toast";
 
 export const OrderButton = ({
@@ -30,34 +27,25 @@ export const OrderButton = ({
 
   const orderItems = async () => {
     setSubmitting(true);
-    const submittedOrder = await submitOrder({ userId, totalPrice, itemsIds });
-    // const itemIds = submittedOrder.createOrder.orderItems.map(
-    //   (item) => item.id
-    // );
-    if (submittedOrder.createOrder) {
-      const promises = [
-        publishOrder(submittedOrder.createOrder.id),
-        disconnectItemfromCart({ itemsIds, cartId }),
-        publishCart(cartId),
-        publishManyItemsAddedToCart(userId),
-      ];
-      await Promise.all(promises);
-      
+
+    try {
+      const submittedOrder = await submitOrder({ userId, totalPrice, itemsIds, cartId });
+      await publishOrder(submittedOrder.createOrder.id);
       router.refresh();
       setSubmitting(false);
-      toast.success(`Item added to cart. You can track it in your profile.`);
-      // setIsOrderSubmitted(true);
+      toast.success(`Order Submitted. You can track it in your profile.`, {
+        duration: 5000,
+      });
       setSelectedItemsIds([]);
-      // setTimeout(function () {
-      //   setIsOrderSubmitted(false);
-      // }, 3000);
-    } else {
+
+    } catch (error) {
+      setSubmitting(false);
       setError(true);
       setTimeout(function () {
         setError(false);
       }, 3000);
-      //something went wrong, plz try again later
     }
+    
   };
 
   return (
@@ -70,7 +58,15 @@ export const OrderButton = ({
         }  rounded-lg border-black justify-around items-center gap-[3px] flex`}
       >
         <div className=" text-center text-[23px] font-semibold flex items-center gap-4">
-          <h2>{isSubmitting ? "Submitting" : "Order"}</h2>
+          <h2 className="flex">
+            {isSubmitting 
+            ? 
+              <>
+                <SVGLoading/>
+                Submitting...
+              </>
+            : "Order"}
+          </h2>
           <svg
             width="24px"
             height="24px"
@@ -119,6 +115,7 @@ export const GoShopping = () => {
 const Cart = ({ cartItems, user, hasNextPage }) => {
   const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedItemsIds, setSelectedItemsIds] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [error, setError] = useState(false);
@@ -130,12 +127,14 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     if(isDarkModeLocal) document.body.classList.add('dark');
     else document.body.classList.remove('dark');
     const localCart = JSON.parse(localStorage.getItem("cart"));
+    console.log(localCart)
     if(!user) setItems(localCart)
     else setItems(cartItems)
   }, [cartItems])
+// console.log(items) //TODO: Add Delete Selected Items
 
   useEffect(() => {
-    if(selectedItemsIds.length === cartItems?.length) setSelectAll(true);
+    if(selectedItemsIds.length === items?.length && items?.length > 0) setSelectAll(true);
     else setSelectAll(false);
   }, [selectedItemsIds])
 
@@ -153,9 +152,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
         }
       } else {
         // If authenticated, remove the item from the user's cart
-        await removeItemfromCart(itemId);
-        // Publish the updated cart
-        await publishCart(user.cartId);
+        await removeItemfromCart(itemId);;
         // Refresh the router to reflect changes
         router.refresh();
         // Update the state with the latest cart items (assuming "cartItems" is updated elsewhere)
@@ -169,12 +166,25 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     }
   };
 
+  console.log(selectAll)
   const selectAllItems = async () => {
-    if (!selectAll) setSelectedItemsIds(cartItems.map((item) => item.id));
+    if (!selectAll) setSelectedItemsIds(items.map((item) => item.id));
     else setSelectedItemsIds([]);
-    setSelectAll(!selectAll);
+    setSelectAll(prev => !prev);
   };
-
+  const deleteSelectedItems = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteManyItems(selectedItemsIds);
+      router.refresh();
+      setSelectedItemsIds([]);
+      setIsDeleting(false);
+    } catch (error) {
+      console.log(error)
+      setIsDeleting(false);
+    }
+  }
+  
   return (
     <div className="flex flex-col items-center justify-between p-4 pb-10 h-screen w-screen bgColor fontColor overflow-y-scroll overflow-x-hidden">
       <div className="w-screen fontColor pb-5 ">
@@ -200,7 +210,7 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
               {items?.length} Items
             </h3>
             {items?.length > 0 && (
-              <div className="flex items-center gap-4 pl-4 py-2 bg-gray-100 rounded-md shadow-md mt-4 mb-2">
+              <div className={`flex items-center gap-4 pl-4 py-2 ${selectedItemsIds.length > 0 ? "bg-[#4bc0d9]" : "bg-gray-100"} rounded-md shadow-md mt-4 mb-2`}>
                 <label className="flex items-center gap-2 text-gray-600 cursor-pointer" htmlFor="selectAll">
                   <input
                     type="checkbox"
@@ -214,6 +224,16 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
                     {selectedItemsIds.length} Items Selected
                   </span>
                 </label>
+                
+                {selectedItemsIds.length > 0 && 
+                  <button disabled={isDeleting} onClick={() => deleteSelectedItems()} className="hover:text-red-500 transition duration-100 cursor-pointer " >
+                    {isDeleting ? 
+                      <SVGLoading/>
+                      :
+                      <SVGTrash />
+                    }
+                  </button>
+                }
                 {/* You can add more interactive elements or content here */}
               </div>
             )}

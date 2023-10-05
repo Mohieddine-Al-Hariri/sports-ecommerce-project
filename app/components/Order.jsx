@@ -7,8 +7,10 @@ import { useState } from "react";
 import { SVGCancel, SVGLoading, SVGX } from ".";
 
 const Order = ({ order }) => {
+  
   const [cancelling, setCancelling] = useState(false);
   const router = useRouter();
+
   let stateColor = "text-green-500";
   if (order.state === "Cancelled" || order.state === "Deleted") stateColor = "text-red-500";
   else if(order.state === "Delivering") stateColor = "text-[#4bc0d9]";
@@ -27,7 +29,9 @@ const Order = ({ order }) => {
     await publishOrder(order.id);
     router.refresh();
   }
+
   const item = order.orderItems[0];
+  
   return (
     <div className="flex flex-col fontColor gap-2 p-2 h-[100px] border-2 borderColor border-solid rounded-lg">
       <div className="flex gap-2 justify-between items-center h-full">

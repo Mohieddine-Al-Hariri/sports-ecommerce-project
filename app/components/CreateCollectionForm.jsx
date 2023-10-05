@@ -66,8 +66,10 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
       return;
     }
     setIsSaving(true);
+
     const imageUrl = imageUpload ? await uploadImage(imageUpload, undefined, form.name) : null;
     const slug = form.name.replace(/\s+/g, '-').toLowerCase() + v4();
+    
     const createdCollection = await createCollection({
       ...form,
       price: numericPrice,
@@ -76,7 +78,9 @@ const CreateCollectionForm = ({ products, getOtherProducts, productsPageNumber, 
       products: includedProducts.map((product) => ({id: product.id}))
     })
     await publishCollection(createdCollection.createCollection.id);
+
     router.refresh();
+    
     setIsSaving(false);
     setForm({
       name: "",

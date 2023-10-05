@@ -42,20 +42,38 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
   const addItemsToCart = async (localCart) => { 
   //Add items to cart in DB from localStorage since user logged in
     const cartId = user.cartId;
-    const items = localCart.map((item) => ({
-      quantity: item.quantity,
-      total: item.total,
-      variant: item.variant,
-      product: {
-        connect: {
-          id: item.product.id
+    const items = localCart.map((item) => {
+      
+      const connectTo = !item.isCollection ? {
+        product: {
+          connect: {
+            id: item.product.id
+          }
+        }
+      } : {
+        collection: {
+          connect: {
+            id: item.collection.id
+          }
         }
       }
-    }));
-    await addManyItemsToCart({cartId, items});
-    await publishCart(cartId);
-    await publishManyItemsAddedToCart(user.id);
-    localStorage.removeItem("cart");
+
+      return({
+        quantity: item.quantity,
+        total: item.total,
+        orderItemVariants: {create: item.orderItemVariants},
+        variant: item.variant,
+        ...connectTo
+      })
+      
+    });
+
+    await addManyItemsToCart({cartId, items, userId: user.id})
+    .then(async (res) => { 
+      const orderItemsPublished = await publishManyItemsAddedToCart(res.orderItems);
+    });
+
+    // localStorage.removeItem("cart");
   }
 
   useEffect(() => {
@@ -69,30 +87,32 @@ const StartPage = ({ products, hasNextPage, user, searchText, categoriesData, se
       setIsDarkMode(false);
     }
     const localCart = JSON.parse(localStorage.getItem("cart"));
+    console.log(localCart)
     if(user && localCart){
       addItemsToCart(localCart);
     }
+
   }, []);
 
   
   useEffect(() => {
     let colls = [];
 
-  if (collectionsData) {
-    colls = collectionsData.collections.slice(0, selectedCategory === 'Collections & Sales' ? undefined : 4);
-    colls = colls.map(collection => {
-      const images = collection.node.products?.map(product => product.imageUrls[0]);
-      return {
-        node: {
-          ...collection.node,
-          excerpt: collection.node.description,
-          reviews: collection.node.reviews,
-          imageUrls: images,
-          isCollection: true,
-        },
-      };
-    });
-  }
+    if (collectionsData) {
+      colls = collectionsData.collections.slice(0, selectedCategory === 'Collections & Sales' ? undefined : 4);
+      colls = colls.map(collection => {
+        const images = collection.node.products?.map(product => product.imageUrls[0]);
+        return {
+          node: {
+            ...collection.node,
+            excerpt: collection.node.description,
+            reviews: collection.node.reviews,
+            imageUrls: images,
+            isCollection: true,
+          },
+        };
+      });
+    }
 
     
     const combined = products.slice(); // Create a shallow copy of products

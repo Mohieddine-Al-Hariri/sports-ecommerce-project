@@ -213,7 +213,7 @@ const ItemsDetailsPage = ({ product, user }) => {
         id,
         quantity,
         total: totalPrice,
-        chosenProductsVariants: [chosenProductVariant],
+        orderItemVariants: [{name: chosenProductVariant}],
         product: {
           imageUrls: [{ url: product.imageUrls[0].url }],
           name: product.name,
@@ -244,12 +244,9 @@ const ItemsDetailsPage = ({ product, user }) => {
       cartId,
       chosenProductsVariants: [chosenProductVariant],
     });
-    const publishCartPromise = publishCart(cartId); //Needs publish after being updated
-    const publishItemPromise = publishItemAddedToCart(
-      isAdded.updateCart.orderItems[0].id
-    );
-    const publishVariantsPromise = publishManyVariants(isAdded.updateCart.orderItems[0].id);
-    await Promise.all([publishCartPromise, publishItemPromise, publishVariantsPromise])
+    
+    await publishCart({cartId, orderItemId: isAdded.updateCart.orderItems[0].id}); 
+    
     setIsAdding(false);
     setIsAddedToCart(true);
     setIsItemAddedToCart(true);
@@ -279,7 +276,7 @@ const ItemsDetailsPage = ({ product, user }) => {
       <div className=" overflow-y-scroll overflow-x-hidden w-full h-full max-sm:pb-8 relative bgColor fontColor flex-col gap-6 max-sm:gap-4 justify-start flex-wrap items-start">
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full h-fit">
           {/* TODO: Make the image size based on the used images dimensions */}
-          <ImagesCarouselModal product={product} setImageIndex={setCurrentImageIndex} />
+          <ImagesCarouselModal product={product} imageIndex={currentImageIndex} setImageIndex={setCurrentImageIndex} />
           <div className="flex flex-col gap-10 sm:h-full">
             <div className="max-sm:w-full w-[440px] relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
               <div>

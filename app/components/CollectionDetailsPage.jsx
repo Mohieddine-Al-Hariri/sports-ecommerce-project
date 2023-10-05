@@ -85,6 +85,7 @@ export const AddItemForm = ({
   isDarkMode,
   isOutOfStock,
   currentImageIndex,
+  setCurrentImageIndex,
   collection,
   isLoggedin,
   user
@@ -142,6 +143,7 @@ export const AddItemForm = ({
         } else chosenProductsVariants[index] = chosenProductsVariantsNames[index];
       }
     });
+    
     if(isStop) return;
     
     if (!isLoggedin) {
@@ -156,12 +158,20 @@ export const AddItemForm = ({
 
       const cartItem = {
         id,
+        collectionId: collection.id,
+        imageUrl: collection.imageUrl,
         quantity,
         total: totalPrice,
-        variant: chosenProductsVariants,
         isCollection: true,
-        collectionId: collection.id,
-        products,
+        orderItemVariants: chosenProductsVariants.map((variant) => ({
+          name: variant
+        })),
+        collection: {
+          name: collection.name,
+          id: collection.id,
+          imageUrl: collection.imageUrl,
+          products: products,
+        },
       };
       const updatedCart = localCart ? [...localCart, cartItem] : [cartItem];
       localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -184,14 +194,8 @@ export const AddItemForm = ({
       chosenProductsVariants,
       isCollection: true,
     });
+    await publishCart({cartId, orderItemId: isAdded.updateCart.orderItems[0].id}); 
 
-    const publishCartPromise = publishCart(cartId); //Needs publish after being updated
-    const publishItemPromise = publishItemAddedToCart(
-      isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id
-    );
-    const publishVariantsPromise = publishManyVariants(isAdded.updateCart.orderItems[isAdded.updateCart.orderItems.length - 1].id);
-    await Promise.all([publishCartPromise, publishItemPromise, publishVariantsPromise])
-    
     setIsAdding(false);
     setIsAddedToCart(true);
     setIsItemAddedToCart(true);
@@ -223,9 +227,9 @@ export const AddItemForm = ({
 
   return (
     <>
-      <div className="flex flex-col w-full px-4 ">
+      <div className="flex flex-col w-full px-4 gap-4 ">
         {collection.products[currentImageIndex].productVariants.length > 0 && (
-          <div className="left-[31px] top-[88px] text-sm font-bold leading-tight mb-2">
+          <div className="left-[31px] top-[88px] text-sm font-bold leading-tight">
             Variants
           </div>
         )}
@@ -246,6 +250,29 @@ export const AddItemForm = ({
               );
             }
           )}
+        </div>
+        <div className="flex items-center justify-center space-x-4 w-full">
+          <button
+            disabled= {currentImageIndex === 0}
+            onClick={() => setCurrentImageIndex(prev => {
+              if(prev > 0) return (prev - 1);
+              else return prev
+            } )}
+            className={` ${currentImageIndex === 0 ? "bg-gray-400" : "bg-[#4bc0d9] hover:bg-[#3ca8d0]"} text-white font-bold py-2 px-4 rounded-full focus:outline-none`}
+          >
+            &lt;
+          </button>
+          <span className="textColorGray font-semibold">Item {currentImageIndex + 1}</span>
+          <button
+            disabled= {currentImageIndex === collection.products.length - 1}
+            onClick={() => setCurrentImageIndex(prev => {
+              if(prev < collection.products.length - 1) return (prev + 1);
+              else return prev
+            } )}
+            className={`${currentImageIndex === collection.products.length - 1 ? "bg-gray-400" : "bg-[#4bc0d9] hover:bg-[#3ca8d0]"} text-white font-bold py-2 px-4 rounded-full focus:outline-none`}
+          >
+            &gt;
+          </button>
         </div>
       </div>
       <div className="w-full flex justify-center items-center flex-col pb-8 ">
@@ -391,6 +418,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
       document.body.classList.remove("dark");
       setIsDarkMode(false);
     }
+    
   }, []);
 
     const handleToggleTooltip = () => {
@@ -426,7 +454,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
         {/*TODO: make scrolling keep the image in its place, and moves the content above it, and maybe make it based on desire? */}
         <div className="sm:flex sm:items-start sm:mb-10 sm:justify-center w-full ">
           
-          <ImagesCarouselModal setImageIndex={setCurrentImageIndex} product={{imageUrls: collection.products.map(product => product.imageUrls[0])}} />
+          <ImagesCarouselModal imageIndex={currentImageIndex} setImageIndex={setCurrentImageIndex} product={{imageUrls: collection.products.map(product => product.imageUrls[0])}} />
           
           <div className="flex flex-col justify-between gap-10 sm:h-screen">
             <div className="max-sm:w-full w-[440px] relative bgColor flex flex-col justify-center px-2 pl-5 gap-4">
@@ -548,6 +576,7 @@ const CollectionDetailsPage = ({ collection, user }) => {
               isOutOfStock={isOutOfStock}
               isDarkMode={isDarkMode}
               currentImageIndex={currentImageIndex}
+              setCurrentImageIndex={setCurrentImageIndex}
               collection={collection}
               user={user}
             />

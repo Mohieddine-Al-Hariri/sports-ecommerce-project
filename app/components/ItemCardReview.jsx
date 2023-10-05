@@ -1,5 +1,5 @@
 "use client"
-import { disconnectItemFromOrder, publishCollection, publishOrder, publishProduct, publishReview, removeOrder, reviewCollection, reviewProduct } from "@/lib";
+// import { disconnectItemFromOrder, publishCollection, publishOrder, publishProduct, publishReview, removeOrder, reviewCollection, reviewProduct } from "@/lib";
 import Image from "next/image"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import ReactStars from 'react-rating-star-with-type';
 import { SVGLoading } from ".";
 
 
-const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstRender, isLastItem }) => {
+const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstRender, isLastItem, submitReview }) => {
   const [star, setStar] = useState(0);
   const [isRated, setIsRated] = useState(false);
   const [headline, setHeadline] = useState("");
@@ -29,6 +29,7 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
     setStar(nextValue);
   }
   const submitProductReview = async () => {
+    
     if(!isRated) {
       setIsError(true);
       setTimeout(function () {
@@ -38,22 +39,28 @@ const ItemCardReview = ({ collection, product, userId, orderId, itemId, isFirstR
     }
     setIsError(false);
     setIsLoading(true);
-    if(collection){
-      const reviewedCollection = await reviewCollection({headline, content, rating: star, collectionId: collection.id, userId})
-      .catch((e) => {
-        console.log(e);
-        setIsLoading(false);
-      });
-      await Promise.all([publishCollection(collection.id), publishReview(reviewedCollection.updateCollection.reviews[reviewedCollection.updateCollection.reviews.length - 1].id), disconnectItemFromOrder({orderId, itemId})]);
-    } else{
-      const reviewedProduct = await reviewProduct({productId: product.id, headline, content, rating: star, userId});
-      await publishProduct(product.id);
-      await publishReview(reviewedProduct.updateProduct.reviews[reviewedProduct.updateProduct.reviews.length - 1].id);
-      await disconnectItemFromOrder({orderId, itemId});
-    }
-    if(isLastItem) await removeOrder(orderId);
-    await publishOrder(orderId);
-    router.refresh();
+
+    if(collection) await submitReview({headline, content, rating: star, collectionId: collection.id, userId, orderId, itemId}, true, isLastItem)
+    else await submitReview({headline, content, rating: star, productId: product.id, userId, orderId, itemId}, false, isLastItem);
+
+    // if(collection){
+    //   const reviewedCollection = await reviewCollection({headline, content, rating: star, collectionId: collection.id, userId, orderId, itemId})
+    //   .catch((e) => {
+    //     console.log(e);
+    //     setIsLoading(false);
+    //   });
+    //   await publishReview(reviewedCollection.reviews[reviewedCollection.reviews.length - 1].id)
+
+    // } else{
+    //   const reviewedProduct = await reviewProduct({productId: product.id, headline, content, rating: star, userId, orderId, itemId});
+    //   await publishReview(reviewedProduct.reviews[reviewedProduct.reviews.length - 1].id);
+    // }
+
+    //Remove order from user's view if no more items available to review
+    // if(isLastItem) await removeOrder(orderId); 
+    // else await publishOrder(orderId); //else publish this order
+
+    // router.refresh();
     setIsLoading(false);
   }
 

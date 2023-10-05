@@ -191,7 +191,7 @@ const CredentialsForm = ({ isModal }) => {
           <div className="login__form overflow-y-scroll max-h-[650px] max-sm:pb-28">
             <div>
               <h1 className="login__title">
-                {isLogIn ? (
+                {!isLogIn ? (
                   <>
                     <span>Welcome</span> to the family
                   </>
@@ -365,13 +365,13 @@ const CredentialsForm = ({ isModal }) => {
                 >
                   {isLogIn
                     ? "Don't have an account? Sign Up"
-                    : "Already have an account? Log In"}
+                    : <p>Already have an account? <span className="underline underline-offset-1 ">Log In</span></p>}
                 </button>
                 <button
                   onClick={() => router.push("/")}
-                  className="login__forgot text-left"
+                  className="login__forgot text-left "
                 >
-                  Cancel
+                  <span className="underline underline-offset-1">Cancel</span>
                 </button>
               </div>
             </div>

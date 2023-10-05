@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { SVGLoading, SVGTrash } from ".";
 
 const CartItem = ({ item, deleteItem, selectedItemsIds, setSelectedItemsIds, selectAll }) => {
-  const { quantity, total, product, id, createdAt, variant, collection, orderItemVariants } = item;
+  const { quantity, total, product, id, createdAt, variant, collection, orderItemVariants, isCollection } = item;
   const [isSelected, setIsSelected] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+
+  console.log(item);
 
   useEffect(() => {
     if(selectedItemsIds.includes(id)) {
