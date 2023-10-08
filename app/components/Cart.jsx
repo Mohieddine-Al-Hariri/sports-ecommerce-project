@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { SVGLoading, SVGTrash } from ".";
 import toast, { Toaster } from "react-hot-toast";
+import Swal from "sweetalert2";
 
 export const OrderButton = ({
   userId,
@@ -172,16 +173,54 @@ const Cart = ({ cartItems, user, hasNextPage }) => {
     setSelectAll(prev => !prev);
   };
   const deleteSelectedItems = async () => {
-    try {
-      setIsDeleting(true);
-      await deleteManyItems(selectedItemsIds);
-      router.refresh();
-      setSelectedItemsIds([]);
-      setIsDeleting(false);
-    } catch (error) {
-      console.log(error)
-      setIsDeleting(false);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "All selected items will be deleted",
+      icon: 'warning',
+      iconColor: "#4bc0d9",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: "staticBgColor fontColorGray"      
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        try {
+          if (!user) {
+            // If not authenticated, update the local cart (if it exists)
+            const localCart = JSON.parse(localStorage.getItem("cart"));
+            if (localCart) {
+              let updatedCart = localCart;
+              selectedItemsIds.forEach((itemId) => {
+                updatedCart = updatedCart.filter((item) => item.id !== itemId);
+              })
+              localStorage.setItem("cart", JSON.stringify(updatedCart));
+              setItems(updatedCart);
+            }
+          }
+          else{
+            setIsDeleting(true);
+            await deleteManyItems(selectedItemsIds);
+            router.refresh();
+          }
+
+          setSelectedItemsIds([]);
+          toast.success(`${selectedItemsIds.length === 1 ? "Item was" : "Items where"} deleted succefully. \nIf you can still see them, try refreshing the page.`, {
+            duration: 5000,
+            icon: <SVGTrash className="text-[#4bc0d9]  w-[32px]"/>,
+            //TODO: Learn how to use animation.json + implement it
+          });
+          setIsDeleting(false);
+
+        } catch (error) {
+          toast.error(`Something went wrong, please try again.`, {
+            duration: 4000,
+          });
+          console.log(error)
+          setIsDeleting(false);
+        }
+      }
+    })
   }
   
   return (
